@@ -1,17 +1,17 @@
-#include <glic/canvas.h>
-#include <glic/keyboard.h>
-#include <glic/cube.h>
+#include <cgl/canvas.h>
+#include <cgl/keyboard.h>
+#include <cgl/cube.h>
 
-extern CglicCanvas *pcv;
+extern CglCanvas *pcv;
 
-void CglicKeyboard::keyColor(unsigned char key,int x,int y) {
+void CglKeyboard::keyColor(unsigned char key,int x,int y) {
   pcv->winid();
 }
 
 void setTranslation(glm::vec3 tr, int &state){
-  pCglicScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
+  pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
   for (unsigned int iObj = 0; iObj < scene->listObject.size(); iObj++){
-    pCglicObject obj = scene->listObject[iObj];
+    pCglObject obj = scene->listObject[iObj];
     if (obj->isSelected()){
       obj->transform.setTranslation(tr);
       state = 1;
@@ -21,16 +21,16 @@ void setTranslation(glm::vec3 tr, int &state){
     scene->transform.setTranslation(tr);
 }
 
-void CglicKeyboard::special(unsigned char key, int x, int y)
+void CglKeyboard::special(unsigned char key, int x, int y)
 {
-  pCglicScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
+  pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
 
   if(key!=lastKey){
     if (scene->isSelected()){
       scene->saveTransformations();
     }
     for (unsigned int i = 0; i < scene->listObject.size(); i++){
-      CglicObject *obj = scene->listObject[i];
+      CglObject *obj = scene->listObject[i];
       if (obj->isSelected()){
         //if(( !obj->isConstrainedInRotation()) && (!obj->isConstrainedInTranslation()) )
           obj->saveTransformations();
@@ -87,9 +87,9 @@ void CglicKeyboard::special(unsigned char key, int x, int y)
   lastKey = key;
 }
 
-void CglicKeyboard::keyboard(unsigned char key, int x, int y)
+void CglKeyboard::keyboard(unsigned char key, int x, int y)
 {
-  pCglicScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
+  pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
 
   // QUIT
   if ( key == 'q' || key == 27 ){
@@ -128,7 +128,7 @@ void CglicKeyboard::keyboard(unsigned char key, int x, int y)
       scene->undoLast();
     }
     for(int i = 0 ; i < scene->listObject.size() ; i++){
-      pCglicObject obj = scene->listObject[i];
+      pCglObject obj = scene->listObject[i];
       if(obj->isSelected()){
         obj->undoLast();
       }
@@ -142,7 +142,7 @@ void CglicKeyboard::keyboard(unsigned char key, int x, int y)
   if(lastKey=='t'){
     cout << "constrain in Translation" << endl;
     for(int i = 0 ; i < scene->listObject.size() ; i++){
-      pCglicObject obj = scene->listObject[i];
+      pCglObject obj = scene->listObject[i];
       if(obj->isSelected()){
         glm::vec3 constAxis;
         if(key=='x')
@@ -160,7 +160,7 @@ void CglicKeyboard::keyboard(unsigned char key, int x, int y)
   if(lastKey=='r'){
     cout << "constrain in Rotation" << endl;
     for(int i = 0 ; i < scene->listObject.size() ; i++){
-      pCglicObject obj = scene->listObject[i];
+      pCglObject obj = scene->listObject[i];
       if(obj->isSelected()){
         glm::vec3 constAxis;
         if(key=='x')
@@ -178,7 +178,7 @@ void CglicKeyboard::keyboard(unsigned char key, int x, int y)
   if((lastKey == 'r') || (lastKey == 't')){
     if((key=='x') || (key=='y') || (key=='z')){
       for(int i = 0 ; i < scene->listObject.size() ; i++){
-        pCglicObject obj = scene->listObject[i];
+        pCglObject obj = scene->listObject[i];
         if(obj->isSelected()){
           obj->saveTransformations();
         }
@@ -188,14 +188,14 @@ void CglicKeyboard::keyboard(unsigned char key, int x, int y)
 
   //Group objects
   if (key == 'g'){
-    std::vector<pCglicObject> objectsToGroup;
+    std::vector<pCglObject> objectsToGroup;
     for(int i = 0 ; i < scene->listObject.size() ; i++){
       if(scene->listObject[i]->isSelected()){
         objectsToGroup.push_back(scene->listObject[i]);
       }
     }
     if(objectsToGroup.size()>1){
-      scene->listGroup.push_back(new CglicGroup(objectsToGroup));
+      scene->listGroup.push_back(new CglGroup(objectsToGroup));
     }
   }
   //Ungroup
@@ -265,5 +265,5 @@ void CglicKeyboard::keyboard(unsigned char key, int x, int y)
 
 }
 
-void CglicKeyboard::keyboardUp(unsigned char key, int x, int y){}
+void CglKeyboard::keyboardUp(unsigned char key, int x, int y){}
 

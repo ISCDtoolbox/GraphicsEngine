@@ -1,11 +1,11 @@
 /****************************************************************
 *
-* GLIC: ICS Graphics Library
+* CGL: ICS Graphics Library
 *
 * Original Authors:
 *   J. Foulon, P. Frey
 *
-* GLIC: ICS Graphics Library
+* CGL: ICS Graphics Library
 * Copyright (C) 2014- ICS graphic team
 *
 * This library is free software; you can redistribute it and/or
@@ -28,59 +28,59 @@
 #ifndef __ICS_GL_h_
 #define __ICS_GL_h_
 
-#include <glic/canvas.h>
-#include <glic/light.h>
-#include <glic/scene.h>
-#include <glic/view.h>
-#include <glic/window.h>
-#include <glic/mesh.h>
-#include <glic/sphere.h>
-#include <glic/cube.h>
-#include <glic/axis.h>
-#include <glic/transform.h>
-#include <glic/shader.h>
-#include <glic/material.h>
-#include <glic/profile.h>
-#include <glic/group.h>
-#include <glic/colorgenerator.h>
+#include <cgl/canvas.h>
+#include <cgl/light.h>
+#include <cgl/scene.h>
+#include <cgl/view.h>
+#include <cgl/window.h>
+#include <cgl/mesh.h>
+#include <cgl/sphere.h>
+#include <cgl/cube.h>
+#include <cgl/axis.h>
+#include <cgl/transform.h>
+#include <cgl/shader.h>
+#include <cgl/material.h>
+#include <cgl/profile.h>
+#include <cgl/group.h>
+#include <cgl/colorgenerator.h>
 
 
 /*-- The major/minor/patch version. ---------------------------*/
-#define GLIC_VERSION_MAJOR    0
-#define GLIC_VERSION_MINOR    0
-#define GLIC_VERSION_PATCH    0
+#define CGL_VERSION_MAJOR    0
+#define CGL_VERSION_MINOR    0
+#define CGL_VERSION_PATCH    0
 
 /*---------------------------------------------------------------
   Do not modify anything below this line.
  --------------------------------------------------------------*/
 
 /*-- Declare a version string constant ------------------------*/
-#define GLIC_STR(s)           # s
-#define GLIC_xSTR(s)          GLIC_STR(s)
-#define GLIC_DOT(a,b)         a ## . ## b
-#define GLIC_xDOT(a,b)        GLIC_DOT(a,b)
+#define CGL_STR(s)           # s
+#define CGL_xSTR(s)          CGL_STR(s)
+#define CGL_DOT(a,b)         a ## . ## b
+#define CGL_xDOT(a,b)        CGL_DOT(a,b)
 
-#define GLIC_VERSION_STRING \
-	GLIC_xDOT( \
-		GLIC_xDOT(GLIC_VERSION_MAJOR, GLIC_VERSION_MINOR), \
-		         GLIC_VERSION_PATCH)
+#define CGL_VERSION_STRING \
+	CGL_xDOT( \
+		CGL_xDOT(CGL_VERSION_MAJOR, CGL_VERSION_MINOR), \
+		         CGL_VERSION_PATCH)
 
-namespace glic
+namespace cgl
 {
-	inline const char* glicGetVersion()
+	inline const char* cglGetVersion()
   {
-		return GLIC_xSTR(GLIC_VERSION_STRING);
+		return CGL_xSTR(CGL_VERSION_STRING);
   }
 }
 
 /*-- Cleanup all internal macros ------------------------------*/
-#undef GLIC_DOT
-#undef GLIC_xDOT
-#undef GLIC_STR
-#undef GLIC_xSTR
-#undef GLIC_VERSION_STRING
-#undef GLIC_VERSION_MAJOR
-#undef GLIC_VERSION_MINOR
-#undef GLIC_VERSION_PATCH
+#undef CGL_DOT
+#undef CGL_xDOT
+#undef CGL_STR
+#undef CGL_xSTR
+#undef CGL_VERSION_STRING
+#undef CGL_VERSION_MAJOR
+#undef CGL_VERSION_MINOR
+#undef CGL_VERSION_PATCH
 
 #endif

@@ -1,9 +1,9 @@
-#include <glic/scene.h>
-#include <glic/canvas.h>
-extern CglicCanvas *pcv;
+#include <cgl/scene.h>
+#include <cgl/canvas.h>
+extern CglCanvas *pcv;
 
 // object constructor
-CglicScene::CglicScene():transform(){
+CglScene::CglScene():transform(){
   selected = true;
   m_cam = glm::normalize(glm::vec3(1,1,1));
   m_look = -m_cam;
@@ -13,10 +13,10 @@ CglicScene::CglicScene():transform(){
   VIEW = glm::lookAt(m_cam, m_look, m_up);
   globalScale = 100000.0f;//For use of minimums later
 }
-CglicScene::~CglicScene(){}
+CglScene::~CglScene(){}
 
 
-void CglicScene::addObject(pCglicObject object)
+void CglScene::addObject(pCglObject object)
 {
   //Ajout de l'objet à la scène
   listObject.push_back(object);
@@ -24,7 +24,7 @@ void CglicScene::addObject(pCglicObject object)
 
   //Création des axes
   if(listObject.size()==1){
-    axis = new CglicAxis();
+    axis = new CglAxis();
     axis->linkSceneParameters(&MODEL, &VIEW, &PROJ, &center, &m_up, &m_cam, 0);
     axis->view = view;
   }
@@ -33,7 +33,7 @@ void CglicScene::addObject(pCglicObject object)
 }
 
 
-void CglicScene::display()
+void CglScene::display()
 {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_CULL_FACE);
@@ -82,7 +82,7 @@ void CglicScene::display()
 }
 
 
-int CglicScene::getPickedObjectID(int x, int y){
+int CglScene::getPickedObjectID(int x, int y){
   unsigned char pixel[3];
   GLint viewport[4];
   glGetIntegerv(GL_VIEWPORT,viewport);
@@ -95,12 +95,12 @@ int CglicScene::getPickedObjectID(int x, int y){
 }
 
 
-void CglicScene::reOrderObjects(int picked){
+void CglScene::reOrderObjects(int picked){
   listObject.insert(listObject.begin(), listObject[picked]);
   listObject.erase(listObject.begin() + picked + 1);
 }
 
-void CglicScene::toogleFlyingMode(){
+void CglScene::toogleFlyingMode(){
   pcv->profile.displayAxes = ((pcv->profile.flyingMode)?1:0);
   pcv->mice.lastPassivePos = pcv->mice.lastPos = glm::vec2(view->width/2, view->height/2);
 
@@ -125,7 +125,7 @@ void CglicScene::toogleFlyingMode(){
   transform.reset();
 }
 
-void CglicScene::applyTransformation()
+void CglScene::applyTransformation()
 {
   //FLYING MODE
   if(pcv->profile.flyingMode){
@@ -170,7 +170,7 @@ void CglicScene::applyTransformation()
   transform.reset();
 }
 
-void CglicScene::update_matrices()
+void CglScene::update_matrices()
 {
   if(!pcv->profile.flyingMode)
     VIEW = glm::lookAt(m_cam + view->camOffset * m_right, m_look, m_up);
@@ -186,13 +186,13 @@ void CglicScene::update_matrices()
                       view->m_zfar);
 }
 
-void CglicScene::saveTransformations(){
+void CglScene::saveTransformations(){
   transform.lastMatrices.push_back(MODEL);
   transform.lastUps.push_back(m_up);
   transform.lastCams.push_back(m_cam);
 }
 
-void CglicScene::undoLast(){
+void CglScene::undoLast(){
   if(transform.lastMatrices.size()>0){
     MODEL = transform.lastMatrices.back();
     center = glm::vec3(glm::vec4(MODEL[3]));
@@ -204,7 +204,7 @@ void CglicScene::undoLast(){
   }
 }
 
-void CglicScene::resetAll(){
+void CglScene::resetAll(){
   while(transform.lastMatrices.size()>0)
     undoLast();
   for(int i = 0 ; i < listObject.size() ; i++)
@@ -215,7 +215,7 @@ void CglicScene::resetAll(){
 }
 
 
-void CglicScene::debug(){
+void CglScene::debug(){
   //Vectors
 
   cout << "cam   = " << m_cam.x   << " " << m_cam.y   << " " << m_cam.z   << endl;
@@ -228,7 +228,7 @@ void CglicScene::debug(){
   //Matrices
   cout << endl;
   cout << " MODEL " << endl;
-  CglicObject obj = *listObject[0];
+  CglObject obj = *listObject[0];
   for(int i = 0 ; i < 4 ; i++)
     cout << obj.MODEL[i][0] << " " << obj.MODEL[i][1] << " " << obj.MODEL[i][2] << " " << obj.MODEL[i][3] << endl;
   cout << endl;
@@ -244,13 +244,13 @@ void CglicScene::debug(){
 }
 
 
-void CglicScene::glicInit()
+void CglScene::cglInit()
 {
   //  glEnable(GL_DEPTH_TEST);	// Active le test de profondeur
   // 	glEnable(GL_LIGHTING);	// Active l'éclairage
   // 	glEnable(GL_LIGHT0);
 }
 
-bool CglicScene::isSelected(){return selected;}
-void CglicScene::select(){  selected = true;}
-void CglicScene::unSelect(){selected = false;}
+bool CglScene::isSelected(){return selected;}
+void CglScene::select(){  selected = true;}
+void CglScene::unSelect(){selected = false;}

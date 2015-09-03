@@ -1,5 +1,5 @@
-#ifndef CGLICCOLORGENERATOR_H
-#define CGLICCOLORGENERATOR_H
+#ifndef CglCOLORGENERATOR_H
+#define CglCOLORGENERATOR_H
 
 #include <glm/glm.hpp>
 #include <iostream>
@@ -16,14 +16,14 @@ typedef struct {
     double v;       // percent
 } hsv;
 
-class CglicColorGenerator
+class CglColorGenerator
 {
   public:
     int inc;
     float start;
 
-    CglicColorGenerator();
-    ~CglicColorGenerator();
+    CglColorGenerator();
+    ~CglColorGenerator();
     glm::vec3 generateColor();
 
     hsv   rgb2hsv(rgb in);
@@ -33,4 +33,4 @@ class CglicColorGenerator
   private:
 };
 
-#endif // CGLICCOLORGENERATOR_H
+#endif // CglCOLORGENERATOR_H

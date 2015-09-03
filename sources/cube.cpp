@@ -1,19 +1,19 @@
-#include <glic/cube.h>
+#include <cgl/cube.h>
 
-CglicCube::CglicCube(double cr, double cg, double cb, double rr):r(rr)
+CglCube::CglCube(double cr, double cg, double cb, double rr):r(rr)
 {
-  //cout << "  --- - [create CglicCube]" << endl;
+  //cout << "  --- - [create CglCube]" << endl;
   //color[0]=cr;
   //color[1]=cg;
   //color[2]=cb;
 }
 
-CglicCube::~CglicCube()
+CglCube::~CglCube()
 {
-  //cout << "  --- - [destroy CglicCube]" << endl;
+  //cout << "  --- - [destroy CglCube]" << endl;
 }
 
-void CglicCube::display()
+void CglCube::display()
 {
 
   //if (state == TO_SEL ){

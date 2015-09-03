@@ -1,15 +1,15 @@
 /****************************************************************
  *
- * GLIC: ICS Graphics Library
+ * CGL: ICS Graphics Library
  *
  * Original Authors:
  *   J. Foulon, P. Frey
  *
  ****************************************************************/
-#ifndef __GLIC_MESH_H_
-#define __GLIC_MESH_H_
+#ifndef __CGL_MESH_H_
+#define __CGL_MESH_H_
 
-#include <glic/object.h>
+#include <cgl/object.h>
 
 #define FLOAT_MAX  1.e20
 
@@ -34,7 +34,7 @@ typedef struct {
 } NormalAtVertex;
 
 
-class GLIC_API CglicMesh : public CglicObject
+class CGL_API CglMesh : public CglObject
 {
 
 private:
@@ -52,14 +52,14 @@ private:
 
 
 public:
-  CglicMesh(char *name);
+  CglMesh(char *name);
   void meshInfo(const int& verbose = 0, ostream& outstr = cout);
   void shadowsDisplay();
   void artifactsDisplay();
   void display();
   void getBBOX();
   void displayBBOX();
-  ~CglicMesh(){};
+  ~CglMesh(){};
 
   glm::vec3 getBBMIN(){return center + glm::vec3(glm::inverse(MODEL) * glm::vec4(bbmin, 0));};
   glm::vec3 getBBMAX(){return center + glm::vec3(glm::inverse(MODEL) * glm::vec4(bbmax, 0));};

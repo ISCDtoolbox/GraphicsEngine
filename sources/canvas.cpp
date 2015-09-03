@@ -1,8 +1,8 @@
-#include <glic/canvas.h>
+#include <cgl/canvas.h>
 
-CglicCanvas *pcv;
+CglCanvas *pcv;
 
-CglicCanvas::CglicCanvas(int argc, char **argv)
+CglCanvas::CglCanvas(int argc, char **argv)
 {
   pcv = this;
 
@@ -13,76 +13,76 @@ CglicCanvas::CglicCanvas(int argc, char **argv)
   else
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 
-  glicLight();
+  cglLight();
 
   //Construct profile from a configuration file
-  profile = CglicProfile();
+  profile = CglProfile();
 }
 
 
-int CglicCanvas::glicWindow(int x, int y, int w, int h)
+int CglCanvas::cglWindow(int x, int y, int w, int h)
 {
-  window.push_back(CglicWindow(x,y,w,h));
+  window.push_back(CglWindow(x,y,w,h));
   return window.size()-1;
 }
 
 
-int CglicCanvas::glicScene()
+int CglCanvas::cglScene()
 {
-  scene.push_back(new CglicScene());
+  scene.push_back(new CglScene());
   scene[scene.size()-1]->ids = scene.size()-1;
   cout << "scene.size()-1: " << scene.size()-1 << endl;
   return scene.size()-1;
 }
 
-void CglicCanvas::glicSetScene(int ids, int idw)
+void CglCanvas::cglSetScene(int ids, int idw)
 {
   window[idw].ids = ids;
   scene[ids]->view = &window[idw].view;
 }
 
 
-void CglicCanvas::glicLight()
+void CglCanvas::cglLight()
 {
   //cout << "   Sun " << endl;
-   light.push_back(CglicLight(0));
+   light.push_back(CglLight(0));
    light[0].setPos(0., 0., 1., 1.);
-   //light[0].setCol(CglicMaterial::TC_DIF, 1., 0., 0., 0.5);
+   //light[0].setCol(CglMaterial::TC_DIF, 1., 0., 0., 0.5);
    //cout << "   Sun  end" << endl;
 
   //cout << "   Light 1 " << endl;
-  light.push_back(CglicLight(0));
+  light.push_back(CglLight(0));
   light[0].setPos(-1.0, 0., 0.5, 1.);
-  //light[0].setCol(CglicMaterial::TC_DIF, 1., 0., 0., 0.5);
+  //light[0].setCol(CglMaterial::TC_DIF, 1., 0., 0., 0.5);
   //cout << "   Light 1  end" << endl;
 
   //cout << "   Light 2 " << endl;
-  light.push_back(CglicLight(1));
+  light.push_back(CglLight(1));
   //cout << "   Light 2 bis" << endl;
   light[1].setPos(1.0, 0., 0.5, 1.);
-  //light[1].setCol(CglicMaterial::TC_DIF,0., 1., 0., 0.5);
+  //light[1].setCol(CglMaterial::TC_DIF,0., 1., 0., 0.5);
 
   //cout << "   Light 3 " << endl;
-  light.push_back(CglicLight(2));
+  light.push_back(CglLight(2));
   //cout << "   Light 3 bis" << endl;
   light[2].setPos(0., 1., 0.5, 1.);
-  //light[2].setCol(CglicMaterial::TC_DIF, 0., 0., 1., 1.);
+  //light[2].setCol(CglMaterial::TC_DIF, 0., 0., 1., 1.);
 }
 
-int CglicCanvas::glicObject(pCglicObject obj)
+int CglCanvas::cglObject(pCglObject obj)
 {
-  //cout << " [define CglicObject]" << endl;
+  //cout << " [define CglObject]" << endl;
   object.push_back(obj);
   return object.size() - 1;
 }
 
-void CglicCanvas::glicSetObject(int ido, int ids)
+void CglCanvas::cglSetObject(int ido, int ids)
 {
   //cout << " [add Object n." << ido << " to scene n." << ids << "]" << endl;
   scene[ids]->addObject(object[ido]);
 }
 
-int CglicCanvas::glicPickObject(int x, int y)
+int CglCanvas::cglPickObject(int x, int y)
 {
   //cout << " [pick Object ] " << endl;
 
@@ -90,7 +90,7 @@ int CglicCanvas::glicPickObject(int x, int y)
 }
 
 
-int CglicCanvas::winid()
+int CglCanvas::winid()
 {
   int idw = glutGetWindow();
   for (int i=0; i<window.size(); i++) {
@@ -100,42 +100,42 @@ int CglicCanvas::winid()
 }
 
 
-void CglicCanvas::reshape(int w, int h)
+void CglCanvas::reshape(int w, int h)
 {
   //cout << " [reshapeGL]" << endl;
   int  idw = winid();
   window[idw].view.reshape(w, h);
 }
 
-void CglicCanvas::reshapeWrap(int w, int h) {
+void CglCanvas::reshapeWrap(int w, int h) {
   //cout << " [reshapeWrap]" << endl;
   pcv->reshape(w, h);
 }
 
 
-void CglicCanvas::display()
+void CglCanvas::display()
 {
-  //cout << " [display CglicCanvas]" << endl;
+  //cout << " [display CglCanvas]" << endl;
   int  idw = winid();
   window[idw].display();
   window[idw].view.setView();
 }
 
-void CglicCanvas::displayWrap()
+void CglCanvas::displayWrap()
 {
   //cout << " [displayWrap]" << endl;
   pcv->display();
 }
 
 
-void CglicCanvas::motionWrap(int x, int y)
+void CglCanvas::motionWrap(int x, int y)
 {
   //cout << " [motionWrap]" << endl;
   pcv->mice.motion(x,y);
   glutPostRedisplay();
 }
 
-void CglicCanvas::passiveMotionWrap(int x, int y)
+void CglCanvas::passiveMotionWrap(int x, int y)
 {
   //cout << " [motionWrap]" << endl;
   pcv->mice.passiveMotion(x,y);
@@ -143,7 +143,7 @@ void CglicCanvas::passiveMotionWrap(int x, int y)
 }
 
 
-void CglicCanvas::mouseWrap(int b, int s, int x, int y)
+void CglCanvas::mouseWrap(int b, int s, int x, int y)
 {
   //cout << " [mouseWrap]" << endl;
   pcv->mice.mouse(b, s, x, y);
@@ -151,20 +151,20 @@ void CglicCanvas::mouseWrap(int b, int s, int x, int y)
 }
 
 
-void CglicCanvas::keyWrap(unsigned char key, int x, int y)
+void CglCanvas::keyWrap(unsigned char key, int x, int y)
 {
   //cout << " [keyboardWrap]" << endl;
   pcv->keyboard.keyboard(key, x, y);
   glutPostRedisplay();
 }
-void CglicCanvas::keyUpWrap(unsigned char key, int x, int y)
+void CglCanvas::keyUpWrap(unsigned char key, int x, int y)
 {
   //cout << " [keyboardWrap]" << endl;
   pcv->keyboard.keyboardUp(key, x, y);
   glutPostRedisplay();
 }
 
-void CglicCanvas::specialWrap(int key, int x, int y)
+void CglCanvas::specialWrap(int key, int x, int y)
 {
   //cout << " [specialWrap]" << endl;
   pcv->keyboard.special(key, x, y);
@@ -172,7 +172,7 @@ void CglicCanvas::specialWrap(int key, int x, int y)
 }
 
 
-void CglicCanvas::glicMainLoop()
+void CglCanvas::cglMainLoop()
 {
   simpleShader.load("./shaders/shader.vert", "./shaders/shader.frag");
   smoothShader.load("./shaders/smooth_shader.vert", "./shaders/smooth_shader.frag");

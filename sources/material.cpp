@@ -1,4 +1,4 @@
-#include "glic/material.h"
+#include "cgl/material.h"
 
 material::material()
 {

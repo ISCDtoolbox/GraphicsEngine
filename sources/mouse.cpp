@@ -1,10 +1,10 @@
-#include <glic/canvas.h>
-#include <glic/mouse.h>
-#include <glic/cube.h>
-extern CglicCanvas *pcv;
+#include <cgl/canvas.h>
+#include <cgl/mouse.h>
+#include <cgl/cube.h>
+extern CglCanvas *pcv;
 
 
-CglicMouse::CglicMouse()
+CglMouse::CglMouse()
 {
   memset((void*)this, 0, sizeof(*this));
   m_button[0] = m_button[1] = m_button[2] = false;
@@ -32,9 +32,9 @@ glm::vec3 get_arcball_vector(glm::vec2 cursor) {
   return P;
 }
 
-void CglicMouse::motion(int x, int y)
+void CglMouse::motion(int x, int y)
 {
-  pCglicScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
+  pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
 
   //GLuint   tm;
   //glm::vec3    v;
@@ -91,8 +91,8 @@ void CglicMouse::motion(int x, int y)
     lastPos = currPos;
 }
 
-void CglicMouse::passiveMotion(int x, int y){
-  pCglicScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
+void CglMouse::passiveMotion(int x, int y){
+  pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
   glm::vec2 currPassivePos(x,y);
   if (currPassivePos != lastPassivePos) {
     glm::vec3 va = get_arcball_vector(lastPassivePos);
@@ -110,7 +110,7 @@ void CglicMouse::passiveMotion(int x, int y){
     }
     else{
       for (unsigned int i = 0; i < scene->listObject.size(); i++){
-        CglicObject *obj = scene->listObject[i];
+        CglObject *obj = scene->listObject[i];
         if (obj->isSelected()){
           if(obj->isConstrainedInRotation())
             obj->setConstrainedRotation(5.0f * d.y);
@@ -128,12 +128,12 @@ void CglicMouse::passiveMotion(int x, int y){
 
 
 void save(bool cond){
-  pCglicScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
+  pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
   if(cond){
     if (scene->isSelected())
       scene->saveTransformations();
     for (unsigned int i = 0; i < scene->listObject.size(); i++){
-      CglicObject *obj = scene->listObject[i];
+      CglObject *obj = scene->listObject[i];
       if (obj->isSelected()){
         //if((!obj->isConstrainedInRotation()) && (!obj->isConstrainedInTranslation()))
           obj->saveTransformations();
@@ -142,9 +142,9 @@ void save(bool cond){
   }
 }
 
-void CglicMouse::mouse(int b, int s, int x, int y)
+void CglMouse::mouse(int b, int s, int x, int y)
 {
-  pCglicScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
+  pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
 
   //GLint  key;
   //m_tm = glutGet(GLUT_ELAPSED_TIME);
@@ -156,7 +156,7 @@ void CglicMouse::mouse(int b, int s, int x, int y)
 
   if(isReleased){
     for (unsigned int i = 0; i < scene->listObject.size(); i++){
-      CglicObject *obj = scene->listObject[i];
+      CglObject *obj = scene->listObject[i];
       if ( (obj->isConstrainedInRotation()) || ((obj->isConstrainedInTranslation())) )
         obj->unConstrain();
     }
@@ -181,7 +181,7 @@ void CglicMouse::mouse(int b, int s, int x, int y)
       bool  ctrl = ((glutGetModifiers() && GLUT_ACTIVE_CTRL) ? 1:0);
 
       if((s==GLUT_UP) && (!pcv->profile.flyingMode)){
-        pCglicScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
+        pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
         int pickedID = scene->getPickedObjectID(x, y);
         bool match = false;
         int  IndPicked = -1;
@@ -235,5 +235,5 @@ void CglicMouse::mouse(int b, int s, int x, int y)
 }
 
 
-void CglicMouse::transform()
+void CglMouse::transform()
 {}

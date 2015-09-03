@@ -1,22 +1,22 @@
 /****************************************************************
  *
- * GLIC: ICS Graphics Library
+ * CGL: ICS Graphics Library
  *
  * Original Authors:
  *   J. Foulon, P. Frey
  *
  ****************************************************************/
-#ifndef __GLIC_CUBE_H_
-#define __GLIC_CUBE_H_
+#ifndef __CGL_CUBE_H_
+#define __CGL_CUBE_H_
 
-#include <glic/object.h>
+#include <cgl/object.h>
 
-class GLIC_API CglicCube : public CglicObject
+class CGL_API CglCube : public CglObject
 {
 public:
-  CglicCube(double cr=0., double cg=0., double cb=0.,double rr=1);
+  CglCube(double cr=0., double cg=0., double cb=0.,double rr=1);
   void display();
-  ~CglicCube();
+  ~CglCube();
 
 private:
   double r;

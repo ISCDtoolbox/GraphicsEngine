@@ -1,26 +1,26 @@
 /****************************************************************
  *
- * GLIC: ICS Graphics Library
+ * CGL: ICS Graphics Library
  *
  * Original Authors:
  *   J. Foulon, P. Frey
  *
  ****************************************************************/
 
-#ifndef __GLIC_AXIS_H_
-#define __GLIC_AXIS_H_
+#ifndef __CGL_AXIS_H_
+#define __CGL_AXIS_H_
 
-#include <glic/object.h>
-#include <glic/shader.h>
-#include <glic/view.h>
+#include <cgl/object.h>
+#include <cgl/shader.h>
+#include <cgl/view.h>
 
-class GLIC_API CglicAxis : public CglicObject
+class CGL_API CglAxis : public CglObject
 {
 public:
-  CglicAxis();
-  ~CglicAxis(){};
+  CglAxis();
+  ~CglAxis(){};
   void display();
-  CglicView *view;
+  CglView *view;
 
 private:
   vector<float> grid;

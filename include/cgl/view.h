@@ -1,17 +1,17 @@
 /****************************************************************
 *
-* GLIC: ICS Graphics Library
+* CGL: ICS Graphics Library
 *
 * Original Authors:
 *   J. Foulon, P. Frey
 *
 ****************************************************************/
-#ifndef __GLIC_VIEW_H_
-#define __GLIC_VIEW_H_
+#ifndef __CGL_VIEW_H_
+#define __CGL_VIEW_H_
 
 #include "defs.h"
 
-class GLIC_API CglicView
+class CGL_API CglView
 {
 public:
   enum TViewType {TV_DEF, TV_FLY, TV_LEFT, TV_RIGHT};
@@ -29,15 +29,15 @@ private:
   TViewType m_ctyp,m_eye;
 
 public:
-	CglicView();
-	virtual ~CglicView();
+	CglView();
+	virtual ~CglView();
 	void setPersp(double fovy, double znear, double zfar);
 
 	void setView();
 	void reshape(int w, int h);
 };
 
-typedef CglicView * pCglicView;
+typedef CglView * pCglView;
 
 
 #endif

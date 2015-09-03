@@ -1,18 +1,18 @@
-#include <glic/light.h>
-#include <glic/material.h>
+#include <cgl/light.h>
+#include <cgl/material.h>
 #include <glm/ext.hpp>
 
 
 // light constructor
-CglicLight::CglicLight(const int& i)
+CglLight::CglLight(const int& i)
 {
-  //cout << "  --- - [create CglicLight]" << endl;
+  //cout << "  --- - [create CglLight]" << endl;
   ltyp = TL_DIRECTION;
   lid = i;
 
-  //setCol(CglicMaterial::TC_AMB, 0.0, 0.0, 0.0, 1.0);
-  //setCol(CglicMaterial::TC_DIF, 1.0, 1.0, 1.0, 1.0);
-  //setCol(CglicMaterial::TC_SPE, 1.0, 1.0, 1.0, 1.0);
+  //setCol(CglMaterial::TC_AMB, 0.0, 0.0, 0.0, 1.0);
+  //setCol(CglMaterial::TC_DIF, 1.0, 1.0, 1.0, 1.0);
+  //setCol(CglMaterial::TC_SPE, 1.0, 1.0, 1.0, 1.0);
 
   setPos(0, 0, 0, 1);
   setAtt(1, 0, 0);
@@ -28,27 +28,27 @@ CglicLight::CglicLight(const int& i)
 }
 
 
-CglicLight::~CglicLight()
+CglLight::~CglLight()
 {
-  //cout << "  --- - [destroy CglicLight]" << endl;
+  //cout << "  --- - [destroy CglLight]" << endl;
 }
 /*
-void CglicLight::setCol(CglicMaterial::TcolType typ, const float r, const float g,const float b, const float a)
+void CglLight::setCol(CglMaterial::TcolType typ, const float r, const float g,const float b, const float a)
 {
   switch (typ) {
-    case CglicMaterial::TC_AMB:
+    case CglMaterial::TC_AMB:
       amb[0] = r;
       amb[1] = g;
       amb[2] = b;
       amb[3] = a;
       break;
-    case CglicMaterial::TC_DIF:
+    case CglMaterial::TC_DIF:
       dif[0] = r;
       dif[1] = g;
       dif[2] = b;
       dif[3] = a;
       break;
-    case CglicMaterial::TC_SPE:
+    case CglMaterial::TC_SPE:
       spe[0] = r;
       spe[1] = g;
       spe[2] = b;
@@ -61,7 +61,7 @@ void CglicLight::setCol(CglicMaterial::TcolType typ, const float r, const float 
 }
 */
 
-void CglicLight::setPos(const float x, const float y, const float z, const float w)
+void CglLight::setPos(const float x, const float y, const float z, const float w)
 {
   pos[0] = x;
   pos[1] = y;
@@ -73,7 +73,7 @@ void CglicLight::setPos(const float x, const float y, const float z, const float
 }
 
 
-void CglicLight::setAtt(const int c, const int l, const int q)
+void CglLight::setAtt(const int c, const int l, const int q)
 {
   cstatt  = c;
   linatt  = l;
@@ -81,13 +81,13 @@ void CglicLight::setAtt(const int c, const int l, const int q)
 }
 
 
-void CglicLight::setType(TlitType typ)
+void CglLight::setType(TlitType typ)
 {
   ltyp = typ;
 }
 
 
-void CglicLight::setSpot(float cutoff, float sx, float sy, float sz, float expo)
+void CglLight::setSpot(float cutoff, float sx, float sy, float sz, float expo)
 {
   spotCutoff    = cutoff;
   spotDirect[0] = sx;
@@ -97,22 +97,22 @@ void CglicLight::setSpot(float cutoff, float sx, float sy, float sz, float expo)
 }
 
 /*
-void CglicLight::getCol(CglicMaterial::TcolType typ, float &r, float &g, float &b, float &a) const
+void CglLight::getCol(CglMaterial::TcolType typ, float &r, float &g, float &b, float &a) const
 {
   switch (typ) {
-    case CglicMaterial::TC_AMB:
+    case CglMaterial::TC_AMB:
       r = amb[0];
       g = amb[1];
       b = amb[2];
       a = amb[3];
       break;
-    case CglicMaterial::TC_DIF:
+    case CglMaterial::TC_DIF:
       r = dif[0];
       g = dif[1];
       b = dif[2];
       a = dif[3];
       break;
-    case CglicMaterial::TC_SPE:
+    case CglMaterial::TC_SPE:
       r = spe[0];
       g = spe[1];
       b = spe[2];
@@ -125,7 +125,7 @@ void CglicLight::getCol(CglicMaterial::TcolType typ, float &r, float &g, float &
 }
 */
 
-void CglicLight::getPos(float &x, float &y, float &z, float &w ) const
+void CglLight::getPos(float &x, float &y, float &z, float &w ) const
 {
   x = pos[0];
   y = pos[1];
@@ -134,7 +134,7 @@ void CglicLight::getPos(float &x, float &y, float &z, float &w ) const
 }
 
 
-void CglicLight::glicInit()
+void CglLight::cglInit()
 {
   // check if enabled ...
   GLenum   light = GL_LIGHT0 + lid;
