@@ -40,5 +40,9 @@ add_dependencies(SUscCGL glm)
 target_link_libraries(SUscCGL ${CORELIBS} mesh)
 
 project(SUcgl)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "$ENV{HOME}/bin")
 add_executable(SUcgl main.cpp)
 target_link_libraries(SUcgl SUscCGL)
+
+file(MAKE_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders")
+file(COPY shaders/ DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders")
