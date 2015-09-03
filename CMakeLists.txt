@@ -15,7 +15,7 @@ ExternalProject_Add(
   LOG_INSTALL ON
 )
 
-#Création des headers des shaders
+#Création des fichiers headers
 add_executable(embedfile sources/embedfile.cpp)
 execute_process(COMMAND embedfile simple_vert_code shaders/shader.vert include/simple_shader_vert.h)
 execute_process(COMMAND embedfile simple_frag_code shaders/shader.frag include/simple_shader_frag.h)
@@ -32,10 +32,11 @@ set(CORELIBS ${GLEW_LIBRARY} ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES})
 
 #Include files
 include_directories("include/" "library/libmesh/" "${CMAKE_CURRENT_BINARY_DIR}/library/glm/src/glm")
-file(GLOB_RECURSE source_files sources/* include/cgl/*)
+file(GLOB_RECURSE source_files sources/* include/cgl/* include/*)
 
 #Link
 add_library(SUscCGL SHARED ${source_files})
+add_dependencies(SUscCGL embedfile)
 add_library(mesh SHARED library/libmesh/libmesh5.h library/libmesh/libmesh5.c)
 add_dependencies(SUscCGL glm)
 target_link_libraries(SUscCGL ${CORELIBS} mesh)
