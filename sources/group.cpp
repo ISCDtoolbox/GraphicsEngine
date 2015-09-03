@@ -1,11 +1,11 @@
-#include "glic/defs.h"
+#include "cgl/defs.h"
 
-#include "glic/group.h"
-#include "glic/canvas.h"
+#include "cgl/group.h"
+#include "cgl/canvas.h"
 
-extern CglicCanvas *pcv;
+extern CglCanvas *pcv;
 
-CglicGroup::CglicGroup(std::vector<pCglicObject> groupOfObjects)
+CglGroup::CglGroup(std::vector<pCglObject> groupOfObjects)
 {
   listObject = groupOfObjects;
   group_color = glm::vec3(0,0.7,0);
@@ -30,12 +30,12 @@ CglicGroup::CglicGroup(std::vector<pCglicObject> groupOfObjects)
   }
 }
 
-CglicGroup::~CglicGroup()
+CglGroup::~CglGroup()
 {
   //dtor
 }
 
-void CglicGroup::compute(){
+void CglGroup::compute(){
 
   //On vérifie si un membre du groupe est sélectionné
   bool match = false;
@@ -70,4 +70,4 @@ void CglicGroup::compute(){
   }
 }
 
-bool CglicGroup::isSelected(){return selected;}
+bool CglGroup::isSelected(){return selected;}

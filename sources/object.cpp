@@ -1,15 +1,15 @@
-#include <glic/object.h>
-#include <glic/canvas.h>
-extern CglicCanvas *pcv;
+#include <cgl/object.h>
+#include <cgl/canvas.h>
+extern CglCanvas *pcv;
 
-void CglicObject::uniformVec3(int ID, glm::vec3 v){
+void CglObject::uniformVec3(int ID, glm::vec3 v){
   glUniform3f(ID, v.x, v.y, v.z);
 }
 
 // object constructor
-CglicObject::CglicObject():transform()
+CglObject::CglObject():transform()
 {
-  //cout << "  --- [create CglicObject]" << endl;
+  //cout << "  --- [create CglObject]" << endl;
   selected = false;
   box      = false;
   line     = false;
@@ -28,9 +28,9 @@ CglicObject::CglicObject():transform()
   localScale = 1;
 }
 
-CglicObject::~CglicObject(){}
+CglObject::~CglObject(){}
 
-void CglicObject::linkSceneParameters(glm::mat4 *MODEL, glm::mat4 *VIEW, glm::mat4 *PROJ, glm::vec3 *Center, glm::vec3 *Up, glm::vec3 *Cam, int ID){
+void CglObject::linkSceneParameters(glm::mat4 *MODEL, glm::mat4 *VIEW, glm::mat4 *PROJ, glm::vec3 *Center, glm::vec3 *Up, glm::vec3 *Cam, int ID){
   pPROJ        = PROJ;
   pVIEW        = VIEW;
   pMODEL       = MODEL;
@@ -41,7 +41,7 @@ void CglicObject::linkSceneParameters(glm::mat4 *MODEL, glm::mat4 *VIEW, glm::ma
   pickingColor = glm::vec3(objectID/255.0f, 0, 0);
 }
 
-void CglicObject::pickingDisplay(){
+void CglObject::pickingDisplay(){
 
   if(!hidden){
     int shaderID = pcv->simpleShader.mProgramID;
@@ -64,10 +64,10 @@ void CglicObject::pickingDisplay(){
   }
 }
 
-void CglicObject::glicInit()
+void CglObject::cglInit()
 {}
 
-void CglicObject::applyTransformation()
+void CglObject::applyTransformation()
 {
   glm::mat4 ID = glm::mat4(1.0f);
   if(idGroup==-1)
@@ -78,59 +78,59 @@ void CglicObject::applyTransformation()
   center += transform.tr;// glm::vec3(MODEL[3]);
   transform.reset();
 }
-void CglicObject::saveTransformations(){
+void CglObject::saveTransformations(){
   transform.lastMatrices.push_back(MODEL);
 }
-void CglicObject::undoLast(){
+void CglObject::undoLast(){
   if(transform.lastMatrices.size()>0){
     MODEL = transform.lastMatrices.back();
     center = glm::vec3(glm::vec4(MODEL[3]));
     transform.lastMatrices.pop_back();
   }
 }
-void CglicObject::resetAll(){
+void CglObject::resetAll(){
   while(transform.lastMatrices.size()>0)
     undoLast();
 }
 
 
-void CglicObject::setRotationCenter(glm::vec3 &center){rotationCenter = &center;}
-void CglicObject::setScaleFactor(float sf){scaleFactor = sf;}
+void CglObject::setRotationCenter(glm::vec3 &center){rotationCenter = &center;}
+void CglObject::setScaleFactor(float sf){scaleFactor = sf;}
 
-void       CglicObject::resetGroupID(){idGroup = -1;}
-float      CglicObject::getLocalScale(){return localScale;}
-int        CglicObject::getID(){return objectID;}
-glm::vec3* CglicObject::getCenterPtr(){return &center;}
+void       CglObject::resetGroupID(){idGroup = -1;}
+float      CglObject::getLocalScale(){return localScale;}
+int        CglObject::getID(){return objectID;}
+glm::vec3* CglObject::getCenterPtr(){return &center;}
 
 //Toogle render modes
-void CglicObject::toogleBBox()   {box        = !box;}
-void CglicObject::toogleMesh()   {line       = !line;}
-void CglicObject::toogleSmooth() {smooth     = !smooth;}
+void CglObject::toogleBBox()   {box        = !box;}
+void CglObject::toogleMesh()   {line       = !line;}
+void CglObject::toogleSmooth() {smooth     = !smooth;}
 
 //Selection accessors
-bool CglicObject::isPicked(int ID){return objectID == ID;}
-bool CglicObject::isHidden(){return hidden;}
-void CglicObject::hide(){    hidden = true;}
-void CglicObject::unHide(){  hidden = false;}
-bool CglicObject::isSelected(){return selected;}
-void CglicObject::toogleSelected(){    selected = !selected;}
-void CglicObject::select(){            selected = true;}
-void CglicObject::unSelect(){          selected = false;}
+bool CglObject::isPicked(int ID){return objectID == ID;}
+bool CglObject::isHidden(){return hidden;}
+void CglObject::hide(){    hidden = true;}
+void CglObject::unHide(){  hidden = false;}
+bool CglObject::isSelected(){return selected;}
+void CglObject::toogleSelected(){    selected = !selected;}
+void CglObject::select(){            selected = true;}
+void CglObject::unSelect(){          selected = false;}
 
 //Constrained movements accessors
-bool CglicObject::isConstrainedInRotation(){return isRotationConstrained;}
-bool CglicObject::isConstrainedInTranslation(){return isTranslationConstrained;};
-void CglicObject::constrainRotation(glm::vec3 axis){
+bool CglObject::isConstrainedInRotation(){return isRotationConstrained;}
+bool CglObject::isConstrainedInTranslation(){return isTranslationConstrained;};
+void CglObject::constrainRotation(glm::vec3 axis){
   isRotationConstrained = true;
   constrainedRotationAxis = axis;
 }
-void CglicObject::constrainTranslation(glm::vec3 axis){
+void CglObject::constrainTranslation(glm::vec3 axis){
   isTranslationConstrained = true;
   constrainedTranslationAxis = axis;
 }
-void CglicObject::unConstrain(){
+void CglObject::unConstrain(){
   isRotationConstrained = isTranslationConstrained = false;
   constrainedRotationAxis = constrainedTranslationAxis = glm::vec3(0);
 };
-void CglicObject::setConstrainedRotation(float angle){transform.setRotation(glm::rotate(glm::mat4(1), angle, constrainedRotationAxis));}
-void CglicObject::setConstrainedTranslation(float tr){transform.tr += tr * constrainedTranslationAxis;}
+void CglObject::setConstrainedRotation(float angle){transform.setRotation(glm::rotate(glm::mat4(1), angle, constrainedRotationAxis));}
+void CglObject::setConstrainedTranslation(float tr){transform.tr += tr * constrainedTranslationAxis;}

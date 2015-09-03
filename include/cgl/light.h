@@ -1,20 +1,20 @@
 
 /****************************************************************
  *
- * GLIC: ICS Graphics Library
+ * CGL: ICS Graphics Library
  *
  * Original Authors:
  *   J. Foulon, P. Frey
  *
  ****************************************************************/
-#ifndef __GLIC_LIGHT_H_
-#define __GLIC_LIGHT_H_
+#ifndef __CGL_LIGHT_H_
+#define __CGL_LIGHT_H_
 
-#include <glic/material.h>
-#include <glic/object.h>
+#include <cgl/material.h>
+#include <cgl/object.h>
 
 
-class GLIC_API CglicLight : public CglicObject
+class CGL_API CglLight : public CglObject
 {
 public:
   enum TlitType {TL_POINT, TL_DIRECTION, TL_SPOT};
@@ -27,22 +27,22 @@ private:
 
 public:
   // constructor + destructor
-  CglicLight(const int& i);
-  virtual ~CglicLight();
+  CglLight(const int& i);
+  virtual ~CglLight();
 
-  //void setCol(CglicMaterial::TcolType typ, const float r, const float g,const float b, const float a);
+  //void setCol(CglMaterial::TcolType typ, const float r, const float g,const float b, const float a);
   void setPos(const float x, const float y, const float z, const float w);
   void setAtt(const int c, const int l, const int q);
   void setType(TlitType typ);
   void setSpot(float cutoff, float sx, float sy, float sz, float expo);
 
-  //void getCol(CglicMaterial::TcolType typ, float &r, float &g, float &b, float &a) const;
+  //void getCol(CglMaterial::TcolType typ, float &r, float &g, float &b, float &a) const;
   void getPos(float &x, float &y, float &z, float &w) const;
 public:
-  virtual void glicInit();
+  virtual void cglInit();
 };
 
-typedef CglicLight * pCglicLight;
+typedef CglLight * pCglLight;
 
 
 #endif

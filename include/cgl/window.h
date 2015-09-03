@@ -1,37 +1,37 @@
 /****************************************************************
 *
-* GLIC: ICS Graphics Library
+* CGL: ICS Graphics Library
 *
 * Original Authors:
 *   J. Foulon, P. Frey
 *
 ****************************************************************/
-#ifndef __GLIC_WINDOW_H_
-#define __GLIC_WINDOW_H_
+#ifndef __CGL_WINDOW_H_
+#define __CGL_WINDOW_H_
 
 #include "defs.h"
-#include <glic/scene.h>
-#include <glic/view.h>
+#include <cgl/scene.h>
+#include <cgl/view.h>
 
 
-class GLIC_API CglicWindow
+class CGL_API CglWindow
 {
 private:
 	int    m_wpos[2],m_wsiz[2];   // window position + size
 	int    m_vpos[2],m_vsiz[2];   // viewport position + size
   double m_mold[16],m_mnew[16];
-  std::vector<pCglicLight>  light;
+  std::vector<pCglLight>  light;
   
 public:
 	int   m_id;
   int ids;
-	CglicView    view;
+	CglView    view;
 
-	CglicWindow();
-	CglicWindow(int x, int y, int w, int h);
-	virtual ~CglicWindow();
+	CglWindow();
+	CglWindow(int x, int y, int w, int h);
+	virtual ~CglWindow();
 
-  int glicAddLight(pCglicLight li);
+  int cglAddLight(pCglLight li);
   void activateLight();
   
   void reshape(int w, int h);
@@ -40,10 +40,10 @@ public:
 	void display();
 	void resize(int w, int h);
   void title(const char *title);
-	void glicMainLoop();
+	void cglMainLoop();
 };
 
-typedef CglicWindow * pCglicWindow;
+typedef CglWindow * pCglWindow;
 
 #endif
 

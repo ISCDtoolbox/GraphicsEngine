@@ -1,13 +1,13 @@
 /****************************************************************
  *
- * GLIC: ICS Graphics Library
+ * CGL: ICS Graphics Library
  *
  * Original Authors:
  *   J. Foulon, P. Frey
  *
  ****************************************************************/
-#ifndef _GLIC_DEF_H
-#define _GLIC_DEF_H
+#ifndef _CGL_DEF_H
+#define _CGL_DEF_H
 
 #include <iostream>
 #include <cstdlib>
@@ -32,17 +32,17 @@ using namespace std;
 #endif
 
 #ifdef WIN32
-#ifdef GLIC_DLL
-#ifdef GLIC_LIB
-#define GLIC_API __declspec(dllexport)
+#ifdef CGL_DLL
+#ifdef CGL_LIB
+#define CGL_API __declspec(dllexport)
 #else
-#define GLIC_API __declspec(dllimport)
+#define CGL_API __declspec(dllimport)
 #endif
 #else
-#define GLIC_API
+#define CGL_API
 #endif
 #else
-#define GLIC_API
+#define CGL_API
 #endif
 
 #include <glm/glm.hpp>

@@ -1,6 +1,6 @@
-#include "glic/profile.h"
+#include "cgl/profile.h"
 
-CglicProfile::CglicProfile()
+CglProfile::CglProfile()
 {
   displayShadows    = true;
   displayBottomGrid = true;
@@ -34,8 +34,8 @@ CglicProfile::CglicProfile()
   //group_color   = glm::vec3(0,   0.8, 0);         //Group selection
 }
 
-CglicProfile::~CglicProfile(){}
+CglProfile::~CglProfile(){}
 
-glm::vec3 CglicProfile::color(){
+glm::vec3 CglProfile::color(){
   return colorGenerator.generateColor();
 }

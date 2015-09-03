@@ -1,21 +1,21 @@
 /****************************************************************
  *
- * GLIC: ICS Graphics Library
+ * CGL: ICS Graphics Library
  *
  * Original Authors:
  *   J. Foulon, P. Frey
  *
  ****************************************************************/
-#ifndef __GLIC_KEYBOARD_H_
-#define __GLIC_KEYBOARD_H_
+#ifndef __CGL_KEYBOARD_H_
+#define __CGL_KEYBOARD_H_
 
 #include "defs.h"
 
-class GLIC_API CglicKeyboard
+class CGL_API CglKeyboard
 {
 public:
-  CglicKeyboard(){selection=-1; lastKey='*';};
-  virtual ~CglicKeyboard(){};
+  CglKeyboard(){selection=-1; lastKey='*';};
+  virtual ~CglKeyboard(){};
   void keyboard(unsigned char key, int x, int y);
   void keyboardUp(unsigned char key, int x, int y);
   void special(unsigned char key, int x, int y);

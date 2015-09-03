@@ -2,18 +2,18 @@
 #define PROFILE_H
 
 #include "defs.h"
-#include "glic/colorgenerator.h"
+#include "cgl/colorgenerator.h"
 
-class CglicProfile
+class CglProfile
 {
   public:
     //Constructor from config file
-    CglicProfile();
-    ~CglicProfile();
+    CglProfile();
+    ~CglProfile();
     glm::vec3 color();
 
   public:
-    CglicColorGenerator colorGenerator;
+    CglColorGenerator colorGenerator;
 
     bool  displayShadows;
     bool  displayBottomGrid;

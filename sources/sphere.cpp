@@ -1,19 +1,19 @@
-#include <glic/sphere.h>
+#include <cgl/sphere.h>
 
-CglicSphere::CglicSphere(double cr, double cg, double cb, double rr):r(rr)
+CglSphere::CglSphere(double cr, double cg, double cb, double rr):r(rr)
 {
-  //cout << "  --- - [create CglicSphere]" << endl;
+  //cout << "  --- - [create CglSphere]" << endl;
   //color[0]=cr;
   //color[1]=cg;
   //color[2]=cb;
 }
 
-CglicSphere::~CglicSphere()
+CglSphere::~CglSphere()
 {
-  //cout << "  --- - [destroy CglicSphere]" << endl;
+  //cout << "  --- - [destroy CglSphere]" << endl;
 }
 
-void CglicSphere::display()
+void CglSphere::display()
 {
 
   //if (state == TO_SEL ){

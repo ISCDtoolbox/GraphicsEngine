@@ -1,13 +1,13 @@
-#include <glic/mesh.h>
+#include <cgl/mesh.h>
 extern "C" {
 #include <libmesh5.h>
 }
 
-#include <glic/canvas.h>
+#include <cgl/canvas.h>
 
-extern CglicCanvas *pcv;
+extern CglCanvas *pcv;
 
-CglicMesh::CglicMesh(char *name)
+CglMesh::CglMesh(char *name)
 {
   isMesh   = true;
   Point    *ppt;
@@ -139,7 +139,7 @@ CglicMesh::CglicMesh(char *name)
   nPicking = 3 * tria.size();
 }
 
-void CglicMesh::meshInfo(const int& verbose, ostream& outstr)
+void CglMesh::meshInfo(const int& verbose, ostream& outstr)
 {
   //cout << " \t\t MeshInfo \n" << endl;
   cout << "np: " << np << ", nt: " << nt << ", nn:" << nn << ", dim: " << dim << ", ver: " << ver << endl;
@@ -157,7 +157,7 @@ void CglicMesh::meshInfo(const int& verbose, ostream& outstr)
   }
 }
 
-void CglicMesh::getBBOX()
+void CglMesh::getBBOX()
 {
   //Init
   Point     *p0;
@@ -250,7 +250,7 @@ glm::mat4 shadowMatrix(glm::vec4 ground, glm::vec4 light){
     return shadowMat;
 }
 
-void CglicMesh::shadowsDisplay(){
+void CglMesh::shadowsDisplay(){
   if(pcv->profile.displayShadows){
     if(hidden)
       glEnable(GL_BLEND);
@@ -286,7 +286,7 @@ void CglicMesh::shadowsDisplay(){
   }
 }
 
-void CglicMesh::artifactsDisplay(){
+void CglMesh::artifactsDisplay(){
   if(!hidden){
     //Initialization
     glm::mat4 MVP = *pPROJ * *pVIEW * *pMODEL * glm::scale(MODEL, glm::vec3(scaleFactor));;
@@ -305,7 +305,7 @@ void CglicMesh::artifactsDisplay(){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
 
     //Group identification
-    pCglicScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
+    pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
     if (scene->listGroup.size() > 0){
       for(int i = 0 ; i < scene->listGroup.size() ; i++){
         for(int j = 0 ; j < scene->listGroup[i]->listObject.size() ; j++){
@@ -407,7 +407,7 @@ void CglicMesh::artifactsDisplay(){
   }
 }
 
-void CglicMesh::display()
+void CglMesh::display()
 {
   if(hidden)
     glEnable(GL_BLEND);
@@ -440,7 +440,7 @@ void CglicMesh::display()
   //Indices buffer binding
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
 
-  pCglicScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
+  pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
   glm::vec3 selection_color = ((idGroup==-1)?pcv->profile.sele_color:scene->listGroup[idGroup]->group_color);
 
   if(smooth){

@@ -1,10 +1,10 @@
-#include <glic/view.h>
+#include <cgl/view.h>
 #include "glm/gtx/string_cast.hpp"
-#include <glic/canvas.h>
-extern CglicCanvas *pcv;
+#include <cgl/canvas.h>
+extern CglCanvas *pcv;
 
 
-CglicView::CglicView()
+CglView::CglView()
 {
   m_stereo = false;
   m_eyesep = 0.027;
@@ -16,12 +16,12 @@ CglicView::CglicView()
 }
 
 
-CglicView::~CglicView()
+CglView::~CglView()
 {
 }
 
 
-void CglicView::setPersp(double fovy, double znear, double zfar)
+void CglView::setPersp(double fovy, double znear, double zfar)
 {
   m_fovy  = fovy;
   m_znear = znear;
@@ -29,7 +29,7 @@ void CglicView::setPersp(double fovy, double znear, double zfar)
 }
 
 
-void CglicView::reshape(int w, int h)
+void CglView::reshape(int w, int h)
 {
   //cout << "   -- reshapeView " << w << " " << h << endl;
   glViewport(0,0,(GLsizei)w,(GLsizei)h);
@@ -40,7 +40,7 @@ void CglicView::reshape(int w, int h)
 }
 
 
-void CglicView::setView()
+void CglView::setView()
 {
   //cout << "   -- setView\n";
   if ( m_stereo == true ){}

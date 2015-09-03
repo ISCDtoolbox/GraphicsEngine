@@ -1,17 +1,17 @@
-#include "glic/colorgenerator.h"
+#include "cgl/colorgenerator.h"
 using namespace std;
 
-CglicColorGenerator::CglicColorGenerator(){
+CglColorGenerator::CglColorGenerator(){
   srand(time(0));
   start = (rand()/(double)(RAND_MAX + 1)) + 1;
   inc = 0;
 }
 
-CglicColorGenerator::~CglicColorGenerator(){
+CglColorGenerator::~CglColorGenerator(){
 
 }
 
-glm::vec3 CglicColorGenerator::generateColor(){
+glm::vec3 CglColorGenerator::generateColor(){
   double golden_ratio_conjugate = 0.618033988749895;
   float h = (start + inc * golden_ratio_conjugate);
   h -= int(h);
@@ -23,7 +23,7 @@ glm::vec3 CglicColorGenerator::generateColor(){
   return mixFactor * col + (1-mixFactor) * mix;
 }
 
-hsv CglicColorGenerator::rgb2hsv(rgb in){
+hsv CglColorGenerator::rgb2hsv(rgb in){
     hsv         out;
     double      min, max, delta;
 
@@ -61,7 +61,7 @@ hsv CglicColorGenerator::rgb2hsv(rgb in){
 }
 
 
-rgb CglicColorGenerator::hsv2rgb(hsv in){
+rgb CglColorGenerator::hsv2rgb(hsv in){
     double      hh, p, q, t, ff;
     long        i;
     rgb         out;

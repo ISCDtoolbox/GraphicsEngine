@@ -1,15 +1,15 @@
-#include <glic/canvas.h>
-#include <glic/window.h>
+#include <cgl/canvas.h>
+#include <cgl/window.h>
 
-extern CglicCanvas *pcv;
+extern CglCanvas *pcv;
 
 
-CglicWindow::CglicWindow(): m_id(-1) /*scene(NULL)*/
+CglWindow::CglWindow(): m_id(-1) /*scene(NULL)*/
 {
 }
 
 
-CglicWindow::CglicWindow(int x, int y, int w, int h)
+CglWindow::CglWindow(int x, int y, int w, int h)
 {
   cout << " - [create window " << w << " " << h << "]" << endl;
   this->m_wpos[0] = x;
@@ -20,13 +20,13 @@ CglicWindow::CglicWindow(int x, int y, int w, int h)
 }
 
 
-CglicWindow::~CglicWindow()
+CglWindow::~CglWindow()
 {
   cout << " - [destroy window]" << endl;
 }
 
 
-void CglicWindow::show()
+void CglWindow::show()
 {
   bool VBOs = false;
 
@@ -62,7 +62,7 @@ void CglicWindow::show()
 }
 
 
-void CglicWindow::display()
+void CglWindow::display()
 {
   glm::vec3 col = pcv->profile.back_color;
 
@@ -94,14 +94,14 @@ void CglicWindow::display()
   glutSwapBuffers();
 }
 
-int CglicWindow::glicAddLight(pCglicLight li)
+int CglWindow::cglAddLight(pCglLight li)
 {
   cout << " -  [Add light]" << endl;
   light.push_back(li);
   return light.size() - 1;
 }
 
-void CglicWindow::activateLight()
+void CglWindow::activateLight()
 {
 
   //cout << " - [Activate light]" << endl;
@@ -116,7 +116,7 @@ void CglicWindow::activateLight()
   for (unsigned int iLight = 0; iLight < light.size(); iLight++)
   {
     cout << "iLight: " << iLight << endl;
-    light[iLight]->glicInit();
+    light[iLight]->cglInit();
     cout << "iLight init : " << iLight << endl;
     glEnable(GL_LIGHT0 +light[iLight]->lid);
     cout << "iLight enable: " << iLight << endl;

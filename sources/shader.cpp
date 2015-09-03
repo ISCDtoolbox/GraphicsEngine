@@ -1,4 +1,4 @@
-#include "glic/shader.h"
+#include "cgl/shader.h"
 #include <fstream>
 
 using namespace std;

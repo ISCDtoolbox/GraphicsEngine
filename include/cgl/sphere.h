@@ -1,24 +1,24 @@
 /****************************************************************
  *
- * GLIC: ICS Graphics Library
+ * CGL: ICS Graphics Library
  *
  * Original Authors:
  *   J. Foulon, P. Frey
  *
  ****************************************************************/
-#ifndef __GLIC_SPHERE_H_
-#define __GLIC_SPHERE_H_
+#ifndef __CGL_SPHERE_H_
+#define __CGL_SPHERE_H_
 
-#include <glic/object.h>
+#include <cgl/object.h>
 
-class GLIC_API CglicSphere : public CglicObject
+class CGL_API CglSphere : public CglObject
 {
 private:
   double r;
 public:
-  CglicSphere(double cr=0., double cg=0., double cb=0.,double rr=1.);
+  CglSphere(double cr=0., double cg=0., double cb=0.,double rr=1.);
   void display();
-  ~CglicSphere();
+  ~CglSphere();
 };
 
 #endif

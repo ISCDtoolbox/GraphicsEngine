@@ -1,17 +1,17 @@
 /****************************************************************
  *
- * GLIC: ICS Graphics Library
+ * CGL: ICS Graphics Library
  *
  * Original Authors:
  *   J. Foulon, P. Frey
  *
  ****************************************************************/
-#ifndef __GLIC_MOUSE_H_
-#define __GLIC_MOUSE_H_
+#ifndef __CGL_MOUSE_H_
+#define __CGL_MOUSE_H_
 
 #include "defs.h"
 
-class GLIC_API CglicMouse
+class CGL_API CglMouse
 {
 public:
   glm::vec2 lastPos;
@@ -31,8 +31,8 @@ private:
   bool isPressed, isReleased;
 
 public:
-  CglicMouse();
-  virtual ~CglicMouse(){};
+  CglMouse();
+  virtual ~CglMouse(){};
   void motion(int x, int y);
   void passiveMotion(int x, int y);
   void mouse(int b, int s, int x, int y);

@@ -1,24 +1,24 @@
-#include <glic/transform.h>
+#include <cgl/transform.h>
 
-void CglicTransform::setTranslation(glm::vec3 translation){
+void CglTransform::setTranslation(glm::vec3 translation){
   tr += translation;
 }
 
-void CglicTransform::setRotation(glm::mat4 M){
+void CglTransform::setRotation(glm::mat4 M){
   rot = M;
 }
 /*
-void CglicTransform::setQuaternion(glm::quat Q){
+void CglTransform::setQuaternion(glm::quat Q){
   quat = Q;
   rot  = glm::toMat4(quat);
 }
 */
-void CglicTransform::reset(){
+void CglTransform::reset(){
   tr   = glm::vec3(0.0f);
   rot  = glm::mat4(1.0f);
 }
 
-void CglicTransform::print()
+void CglTransform::print()
 {
   cout << "rotation:" << endl;
   for (int i = 0; i < 4; i++){

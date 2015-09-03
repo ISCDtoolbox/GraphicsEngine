@@ -1,8 +1,8 @@
-#include <glic/axis.h>
-#include <glic/canvas.h>
-extern CglicCanvas *pcv;
+#include <cgl/axis.h>
+#include <cgl/canvas.h>
+extern CglCanvas *pcv;
 
-CglicAxis::CglicAxis(){
+CglAxis::CglAxis(){
   //Grid creation
   float size       = 2;
   float resolution = 20;
@@ -41,7 +41,7 @@ CglicAxis::CglicAxis(){
   glBufferData( GL_ARRAY_BUFFER, sizeof(float) * axes.size(), &axes[0], GL_STATIC_DRAW);
 }
 
-void CglicAxis::display()
+void CglAxis::display()
 {
   //Initialization
   glUseProgram(pcv->simpleShader.mProgramID);
@@ -64,7 +64,7 @@ void CglicAxis::display()
 
   //Axes
   if(pcv->profile.displayAxes){
-    pCglicScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
+    pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
     //glDisable(GL_DEPTH_TEST);
     glDepthFunc(GL_ALWAYS);
     glViewport(0,0,150,150);

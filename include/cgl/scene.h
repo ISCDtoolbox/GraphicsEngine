@@ -1,28 +1,28 @@
 /****************************************************************
  *
- * GLIC: ICS Graphics Library
+ * CGL: ICS Graphics Library
  *
  * Original Authors:
  *   J. Foulon, P. Frey
  *
  ****************************************************************/
-#ifndef __GLIC_SCENE_H_
-#define __GLIC_SCENE_H_
+#ifndef __CGL_SCENE_H_
+#define __CGL_SCENE_H_
 
 #include "defs.h"
-#include <glic/object.h>
-#include <glic/view.h>
-#include <glic/axis.h>
-#include <glic/group.h>
+#include <cgl/object.h>
+#include <cgl/view.h>
+#include <cgl/axis.h>
+#include <cgl/group.h>
 
-class GLIC_API CglicScene
+class CGL_API CglScene
 {
 public:
-  std::vector<pCglicObject> listObject;
-  std::vector<pCglicGroup>  listGroup;
-  CglicTransform            transform;
-  CglicAxis                 *axis;
-  CglicView                 *view;
+  std::vector<pCglObject> listObject;
+  std::vector<pCglGroup>  listGroup;
+  CglTransform            transform;
+  CglAxis                 *axis;
+  CglView                 *view;
 
   float globalScale;
   glm::vec3 center;
@@ -39,10 +39,10 @@ public:
   bool selected;
   int  ids;
 
-  CglicScene();
-  virtual ~CglicScene();
+  CglScene();
+  virtual ~CglScene();
   void display();
-  void addObject(pCglicObject object);
+  void addObject(pCglObject object);
   void applyTransformation();
   void saveTransformations();
   void update_matrices();
@@ -61,10 +61,10 @@ public:
   glm::vec2 cursorOrigin;
 
 protected:
-  virtual void glicInit();
+  virtual void cglInit();
 };
 
-typedef CglicScene* pCglicScene;
+typedef CglScene* pCglScene;
 
 
 #endif

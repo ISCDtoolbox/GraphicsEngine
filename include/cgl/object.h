@@ -1,21 +1,21 @@
 /****************************************************************
  *
- * GLIC: ICS Graphics Library
+ * CGL: ICS Graphics Library
  *
  * Original Authors:
  *   J. Foulon, P. Frey
  *
  ****************************************************************/
-#ifndef __GLIC_OBJECT_H_
-#define __GLIC_OBJECT_H_
+#ifndef __CGL_OBJECT_H_
+#define __CGL_OBJECT_H_
 
 #include "defs.h"
-#include <glic/transform.h>
+#include <cgl/transform.h>
 
-class GLIC_API CglicObject
+class CGL_API CglObject
 {
   public:
-    CglicTransform transform;
+    CglTransform transform;
     bool isMesh;
 
   protected:
@@ -53,8 +53,8 @@ class GLIC_API CglicObject
 
   //Public methods
   public:
-    CglicObject();
-    virtual ~CglicObject();
+    CglObject();
+    virtual ~CglObject();
     void linkSceneParameters(glm::mat4 *MODEL, glm::mat4 *VIEW, glm::mat4 *PROJ, glm::vec3 *Center, glm::vec3 *Up, glm::vec3 *Cam, int ID);
     void setRotationCenter(glm::vec3 &center);
     void setScaleFactor(float sf);
@@ -102,9 +102,9 @@ class GLIC_API CglicObject
     void  unConstrain();
 
 protected:
-  virtual void glicInit();
+  virtual void cglInit();
 };
 
-typedef CglicObject* pCglicObject;
+typedef CglObject* pCglObject;
 
 #endif
