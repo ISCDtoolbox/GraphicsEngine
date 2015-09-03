@@ -78,7 +78,7 @@ void CglScene::display()
       listObject[iObj]->display();
 
   glClear(GL_DEPTH_BUFFER_BIT);
-  debug();
+  //debug();
 }
 
 

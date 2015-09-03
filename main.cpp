@@ -103,6 +103,7 @@ int main(int argc, char **argv){
     vector<glm::mat4> mats;
     vector<glm::vec3> centers;
     vector<int>       groups;
+    vector<glm::vec4> matrices;
     string line;
     int lineNumber = -1;
     int numLines = 7;
@@ -112,7 +113,7 @@ int main(int argc, char **argv){
 
     if (saveFile.is_open()){
       while ( getline (saveFile,line) ){
-        cout << lineNumber << endl;
+        //cout << lineNumber << endl;
 
         //Enregistrement du nombre de maillages
         if (lineNumber==-1)
@@ -121,36 +122,26 @@ int main(int argc, char **argv){
         //Enregistrement des noms de fichiers
         if (lineNumber%numLines == 0)
           names.push_back(line);
-
-        //Enregistrement des matrices
-        if (lineNumber%numLines == 1){
-          cout << "create mat:  " << mats.size() << endl;
-          cout << line << endl;
-          mats.push_back(glm::mat4(1.0f));
-          cout << "matCreation: " << mats.size() << endl;
-        }
+	
         for(int i = 1 ; i < 5 ; i++){
           if(lineNumber%numLines == i){
-            //cout << i << endl;
+	    glm::vec4 ROW;
             vector<float> values = split<float>(line);
             for(int j = 0 ; j < 4 ; j++){
-              mats[mats.size() - 1][i][j] = values[j];
+	      ROW[j] = values[j];
+              //mats[mats.size() - 1][i][j] = values[j];
             }
+	    matrices.push_back(ROW);
           }
         }
 
         //Enregistrement des centres
         if(lineNumber%numLines == 5){
-          cout << "ooo" << endl;
           centers.push_back(glm::vec3(0.0f));
-          cout << "eee" << endl;
-          cout << line << endl;
           vector<double> values = split<double>(line);
-          cout << "aaa" << endl;
           for(int i = 0 ; i < 3 ; i++){
             centers[centers.size()-1][i] = values[i];
           }
-          cout << "iii" << endl;
         }
 
         //Enregistrement des idGroups
@@ -165,20 +156,38 @@ int main(int argc, char **argv){
     else
       cout << "Unable to open file";
 
-    cout << numberMeshes << endl;
-    for(int i = 0 ; i < names.size() ; i++)
-        cout << names[i] << endl;
-
-    for(int i = 0 ; i < centers.size() ; i++)
-      cout << centers[i].x << " " << centers[i].y << " " << centers[i].z << endl;
-
-    for(int i = 0 ; i < mats.size() ; i++){
-      for(int j = 0 ; j < 4 ; j ++){
-        cout << mats[i][j][0] << " " << mats[i][j][1] << " " << mats[i][j][2] << " " << mats[i][j][3] << endl;
+    //Reconditionnement des matrices
+    for(int i = 0 ; i < matrices.size() ; i++){
+      if(i%4 == 0){
+	mats.push_back(glm::mat4(1.0f));
       }
-      cout << endl;
+      mats[i/4][i%4] = matrices[i];
     }
-    exit(143);
+
+    //Group check
+    //for(int i = 0 ; i < groups.size() ; i++)
+    //cout << groups[i] << endl;
+
+    idw = cv.cglWindow(0,0,800,800);
+    ids = cv.cglScene();
+    cv.cglSetScene(ids, idw);
+    cv.window[idw].show();
+
+    InitGlew();
+
+    cout << idw << " " << ids << endl;
+    vector<CglMesh*> mesh;
+    for (int i=0; i < numberMeshes; i++){
+      char *N = (char*)names[i].c_str();
+      mesh.push_back(new CglMesh(N));
+      mesh[i]->meshInfo(0);
+      ido = cv.cglObject(mesh[i]);
+      cv.cglSetObject(ido, ids);
+      mesh[i]->setCenter(centers[i]);
+      mesh[i]->setMODEL(mats[i]);
+      //mesh[i]->setGroupID(groups[i]+1);
+      mesh[i]->setFileName(names[i]);
+    }
   }
 
   else

@@ -97,6 +97,11 @@ void CglObject::resetAll(){
 void CglObject::setRotationCenter(glm::vec3 &center){rotationCenter = &center;}
 void CglObject::setScaleFactor(float sf){scaleFactor = sf;}
 
+void CglObject::setMODEL(glm::mat4 M){MODEL = M;}
+void CglObject::setCenter(glm::vec3 C){center = C;}
+void CglObject::setGroupID(int id){idGroup = id;}
+void CglObject::setFileName(std::string n){meshFile = n;}
+
 int        CglObject::getGroupID(){return idGroup;}
 void       CglObject::resetGroupID(){idGroup = -1;}
 float      CglObject::getLocalScale(){return localScale;}

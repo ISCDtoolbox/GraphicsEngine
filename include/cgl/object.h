@@ -60,6 +60,11 @@ class CGL_API CglObject
     void setRotationCenter(glm::vec3 &center);
     void setScaleFactor(float sf);
 
+    void setMODEL(glm::mat4 M);
+    void setCenter(glm::vec3 C);
+    void setGroupID(int id);
+    void setFileName(std::string n);
+
     virtual void display(){};
     virtual void artifactsDisplay(){};
     virtual void shadowsDisplay(){};
