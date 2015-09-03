@@ -97,6 +97,7 @@ void CglObject::resetAll(){
 void CglObject::setRotationCenter(glm::vec3 &center){rotationCenter = &center;}
 void CglObject::setScaleFactor(float sf){scaleFactor = sf;}
 
+int        CglObject::getGroupID(){return idGroup;}
 void       CglObject::resetGroupID(){idGroup = -1;}
 float      CglObject::getLocalScale(){return localScale;}
 int        CglObject::getID(){return objectID;}
