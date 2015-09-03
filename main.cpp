@@ -5,6 +5,7 @@
 
 #include <sstream>
 #include <iterator>
+#include <set>
 
 using namespace std;
 
@@ -164,10 +165,6 @@ int main(int argc, char **argv){
       mats[i/4][i%4] = matrices[i];
     }
 
-    //Group check
-    //for(int i = 0 ; i < groups.size() ; i++)
-    //cout << groups[i] << endl;
-
     idw = cv.cglWindow(0,0,800,800);
     ids = cv.cglScene();
     cv.cglSetScene(ids, idw);
@@ -185,7 +182,20 @@ int main(int argc, char **argv){
       cv.cglSetObject(ido, ids);
       mesh[i]->setCenter(centers[i]);
       mesh[i]->setMODEL(mats[i]);
-      //mesh[i]->setGroupID(groups[i]+1);
+
+      pCglScene scene = cv.scene[cv.window[cv.winid()].ids];
+      set<int> indGroups(groups.begin(), groups.end());
+      for (set<int>::iterator i = indGroups.begin(); i != indGroups.end(); i++) {
+	std::vector<pCglObject> objectsToGroup;
+	for(int j = 0 ; j < scene->listObject.size() ; j++){
+	  if((groups[j]==*i) && (groups[j]!=-1)){
+	    objectsToGroup.push_back(scene->listObject[j]);
+	  }
+	}
+	if(objectsToGroup.size()>1){
+	  scene->listGroup.push_back(new CglGroup(objectsToGroup));
+	}
+      }
       mesh[i]->setFileName(names[i]);
     }
   }
