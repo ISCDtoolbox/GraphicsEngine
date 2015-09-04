@@ -12,80 +12,78 @@ uniform mat4 M;//MODEL
 uniform mat4 V;//VIEW
 
 
+vec3 light(vec3 light_color, vec3 mater_color, vec3 mix_ratio, vec3 light_posit, bool camera_space, float light_power, float lobe_size);
+
 void main(){
-
   gl_Position = MVP * vec4(vertex_position, 1);
-
   vec3 Position_worldspace = (M * vec4(vertex_position,1)).xyz;
 
+  bool camera_anchored = true;
+  bool world_anchored  = false;
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  //                                        Préparation                                          //
-  /////////////////////////////////////////////////////////////////////////////////////////////////
+  vec3 fill_light = light(vec3(1,1,0.7),
+                          COL,
+                          vec3(0.2, 0.75, 0.05),
+                          vec3(4,2,10),
+                          camera_anchored,
+                          100.0,
+                          5.0);
+  vec3 side_light = light(vec3(1,0.9,0.9),
+                          COL,
+                          vec3(0.2, 0.75, 0.05),
+                          vec3(-10,2,7),
+                          camera_anchored,
+                          50.0,
+                          5.0);
+  vec3 back_light = light(vec3(0.9,0.9,1),
+                          COL,
+                          vec3(0.2, 0.65, 0.15),
+                          vec3(1,1,-10),
+                          camera_anchored,
+                          100.0,
+                          5.0);
 
-  vec3 LightColor            = vec3(1,1,0.8);//Lumière un peu jaune
-  vec3 MaterialDiffuseColor  = COL;
-  vec3 MaterialSpecularColor = 0.5 * (COL + vec3(1.0, 1.0, 1.0));
-  float lobeSize = 5.0;//Taille du lobe spéculaire
-  float LightPower           = 100.0;
-  vec3 MaterialAmbientColor  = 0.5 * MaterialDiffuseColor;
-
-  vec3 LightPosition_worldspace = vec3(-1,10,-1);
-  //vec3 LightPosition_worldspace = (vec4(LIGHTPOS, 1) * M).xyz;
-  //vec3 LightPosition_worldspace = (MVP * vec4(LIGHTPOS,0)).xyz;
-  //MaterialAmbientColor = LIGHTPOS;
-
-  float distance = length(LightPosition_worldspace - gl_Position.xyz);
+  vec3 mix = 0.9 * vec3(1, 1, 2);
+  fragmentColor = mix.x * fill_light +
+                  mix.y * side_light +
+                  mix.z * back_light
+                  ;
+}
 
 
 
+vec3 light(vec3 light_color, vec3 mater_color, vec3 mix_ratio, vec3 light_posit, bool camera_anchored, float light_power, float lobe_size){
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  //                                         Diffusivité                                         //
-  /////////////////////////////////////////////////////////////////////////////////////////////////
+  float distance = length(light_posit - gl_Position.xyz);
+  vec3 vertex_position_cameraspace = ( V * M * vec4(vertex_position,1)).xyz;
+  vec3 eye_direction_cameraspace = vec3(0,0,0) - vertex_position_cameraspace;
+  vec3 light_position_cameraspace = ( V * vec4(light_posit,1)).xyz;
 
-  // Vecteur allant du sommet vers la caméra, dans l'espace caméra.
-  // Dans l'espace caméra, la caméra est à l'origine (0,0,0).
-  vec3 vertexPosition_cameraspace = ( V * M * vec4(vertex_position,1)).xyz;
-  vec3 EyeDirection_cameraspace = vec3(0,0,0) - vertexPosition_cameraspace;
+  //WORLD OR CAMERA?
+  vec3 light_direction_cameraspace;
+  if(camera_anchored)
+    light_direction_cameraspace = light_posit + eye_direction_cameraspace;
+  else
+    light_direction_cameraspace = light_position_cameraspace + eye_direction_cameraspace;
 
-  // Vecteur allant du sommet vers la lumière, dans l'espace caméra. M est omise car c'est une matrice d'identité.
-  vec3 LightPosition_cameraspace = ( V * vec4(LightPosition_worldspace,1)).xyz;
-  vec3 LightDirection_cameraspace = LightPosition_cameraspace + EyeDirection_cameraspace;
-
-  // Normale du sommet, dans l'espace caméra
-  // correct seulement si ModelMatrix ne redimensionne pas le modèle ! Utilisez sa transposée inverse sinon
-  vec3 Normal_cameraspace = ( V * M * vec4(vertex_normal,0)).xyz;
-
-  // Normale du fragment calculé, dans l'espace caméra
-  vec3 n = normalize( Normal_cameraspace );
-  // Direction de la lumière (du fragment vers la lumière)
-  vec3 l = normalize( LightDirection_cameraspace );
-
-  // Le cosinus de l'angle entre la normale et le rayon de lumière est toujours supérieur à 0
+  vec3 normal_cameraspace = ( V * M * vec4(vertex_normal,0)).xyz;
+  vec3 n = normalize( normal_cameraspace );
+  vec3 l = normalize( light_direction_cameraspace );
   float cosTheta = clamp( dot( n,l ), 0.,1. );
 
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  //                                         Spécularité                                         //
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-
-  // Vecteur de l'œil (vers la caméra)
-  vec3 E = normalize(EyeDirection_cameraspace);
-
-  // Direction dans laquelle le triangle reflète la lumière
+  vec3 E = normalize(eye_direction_cameraspace);
   vec3 R = reflect(-l,n);
-
-  // Cosinus de l'angle entre le vecteur œil et le vecteur de reflexion limité à 0
   float cosAlpha = clamp( dot( E,R ), 0.,1. );
 
-
-  //Sortie finale de couleur
-  vec3 color = 0.2 * MaterialAmbientColor
-             + 0.6 * MaterialDiffuseColor  * LightColor * LightPower * cosTheta        / (distance*distance)
-             + 0.2 * MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,lobeSize) / (distance*distance)  //pow(...) = largeur du lobe speculaire
+  vec3 ambi_color = 0.1 *  mater_color;
+  vec3 diff_color = mater_color;
+  vec3 spec_color = 0.5 * (mater_color + vec3(1.0, 1.0, 1.0));
+  vec3 color = mix_ratio.x * ambi_color
+             + mix_ratio.y * diff_color * light_color * light_power * cosTheta        / (distance*distance)
+             + mix_ratio.z * spec_color * light_color * light_power * pow(cosAlpha,lobe_size) / (distance*distance)
              ;
-  fragmentColor = color;
+
+  return color;
 }
 
 

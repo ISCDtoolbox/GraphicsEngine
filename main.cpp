@@ -114,28 +114,23 @@ int main(int argc, char **argv){
 
     if (saveFile.is_open()){
       while ( getline (saveFile,line) ){
-        //cout << lineNumber << endl;
-
         //Enregistrement du nombre de maillages
         if (lineNumber==-1)
           numberMeshes = atoi(line.c_str());
-
         //Enregistrement des noms de fichiers
         if (lineNumber%numLines == 0)
           names.push_back(line);
-	
+        //Enregistrement de l'ensemble des lignes des matrices pour contourner la memory corruption des matrices
         for(int i = 1 ; i < 5 ; i++){
           if(lineNumber%numLines == i){
-	    glm::vec4 ROW;
+            glm::vec4 ROW;
             vector<float> values = split<float>(line);
             for(int j = 0 ; j < 4 ; j++){
-	      ROW[j] = values[j];
-              //mats[mats.size() - 1][i][j] = values[j];
+              ROW[j] = values[j];
             }
-	    matrices.push_back(ROW);
+            matrices.push_back(ROW);
           }
         }
-
         //Enregistrement des centres
         if(lineNumber%numLines == 5){
           centers.push_back(glm::vec3(0.0f));
@@ -144,12 +139,10 @@ int main(int argc, char **argv){
             centers[centers.size()-1][i] = values[i];
           }
         }
-
         //Enregistrement des idGroups
         if((lineNumber%numLines == 6) && (lineNumber!=-1))
           groups.push_back(atoi(line.c_str()));
-
-
+        //Update
         lineNumber++;
       }
       saveFile.close();
@@ -165,14 +158,15 @@ int main(int argc, char **argv){
       mats[i/4][i%4] = matrices[i];
     }
 
+    //Création de la fenêtre
     idw = cv.cglWindow(0,0,800,800);
     ids = cv.cglScene();
     cv.cglSetScene(ids, idw);
     cv.window[idw].show();
-
     InitGlew();
 
     cout << idw << " " << ids << endl;
+    //Chargement des propriétés du maillage
     vector<CglMesh*> mesh;
     for (int i=0; i < numberMeshes; i++){
       char *N = (char*)names[i].c_str();
@@ -182,19 +176,19 @@ int main(int argc, char **argv){
       cv.cglSetObject(ido, ids);
       mesh[i]->setCenter(centers[i]);
       mesh[i]->setMODEL(mats[i]);
-
+      //Création des groupes
       pCglScene scene = cv.scene[cv.window[cv.winid()].ids];
       set<int> indGroups(groups.begin(), groups.end());
       for (set<int>::iterator i = indGroups.begin(); i != indGroups.end(); i++) {
-	std::vector<pCglObject> objectsToGroup;
-	for(int j = 0 ; j < scene->listObject.size() ; j++){
-	  if((groups[j]==*i) && (groups[j]!=-1)){
-	    objectsToGroup.push_back(scene->listObject[j]);
-	  }
-	}
-	if(objectsToGroup.size()>1){
-	  scene->listGroup.push_back(new CglGroup(objectsToGroup));
-	}
+        std::vector<pCglObject> objectsToGroup;
+        for(int j = 0 ; j < scene->listObject.size() ; j++){
+          if((groups[j]==*i) && (groups[j]!=-1)){
+            objectsToGroup.push_back(scene->listObject[j]);
+          }
+        }
+        if(objectsToGroup.size()>1){
+          scene->listGroup.push_back(new CglGroup(objectsToGroup));
+        }
       }
       mesh[i]->setFileName(names[i]);
     }
