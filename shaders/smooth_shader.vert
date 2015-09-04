@@ -21,29 +21,29 @@ void main(){
   bool camera_anchored = true;
   bool world_anchored  = false;
 
-  vec3 fill_light = light(vec3(1,1,0.7),
+  vec3 fill_light = light(vec3(1,1,0.9),
                           COL,
-                          vec3(0.2, 0.75, 0.05),
+                          vec3(0.2, 0.65, 0.15),
                           vec3(4,2,10),
                           camera_anchored,
                           100.0,
                           5.0);
   vec3 side_light = light(vec3(1,0.9,0.9),
                           COL,
-                          vec3(0.2, 0.75, 0.05),
+                          vec3(0.2, 0.65, 0.15),
                           vec3(-10,2,7),
                           camera_anchored,
                           50.0,
                           5.0);
-  vec3 back_light = light(vec3(0.9,0.9,1),
+  vec3 back_light = light(vec3(1,1,0.9),
                           COL,
-                          vec3(0.2, 0.65, 0.15),
+                          vec3(0.2, 0.65, 0.5),
                           vec3(1,1,-10),
                           camera_anchored,
                           100.0,
                           5.0);
 
-  vec3 mix = 0.9 * vec3(1, 1, 2);
+  vec3 mix = 0.9 * vec3(1, 1, 1);
   fragmentColor = mix.x * fill_light +
                   mix.y * side_light +
                   mix.z * back_light

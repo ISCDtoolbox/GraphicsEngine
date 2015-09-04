@@ -253,8 +253,8 @@ glm::mat4 shadowMatrix(glm::vec4 ground, glm::vec4 light){
 
 void CglMesh::shadowsDisplay(){
   if(pcv->profile.displayShadows){
-    if(hidden)
-      glEnable(GL_BLEND);
+    //if(hidden)
+    glEnable(GL_BLEND);
 
     glEnable(GL_CULL_FACE);
     int shaderID = pcv->simpleShader.mProgramID;
@@ -274,7 +274,17 @@ void CglMesh::shadowsDisplay(){
                            glm::scale(MODEL, glm::vec3(scaleFactor));
 
     glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &shadowMVP[0][0]);
-    uniformVec3(colorID, 0.08f * face_color);
+    glm::vec3 shad_color;
+    if(selected){
+      if(idGroup!=-1)
+        shad_color = glm::vec3(0.7, 1, 0.7);
+      else
+        shad_color = pcv->profile.sele_color;
+    }
+    else
+      shad_color = face_color;
+
+    uniformVec3(colorID, pcv->profile.shadow_factor * shad_color);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 
