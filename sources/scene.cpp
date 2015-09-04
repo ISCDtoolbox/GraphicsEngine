@@ -158,10 +158,12 @@ void CglScene::applyTransformation()
   else if(pcv->profile.accumulatedMode){
     MODEL = glm::translate(MODEL, transform.tr);
     m_cam   =  view->zoom * glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_cam,1)));
-    m_up    = glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_up,1)));
-    m_look  = glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_look,1)));//-m_cam;
+    m_right = glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_right,1)));
+    m_look  = -m_cam;//glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_look,1)));//-m_cam;
+    m_up = glm::cross(m_right, m_look);
+    //m_up    = glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_up,1)));
     VIEW = glm::lookAt(m_cam + view->camOffset * m_right, m_look, m_up);
-    m_right = glm::cross(m_look,m_up);
+    //m_right = glm::cross(m_look,m_up);
 
   }
 

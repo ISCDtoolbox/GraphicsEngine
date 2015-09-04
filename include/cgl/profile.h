@@ -44,6 +44,10 @@ class CglProfile
     float     dark_shadow,      clear_shadow,     shadow_factor;
     glm::vec3 sele_color;
 
+    float saturation;
+    float value;
+    float mixWithWhite;
+
   protected:
   private:
 };

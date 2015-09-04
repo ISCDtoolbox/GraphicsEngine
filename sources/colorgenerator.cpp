@@ -1,4 +1,7 @@
 #include "cgl/colorgenerator.h"
+#include <cgl/canvas.h>
+extern CglCanvas *pcv;
+
 using namespace std;
 
 CglColorGenerator::CglColorGenerator(){
@@ -15,11 +18,11 @@ glm::vec3 CglColorGenerator::generateColor(){
   double golden_ratio_conjugate = 0.618033988749895;
   float h = (start + inc * golden_ratio_conjugate);
   h -= int(h);
-  rgb rgbColor = hsv2rgb(hsv{double(h)*360, 0.8, 0.9});
+  rgb rgbColor = hsv2rgb(hsv{double(h)*360, pcv->profile.saturation, pcv->profile.value});
   inc++;
   glm::vec3 mix = glm::vec3(1);
   glm::vec3 col = glm::vec3(rgbColor.r, rgbColor.g, rgbColor.b);
-  float mixFactor = 0.7;//1 = pure color, 0 = pure white
+  float mixFactor = pcv->profile.mixWithWhite;//1 = pure color, 0 = pure white
   return mixFactor * col + (1-mixFactor) * mix;
 }
 

@@ -24,14 +24,11 @@ void main(){
   gl_Position = MVP * vec4(vertex_position, 1);
   vec3 Position_worldspace = (M * vec4(vertex_position,1)).xyz;
 
-  bool camera_anchored = true;
-  bool world_anchored  = false;
-
   vec3 fill_light = light(FILL, COL);
   vec3 side_light = light(SIDE, COL);
   vec3 back_light = light(BACK, COL);
 
-  vec3 mix = 0.9 * vec3(1, 1, 1);
+  vec3 mix = vec3(1, 1, 1.5);
   fragmentColor = mix.x * fill_light
                   + mix.y * side_light
                   + mix.z * back_light

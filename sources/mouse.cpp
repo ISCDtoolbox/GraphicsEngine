@@ -56,7 +56,7 @@ void CglMouse::motion(int x, int y)
         if(pcv->profile.classicalMode)
           ROT = glm::mat4(  glm::angleAxis(0.01f * d.y, scene->m_right)  *  glm::angleAxis(0.01f * d.x, glm::vec3(0,1,0))  );
         else if(pcv->profile.accumulatedMode)
-          ROT = glm::mat4(  glm::angleAxis(0.01f * d.y, scene->m_right)  *  glm::angleAxis(0.01f * d.x, scene->m_up)  );
+          ROT = glm::mat4( glm::angleAxis(0.01f * d.y, scene->m_right) * glm::angleAxis(0.01f * d.x, scene->m_up) );
 
         if (scene->isSelected())
           scene->transform.setRotation(ROT);
