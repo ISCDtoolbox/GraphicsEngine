@@ -14,6 +14,25 @@
 #include <cgl/object.h>
 
 
+class CGL_API CglLight{
+  public:
+    glm::vec3 position;
+    glm::vec3 color;
+    glm::vec3 amb_dif_spe_ratio;
+    float     power;
+    float     specular_lobe;
+    bool      follows_camera;
+
+    //Used for sending
+    glm::mat4 packed;
+
+    CglLight(glm::vec3 pos, glm::vec3 col, glm::vec3 a_d_s_ratio, float pow, float lob, bool cam);
+    //virtual ~CglLight();
+};
+
+typedef CglLight * pCglLight;
+
+/*
 class CGL_API CglLight : public CglObject
 {
 public:
@@ -43,6 +62,6 @@ public:
 };
 
 typedef CglLight * pCglLight;
-
+*/
 
 #endif

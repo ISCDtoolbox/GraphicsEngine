@@ -20,9 +20,10 @@ private:
 	int    m_wpos[2],m_wsiz[2];   // window position + size
 	int    m_vpos[2],m_vsiz[2];   // viewport position + size
   double m_mold[16],m_mnew[16];
-  std::vector<pCglLight>  light;
-  
+
+
 public:
+  std::vector<pCglLight>  light;
 	int   m_id;
   int ids;
 	CglView    view;
@@ -32,8 +33,7 @@ public:
 	virtual ~CglWindow();
 
   int cglAddLight(pCglLight li);
-  void activateLight();
-  
+
   void reshape(int w, int h);
 
 	void show();

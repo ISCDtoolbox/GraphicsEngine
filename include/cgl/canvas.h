@@ -43,12 +43,10 @@ public:
   int  cglWindow(int x, int y, int w, int h);
   int  cglScene();
   void cglSetScene(int ids, int idw);
-  void cglLight();
+  void cglLighting();
 
   int cglObject(pCglObject obj);
   void cglSetObject(int ido, int ids);
-
-  int cglPickObject(int x, int y);
 
 private:
   virtual void reshape(int w, int h);

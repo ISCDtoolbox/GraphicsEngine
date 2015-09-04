@@ -23,14 +23,14 @@ CglProfile::CglProfile()
   groupRotation     = true;
 
   bottomDistance    = 0.1;
-  bottomAngle       = (float)3.14159/4;
+  bottomAngle       = 0.0;//(float)3.14159/4;
 
   clear_back_color    = glm::vec3(1,   1,   0.98);
   clear_grid_color    = glm::vec3(0.5, 0.5, 0.5);
   clear_idle_color    = glm::vec3(0.7, 0.7, 0.7);
   clear_shadow        = 0.9;
 
-  dark_back_color    = glm::vec3(0.01, 0.01, 0);
+  dark_back_color    = glm::vec3(0.02, 0.02, 0.02);
   dark_grid_color    = glm::vec3(0.2, 0.2, 0.2);
   dark_idle_color    = glm::vec3(0.3, 0.3, 0.3);
   dark_shadow        = 0.2;

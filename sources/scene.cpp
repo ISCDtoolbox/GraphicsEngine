@@ -20,7 +20,7 @@ void CglScene::addObject(pCglObject object)
 {
   //Ajout de l'objet à la scène
   listObject.push_back(object);
-  object->linkSceneParameters(&MODEL, &VIEW, &PROJ, &center, &m_up, &m_cam, listObject.size());
+  object->linkSceneParameters(&MODEL, &VIEW, &PROJ, &center, &m_up, &m_cam, listObject.size()+100);
 
   //Création des axes
   if(listObject.size()==1){

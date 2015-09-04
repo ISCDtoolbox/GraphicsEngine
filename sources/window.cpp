@@ -96,30 +96,8 @@ void CglWindow::display()
 
 int CglWindow::cglAddLight(pCglLight li)
 {
-  cout << " -  [Add light]" << endl;
   light.push_back(li);
   return light.size() - 1;
 }
 
-void CglWindow::activateLight()
-{
-
-  //cout << " - [Activate light]" << endl;
-  //cout << " ---- Number of lights: " << light.size() << endl;
-
-  if (light.size() <= 0){
-    return ;
-  };
-
-  glEnable(GL_LIGHTING);	// Active l'éclairage
-
-  for (unsigned int iLight = 0; iLight < light.size(); iLight++)
-  {
-    cout << "iLight: " << iLight << endl;
-    light[iLight]->cglInit();
-    cout << "iLight init : " << iLight << endl;
-    glEnable(GL_LIGHT0 +light[iLight]->lid);
-    cout << "iLight enable: " << iLight << endl;
-  }
-}
 

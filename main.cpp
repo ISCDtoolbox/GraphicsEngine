@@ -162,6 +162,16 @@ int main(int argc, char **argv){
     idw = cv.cglWindow(0,0,800,800);
     ids = cv.cglScene();
     cv.cglSetScene(ids, idw);
+
+
+
+    //Passage des lumières
+    cv.window[idw].cglAddLight(&cv.light[0]);
+    cv.window[idw].cglAddLight(&cv.light[1]);
+    cv.window[idw].cglAddLight(&cv.light[2]);
+
+
+
     cv.window[idw].show();
     InitGlew();
 
@@ -213,6 +223,11 @@ int main(int argc, char **argv){
       ido = cv.cglObject(mesh[i]);
       cv.cglSetObject(ido, ids);
     }
+
+    //Passage des lumières
+    cv.window[idw].cglAddLight(&cv.light[0]);
+    cv.window[idw].cglAddLight(&cv.light[1]);
+    cv.window[idw].cglAddLight(&cv.light[2]);
 
     /*
     //Seconde fenetre

@@ -6,13 +6,19 @@ varying vec3 fragmentColor;
 
 uniform mat4 MVP;
 uniform vec3 COL;
-uniform vec3 LIGHTPOS;
 
-uniform mat4 M;//MODEL
-uniform mat4 V;//VIEW
+//Lights
+uniform mat4 FILL;
+uniform mat4 SIDE;
+uniform mat4 BACK;
+
+uniform mat4 M;
+uniform mat4 V;
 
 
-vec3 light(vec3 light_color, vec3 mater_color, vec3 mix_ratio, vec3 light_posit, bool camera_space, float light_power, float lobe_size);
+
+
+vec3 light(mat4 light_matrix, vec3 mater_color);
 
 void main(){
   gl_Position = MVP * vec4(vertex_position, 1);
@@ -21,38 +27,26 @@ void main(){
   bool camera_anchored = true;
   bool world_anchored  = false;
 
-  vec3 fill_light = light(vec3(1,1,0.9),
-                          COL,
-                          vec3(0.2, 0.65, 0.15),
-                          vec3(4,2,10),
-                          camera_anchored,
-                          100.0,
-                          5.0);
-  vec3 side_light = light(vec3(1,0.9,0.9),
-                          COL,
-                          vec3(0.2, 0.65, 0.15),
-                          vec3(-10,2,7),
-                          camera_anchored,
-                          50.0,
-                          5.0);
-  vec3 back_light = light(vec3(1,1,0.9),
-                          COL,
-                          vec3(0.2, 0.65, 0.5),
-                          vec3(1,1,-10),
-                          camera_anchored,
-                          100.0,
-                          5.0);
+  vec3 fill_light = light(FILL, COL);
+  vec3 side_light = light(SIDE, COL);
+  vec3 back_light = light(BACK, COL);
 
   vec3 mix = 0.9 * vec3(1, 1, 1);
-  fragmentColor = mix.x * fill_light +
-                  mix.y * side_light +
-                  mix.z * back_light
+  fragmentColor = mix.x * fill_light
+                  + mix.y * side_light
+                  + mix.z * back_light
                   ;
 }
 
 
 
-vec3 light(vec3 light_color, vec3 mater_color, vec3 mix_ratio, vec3 light_posit, bool camera_anchored, float light_power, float lobe_size){
+vec3 light(mat4 light_matrix, vec3 mater_color){
+  vec3  light_posit     = light_matrix[0].xyz;
+  vec3  light_color     = light_matrix[1].xyz;
+  vec3  mix_ratio       = light_matrix[2].xyz;
+  float light_power     = light_matrix[3].x;
+  float lobe_size       = light_matrix[3].y;
+  bool  camera_anchored = bool(light_matrix[3].z);
 
   float distance = length(light_posit - gl_Position.xyz);
   vec3 vertex_position_cameraspace = ( V * M * vec4(vertex_position,1)).xyz;

@@ -287,9 +287,6 @@ void CglMesh::shadowsDisplay(){
     uniformVec3(colorID, pcv->profile.shadow_factor * shad_color);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-
-
-
     glDrawElements(GL_TRIANGLES, 3 * tria.size(), GL_UNSIGNED_INT, (void*)0);
 
     glDisable(GL_BLEND);
@@ -422,7 +419,7 @@ void CglMesh::display()
 {
   if(hidden)
     glEnable(GL_BLEND);
-
+  //glEnable(GL_LIGHTING);
   glEnable(GL_CULL_FACE);
 
   //Initialization
@@ -430,13 +427,18 @@ void CglMesh::display()
   int shaderID = ((smooth)?pcv->smoothShader.mProgramID : pcv->simpleShader.mProgramID);
   glUseProgram(shaderID);
   int MatrixID = glGetUniformLocation(shaderID, "MVP");
-  int colorID  = glGetUniformLocation(shaderID, "COL");
-  int lightID  = glGetUniformLocation(shaderID, "LIGHTPOS");
   glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &MVP[0][0]);
-  uniformVec3(lightID, *sceneCam);
+  int colorID  = glGetUniformLocation(shaderID, "COL");
+
+  //Light info
+  int fill_light_ID  = glGetUniformLocation(shaderID, "FILL");
+  glUniformMatrix4fv( fill_light_ID, 1, GL_FALSE, &(pcv->window[pcv->winid()].light[0]->packed)[0][0]);
+  int side_light_ID  = glGetUniformLocation(shaderID, "SIDE");
+  glUniformMatrix4fv( side_light_ID, 1, GL_FALSE, &(pcv->window[pcv->winid()].light[1]->packed)[0][0]);
+  int back_light_ID  = glGetUniformLocation(shaderID, "BACK");
+  glUniformMatrix4fv( back_light_ID, 1, GL_FALSE, &(pcv->window[pcv->winid()].light[2]->packed)[0][0]);
 
   //Mesh buffer binding
-
   glEnableVertexAttribArray( 0);
   glBindBuffer(              GL_ARRAY_BUFFER, meshBuffer);
   glVertexAttribPointer(     0, 3, GL_FLOAT, GL_FALSE, 0, ( void*)0);

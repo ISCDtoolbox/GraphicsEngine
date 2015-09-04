@@ -38,7 +38,7 @@ void CglObject::linkSceneParameters(glm::mat4 *MODEL, glm::mat4 *VIEW, glm::mat4
   sceneUp      = Up;
   sceneCam     = Cam;
   objectID     = ID;
-  pickingColor = glm::vec3(objectID/255.0f, 0, 0);
+  pickingColor = glm::vec3(objectID/255.0f, objectID/255.0f, 0);
 }
 
 void CglObject::pickingDisplay(){
