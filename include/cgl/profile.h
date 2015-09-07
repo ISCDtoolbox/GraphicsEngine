@@ -20,6 +20,8 @@ class CglProfile
     bool  displayBottomGrid;
     bool  displayAxes;
     bool  displayAxesLabels;
+    bool  displayReflection;
+    bool  displayBackgroundGradient;
 
     bool  perspective;
 

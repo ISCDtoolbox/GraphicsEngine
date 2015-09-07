@@ -20,6 +20,7 @@ public:
   CglAxis();
   ~CglAxis(){};
   void gradient(std::vector<float> hei, std::vector<glm::vec3> col);
+  void gradient(std::vector<glm::vec2> hei, std::vector<glm::vec3> col);
   void display();
   CglView *view;
 

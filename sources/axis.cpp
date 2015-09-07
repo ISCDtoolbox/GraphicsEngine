@@ -67,11 +67,9 @@ CglAxis::CglAxis(){
 void CglAxis::gradient(std::vector<float> hei, std::vector<glm::vec3> col){
   if(hei.size()!=col.size())
     exit(122);
-
   glUseProgram(0);
   glDisable(GL_DEPTH_TEST);
   glBegin(GL_QUAD_STRIP);
-
   int nb = hei.size();
   float depth = 0;
   for(int i = 0 ; i < nb ; i++){
@@ -79,7 +77,22 @@ void CglAxis::gradient(std::vector<float> hei, std::vector<glm::vec3> col){
     glVertex3f(-1, hei[i], depth);
     glVertex3f( 1, hei[i], depth);
   }
-
+  glEnd();
+  glEnable(GL_DEPTH_TEST);
+}
+void CglAxis::gradient(std::vector<glm::vec2> hei, std::vector<glm::vec3> col){
+  if(hei.size()!=col.size())
+    exit(122);
+  glUseProgram(0);
+  glDisable(GL_DEPTH_TEST);
+  glBegin(GL_QUAD_STRIP);
+  int nb = hei.size();
+  float depth = 0;
+  for(int i = 0 ; i < nb ; i++){
+    glColor3f(col[i].x, col[i].y, col[i].z);
+    glVertex3f(-1, hei[i].x, depth);
+    glVertex3f( 1, hei[i].y, depth);
+  }
   glEnd();
   glEnable(GL_DEPTH_TEST);
 }
@@ -88,30 +101,38 @@ void CglAxis::display()
 {
   //Background gradient
   if(pcv->profile.displayBackgroundGradient){
-
+    std::vector<float>     gradient_heights;
+    std::vector<glm::vec3> gradient_colors;
     //Brown to white to brown (keep geryer brown)
     //std::vector<glm::vec3> gradient_colors  = {glm::vec3(0.3,0.17,0.05), glm::vec3(0.95,0.95,0.91), glm::vec3(0.85,0.8,0.75)};
     //std::vector<float>     gradient_heights = {-1, 0, 1};
-
     //Blue to white
     //std::vector<glm::vec3> gradient_colors  = {glm::vec3(0.3, 0.4, 0.7), glm::vec3(1,1,1)};
     //std::vector<float>     gradient_heights = {-1, 1};
-
     //White to blue
-    std::vector<glm::vec3> gradient_colors  = {glm::vec3(1,1,1), glm::vec3(0.6, 0.6, 0.7)};
-    std::vector<float>     gradient_heights = {-1, 1};
-
+    if(pcv->profile.dark_theme){
+      gradient_colors  = {glm::vec3(0), glm::vec3(0.15), glm::vec3(0.65)};
+      gradient_heights = {-1, 0, 1};
+    }
+    else{
+      gradient_colors  = {glm::vec3(1), glm::vec3(1), glm::vec3(0.5, 0.5, 0.65)};
+      gradient_heights = {-1, -0.2, 1};
+    }
     //White to grey
     //std::vector<glm::vec3> gradient_colors  = {glm::vec3(1), glm::vec3(0.7)};
     //std::vector<float>     gradient_heights = {-1, 1};
-
     //Grey to White
     //std::vector<glm::vec3> gradient_colors  = {glm::vec3(0.85), glm::vec3(1)};
     //std::vector<float>     gradient_heights = {-1, 1};
-
-
-
+    //Grey to White
+    //std::vector<glm::vec3> gradient_colors  = {glm::vec3(0.3,0.17,0.05), glm::vec3(1), glm::vec3(0.9,0.9,1)};
+    //std::vector<float>     gradient_heights = {-1, 0.5, 1};
     gradient(gradient_heights, gradient_colors);
+
+    //Grey to White
+    //std::vector<glm::vec3> gradient_colors  = {glm::vec3(1), glm::vec3(1), glm::vec3(0.7), glm::vec3(0.7,0.7,1)};
+    //std::vector<glm::vec2>     gradient_heights = {glm::vec2(-1), glm::vec2(-0.5), glm::vec2(0,0.2), glm::vec2(1)};
+    //gradient(gradient_heights, gradient_colors);
 
   }
 
@@ -140,10 +161,9 @@ void CglAxis::display()
   if(pcv->profile.displayAxes){
     pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
     //glDisable(GL_DEPTH_TEST);
-    glDepthFunc(GL_ALWAYS);
     glViewport(0,0,150,150);
     glm::mat4 neutralProj = glm::perspective(70.0, view->ratio, view->m_znear, view->m_zfar);
-    glm::mat4 MVP = glm::scale(glm::translate(neutralProj * *pVIEW * MODEL, glm::vec3(0)/*-*sceneCenter*/), glm::vec3(view->zoom));
+    glm::mat4 MVP = glm::scale(neutralProj * *pVIEW * MODEL, glm::vec3(view->zoom));
 
     glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &MVP[0][0]);
     glLineWidth(2.0);
@@ -160,14 +180,13 @@ void CglAxis::display()
     //Z
     uniformVec3(colorID, glm::vec3(0,0,1));
     glDrawArrays(GL_LINES, 4, 6);
+    //glEnable(GL_DEPTH_TEST);
   }
 
   //Ressources freeing
-  //glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LEQUAL);
   view->reshape(view->width,view->height);
   glDisableVertexAttribArray(0);
-
   glLineWidth(1.0);
   glUseProgram(0);
   glPolygonMode(GL_FRONT, GL_FILL);
