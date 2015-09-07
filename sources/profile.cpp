@@ -2,10 +2,12 @@
 
 CglProfile::CglProfile()
 {
-  displayShadows    = true;
-  displayBottomGrid = true;
+  displayShadows    = false;
+  displayBottomGrid = false;
   displayAxes       = true;
   displayAxesLabels = false;
+  displayBackgroundGradient = true;
+  displayReflection = true;
 
   stereo            = false;
 
@@ -35,7 +37,7 @@ CglProfile::CglProfile()
   dark_idle_color    = glm::vec3(0.7, 0.7, 0.7);
   dark_shadow        = 0.2;
 
-  saturation     = 0.45;
+  saturation     = 0.65;
   value          = 1;
   mixWithWhite   = 1;
 

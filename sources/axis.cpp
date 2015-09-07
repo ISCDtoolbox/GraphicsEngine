@@ -4,8 +4,8 @@ extern CglCanvas *pcv;
 
 CglAxis::CglAxis(){
   //Grid creation
-  float size       = 2;
-  float resolution = 20;
+  float size       = 5;
+  float resolution = 100;
   float dash_size = size/resolution;
   std::vector<glm::vec3> tGrid;
   for(float x = -size/2 ; x <= size/2 ; x+=dash_size){
@@ -39,15 +39,89 @@ CglAxis::CglAxis(){
   glGenBuffers( 1,               &axesBuffer);
   glBindBuffer( GL_ARRAY_BUFFER, axesBuffer);
   glBufferData( GL_ARRAY_BUFFER, sizeof(float) * axes.size(), &axes[0], GL_STATIC_DRAW);
+
+  //Background gradient
+    std::vector<glm::vec3> tBack = {glm::vec3(-1, -1, 0),
+                                    glm::vec3(1,  -1, 0),
+                                    glm::vec3(-1, 1,  0),
+                                    glm::vec3(1,  1,  0)};
+    for(int i = 0 ; i < tBack.size() ; i++)
+      for(int j = 0 ; j < 3 ; j++)
+        back.push_back(tBack[i][j]);
+    glGenBuffers( 1,               &backBuffer);
+    glBindBuffer( GL_ARRAY_BUFFER, backBuffer);
+    glBufferData( GL_ARRAY_BUFFER, sizeof(float) * back.size(), &back[0], GL_STATIC_DRAW);
+
+    //Background colors
+    glm::vec3 lower_color = glm::vec3(0,0,0);
+    glm::vec3 upper_color = glm::vec3(1,1,1);
+    std::vector<glm::vec3> tBackColor = {lower_color, lower_color, upper_color, upper_color};
+    for(int i = 0 ; i < tBackColor.size() ; i++)
+      for(int j = 0 ; j < 3 ; j++)
+        colors.push_back(tBackColor[i][j]);
+    glGenBuffers( 1,               &backColorBuffer);
+    glBindBuffer( GL_ARRAY_BUFFER, backColorBuffer);
+    glBufferData( GL_ARRAY_BUFFER, sizeof(float) * colors.size(), &colors[0], GL_STATIC_DRAW);
+}
+
+void CglAxis::gradient(std::vector<float> hei, std::vector<glm::vec3> col){
+  if(hei.size()!=col.size())
+    exit(122);
+
+  glUseProgram(0);
+  glDisable(GL_DEPTH_TEST);
+  glBegin(GL_QUAD_STRIP);
+
+  int nb = hei.size();
+  float depth = 0;
+  for(int i = 0 ; i < nb ; i++){
+    glColor3f(col[i].x, col[i].y, col[i].z);
+    glVertex3f(-1, hei[i], depth);
+    glVertex3f( 1, hei[i], depth);
+  }
+
+  glEnd();
+  glEnable(GL_DEPTH_TEST);
 }
 
 void CglAxis::display()
 {
+  //Background gradient
+  if(pcv->profile.displayBackgroundGradient){
+
+    //Brown to white to brown (keep geryer brown)
+    //std::vector<glm::vec3> gradient_colors  = {glm::vec3(0.3,0.17,0.05), glm::vec3(0.95,0.95,0.91), glm::vec3(0.85,0.8,0.75)};
+    //std::vector<float>     gradient_heights = {-1, 0, 1};
+
+    //Blue to white
+    //std::vector<glm::vec3> gradient_colors  = {glm::vec3(0.3, 0.4, 0.7), glm::vec3(1,1,1)};
+    //std::vector<float>     gradient_heights = {-1, 1};
+
+    //White to blue
+    std::vector<glm::vec3> gradient_colors  = {glm::vec3(1,1,1), glm::vec3(0.6, 0.6, 0.7)};
+    std::vector<float>     gradient_heights = {-1, 1};
+
+    //White to grey
+    //std::vector<glm::vec3> gradient_colors  = {glm::vec3(1), glm::vec3(0.7)};
+    //std::vector<float>     gradient_heights = {-1, 1};
+
+    //Grey to White
+    //std::vector<glm::vec3> gradient_colors  = {glm::vec3(0.85), glm::vec3(1)};
+    //std::vector<float>     gradient_heights = {-1, 1};
+
+
+
+    gradient(gradient_heights, gradient_colors);
+
+  }
+
   //Initialization
   glUseProgram(pcv->simpleShader.mProgramID);
   glEnableVertexAttribArray( 0);
   GLuint MatrixID = glGetUniformLocation(pcv->simpleShader.mProgramID, "MVP");
   GLuint colorID  = glGetUniformLocation(pcv->simpleShader.mProgramID, "COL");
+
+
 
   //GRID
   if(pcv->profile.displayBottomGrid){
@@ -93,6 +167,7 @@ void CglAxis::display()
   glDepthFunc(GL_LEQUAL);
   view->reshape(view->width,view->height);
   glDisableVertexAttribArray(0);
+
   glLineWidth(1.0);
   glUseProgram(0);
   glPolygonMode(GL_FRONT, GL_FILL);

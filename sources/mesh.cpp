@@ -468,11 +468,22 @@ void CglMesh::display()
     else
       uniformVec3(colorID, face_color);
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glPolygonMode(GL_FRONT, GL_FILL);
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1.0,1.0);
-
     glDrawElements(GL_TRIANGLES, 3 * tria.size(), GL_UNSIGNED_INT, (void*)0);
+
+    //Réflection
+    if(pcv->profile.displayReflection){
+      uniformVec3(colorID, (glm::vec3(3) + face_color) * 0.25f);
+      glm::mat4 reflection = glm::translate( glm::scale( MVP,  glm::vec3(1,-1,1)) , glm::vec3(0, (1.25 * pcv->profile.bottomDistance + 1.25 * center.y) ,0));
+
+      glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &reflection[0][0]);
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      glCullFace(GL_FRONT);
+      glDrawElements(GL_TRIANGLES, 3 * tria.size(), GL_UNSIGNED_INT, (void*)0);
+      glCullFace(GL_BACK);
+    }
   }
   else{
     uniformVec3(colorID, face_color);

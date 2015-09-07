@@ -115,7 +115,7 @@ void CglScene::toogleFlyingMode(){
   }
   //FROM NORMAL TO FLYING
   else{
-    glutSetCursor(GLUT_CURSOR_CROSSHAIR);
+    glutSetCursor(GLUT_CURSOR_NONE);
     glutWarpPointer(view->width/2, view->height/2);
     m_look = -m_cam;
   }
@@ -137,7 +137,6 @@ void CglScene::applyTransformation()
                        m_cam + view->camOffset * m_right + m_look,
                        m_up);
     m_right = glm::cross(m_look,m_up);
-
   }
   //CLASSICAL MODE
   else if (pcv->profile.classicalMode){
