@@ -7,7 +7,7 @@ CglProfile::CglProfile()
   displayBackgroundGradient = true;
 
   displayShadows    = true;
-  displayBottomGrid = true;
+  displayBottomGrid = false;//true;
 
   displayReflection = true;
 

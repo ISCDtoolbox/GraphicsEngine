@@ -17,6 +17,10 @@ CglMouse::CglMouse()
   m_pos   = glm::vec3(0);
 }
 
+void CglMouse::setGUI(){
+  buttons = pcv->getInterface()->getButtonList();
+}
+
 glm::vec3 get_arcball_vector(glm::vec2 cursor) {
   int W = pcv->getWindow()->view.width;
   int H = pcv->getWindow()->view.height;
@@ -121,9 +125,7 @@ void CglMouse::passiveMotion(int x, int y){
     }
 
   }
-
-
-
+  currPos = glm::vec2(x,y);
 }
 
 
@@ -141,6 +143,8 @@ void save(bool cond){
     }
   }
 }
+
+
 
 void CglMouse::mouse(int b, int s, int x, int y)
 {
@@ -231,8 +235,35 @@ void CglMouse::mouse(int b, int s, int x, int y)
 
   arcball = ((m_button[0])?1:0);
   lastPos = currPos = glm::vec2(x,y);
+
+  checkButtons(b, s, x, y);
 }
 
+void CglMouse::checkButtons(int b, int s, int x, int y){
+  if(s==GLUT_DOWN){
+    for(int i = 0 ; i < buttons->size() ; i++){
+      int width  = pcv->getScene()->getView()->width;
+      int height = pcv->getScene()->getView()->height;
+      //Mapped from -1 to 1
+      glm::vec2 minis = (*buttons)[i]->getMins();
+      glm::vec2 maxis = (*buttons)[i]->getMaxs();
+      //Mapped from 0 to width, 0 to height
+      glm::vec2 bX = glm::vec2( width/2 * minis.x + width/2, width/2 * maxis.x + width/2 );
+      glm::vec2 bY = glm::vec2( height/2 * minis.y + height/2, height/2 * maxis.y + height/2 );
 
-void CglMouse::transform()
-{}
+      if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
+        cout << "button " << i << " pressed!" << endl;
+        if(i == 0){
+          pcv->profile.dark_theme = !pcv->profile.dark_theme;
+          pcv->profile.update_theme();
+        }
+        if(i == 1){
+          pcv->profile.displayBottomGrid = !pcv->profile.displayBottomGrid;
+        }
+      }
+    }
+  }
+
+
+
+}

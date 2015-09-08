@@ -43,6 +43,8 @@
 #include <cgl/profile.h>
 #include <cgl/group.h>
 #include <cgl/colorgenerator.h>
+#include <cgl/interface.h>
+#include <cgl/texture.h>
 
 
 /*-- The major/minor/patch version. ---------------------------*/

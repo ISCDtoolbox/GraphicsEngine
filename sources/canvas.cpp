@@ -58,13 +58,15 @@ void CglCanvas::cglSetObject(int ido, int ids){
 ///////////////////////////////////////////////////////////////////////////
 //Accessors
 
-pCglLight  CglCanvas::getLight( int lightID){  return &(light[lightID]);}
-pCglScene  CglCanvas::getScene( int sceneID){  return scene[sceneID]; }
-pCglWindow CglCanvas::getWindow(int windowID){ return &(window[windowID]);}
-pCglScene  CglCanvas::getScene(){  return scene[window[winid()].ids]; }
-pCglWindow CglCanvas::getWindow(){ return &(window[winid()]);}
-int        CglCanvas::simpleID(){return simpleShader.mProgramID;}
-int        CglCanvas::smoothID(){return smoothShader.mProgramID;}
+pCglLight     CglCanvas::getLight( int lightID){  return &(light[lightID]);}
+pCglScene     CglCanvas::getScene( int sceneID){  return scene[sceneID]; }
+pCglWindow    CglCanvas::getWindow(int windowID){ return &(window[windowID]);}
+pCglScene     CglCanvas::getScene(){     return scene[window[winid()].ids]; }
+pCglWindow    CglCanvas::getWindow(){    return &(window[winid()]);}
+pCglInterface CglCanvas::getInterface(){ return &interface;}
+pCglMouse     CglCanvas::getMouse(){     return &mice;}
+int           CglCanvas::simpleID(){     return simpleShader.mProgramID;}
+int           CglCanvas::smoothID(){     return smoothShader.mProgramID;}
 
 void       CglCanvas::centerMouse(){
   mice.lastPassivePos = mice.lastPos = glm::vec2(pcv->getScene()->getView()->width/2, pcv->getScene()->getView()->height/2);
@@ -138,6 +140,8 @@ void CglCanvas::specialWrap(int key, int x, int y){
 void CglCanvas::cglMainLoop(){
   simpleShader.load("SIMPLE");
   smoothShader.load("SMOOTH");
+  interface.init(5);
+  mice.setGUI();
   glutMainLoop();
 }
 

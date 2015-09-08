@@ -67,8 +67,6 @@ void CglScene::display()
   for (int iObj = 0; iObj < numObjects(); iObj++)
     listObject[iObj]->artifactsDisplay();
 
-
-
   //Display des meshes
   for (int iObj = 0; iObj < numObjects(); iObj++)
     if(!listObject[iObj]->isHidden())
@@ -76,6 +74,9 @@ void CglScene::display()
   for (int iObj = 0; iObj < numObjects(); iObj++)
     if(listObject[iObj]->isHidden())
       listObject[iObj]->display();
+
+  //Boutons
+  pcv->getInterface()->display();
 
   glClear(GL_DEPTH_BUFFER_BIT);
   //debug();

@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 project(SUscCGL )
 set(CMAKE_BUILD_TYPE "Release")
 
-
 #Include de GLM
 include(ExternalProject)
 ExternalProject_Add(
@@ -15,6 +14,7 @@ ExternalProject_Add(
   LOG_DOWNLOAD ON
   LOG_INSTALL ON
 )
+
 #Flags and libraries
 set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -Wno-deprecated -O0")
 find_package(GLUT)
@@ -32,6 +32,14 @@ add_library(mesh SHARED library/libmesh/libmesh5.h library/libmesh/libmesh5.c)
 target_link_libraries(SUscCGL ${CORELIBS} mesh)
 add_dependencies(SUscCGL HEADERFILES)
 
+#Allows for copying the icons in another folder
+#add_dependencies(SUscCGL ICONFILES)
+#add_custom_target(
+#  ICONFILES
+#  COMMAND cp icon.bmp "$ENV{HOME}/bin"
+#  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/icons"
+#  COMMENT "Copies icon files"
+#)
 
 
 #Compilation

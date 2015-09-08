@@ -1,9 +1,9 @@
-#include <cgl/canvas.h>
+#include <fstream>
+
 #include <cgl/keyboard.h>
 #include <cgl/cube.h>
 
-#include <fstream>
-
+#include <cgl/canvas.h>
 extern CglCanvas *pcv;
 
 void CglKeyboard::keyColor(unsigned char key,int x,int y) {

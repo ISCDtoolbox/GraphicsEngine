@@ -1,8 +1,6 @@
 #include <cgl/canvas.h>
 #include <cgl/window.h>
-
 extern CglCanvas *pcv;
-
 
 CglWindow::CglWindow(): m_id(-1) /*scene(NULL)*/
 {

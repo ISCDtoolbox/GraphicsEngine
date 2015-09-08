@@ -17,6 +17,7 @@
 #include <cgl/window.h>
 #include <cgl/profile.h>
 #include <cgl/shader.h>
+#include <cgl/interface.h>
 
 class CGL_API CglCanvas
 {
@@ -33,9 +34,10 @@ private:
   std::vector<pCglScene>   scene;
   std::vector<CglWindow>   window;
   std::vector<pCglObject>  object;
-  CglMouse    mice;
-  CglKeyboard keyboard;
-  CglShader   simpleShader, smoothShader;
+  CglMouse                 mice;
+  CglKeyboard              keyboard;
+  CglShader                simpleShader, smoothShader;
+  CglInterface             interface;
 
 
 /////////////////////////////////////////////////////
@@ -57,15 +59,17 @@ public:
   void cglSetObject(int ido, int ids);
 
   //Accessors
-  pCglLight  getLight( int lightID);
-  pCglScene  getScene( int sceneID);
-  pCglWindow getWindow(int windowID);
-  pCglScene  getScene();
-  pCglWindow getWindow();
-  int        simpleID();
-  int        smoothID();
-  void       centerMouse();
-  int        winid();
+  pCglLight     getLight( int lightID);
+  pCglScene     getScene( int sceneID);
+  pCglWindow    getWindow(int windowID);
+  pCglScene     getScene();
+  pCglWindow    getWindow();
+  pCglInterface getInterface();
+  pCglMouse     getMouse();
+  int           simpleID();
+  int           smoothID();
+  void          centerMouse();
+  int           winid();
 
   //Glut wrap functions
   static void reshapeWrap(int w, int h);
