@@ -17,51 +17,91 @@
 
 class CGL_API CglScene
 {
-public:
+
+/////////////////////////////////////////////////////
+//Attributes
+
+private:
+
+  //Instances of cgl objects
   std::vector<pCglObject> listObject;
   std::vector<pCglGroup>  listGroup;
   CglTransform            transform;
-  CglAxis                 *axis;
-  CglView                 *view;
+  pCglAxis                axis;
+  pCglView                view;
 
-  float globalScale;
-  glm::vec3 center;
+  //View parameters
+  glm::vec3               m_look, m_cam, m_up, m_right;
+  glm::vec3               m_look_offset;
+  glm::mat4               MODEL, VIEW, PROJ;
+  glm::vec3               center;
+
+  //Properties
+  bool                    selected;
+  float                   globalScale;
+  int                     ids;
+
+
+/////////////////////////////////////////////////////
+//Methods
 
 public:
-  glm::vec3 m_look, m_cam, m_up, m_look_offset;
-  glm::vec3 m_right;
 
-  glm::mat4 MODEL;
-  glm::mat4 VIEW;
-  glm::mat4 PROJ;
-
-public:
-  bool selected;
-  int  ids;
-
+  //Constructors
   CglScene();
   virtual ~CglScene();
-  void display();
+
+  //Accessors and setters for Canvas objects
   void addObject(pCglObject object);
-  void applyTransformation();
-  void saveTransformations();
-  void update_matrices();
-  void debug();
-  int  getPickedObjectID(int x, int y);
-  void reOrderObjects(int picked);
-  void resetAll();
-  void undoLast();
+  std::vector<pCglObject>* getObjectList(){return &listObject;}
+  std::vector<pCglGroup>*  getGroupList(){ return &listGroup;}
+  int                      numObjects(){return listObject.size();}
+  int                      numGroups(){ return listGroup.size();}
+  pCglObject               getObject(int indObject){ return listObject[indObject]; }
+  pCglGroup                getGroup( int indGroup){  return listGroup[indGroup]; }
+  pCglAxis                 getAxis(){return axis;}
+  pCglView                 getView(){return view;}
+  void                     setView(pCglView newView){view = newView;}
+  pCglTransform            getTransform(){return &transform;}
 
-  bool isSelected();
-  void select();
-  void unSelect();
+  //Accessors and setters for camera parameters
+  glm::vec3                getRight(){return m_right;}
+  glm::vec3                getLook(){ return m_look;}
+  glm::vec3                getCam(){ return m_cam;}
+  glm::vec3                getUp(){ return m_up;}
+  void                     setCam(glm::vec3 newCam){m_cam = newCam;}
+  void                     setUp( glm::vec3 newUp){ m_up  = newUp;}
+  void                     toogleFlyingMode();
 
-  void toogleFlyingMode();
+  //Transformations
+  void                     applyTransformation();
+  void                     saveTransformations();
+  void                     update_matrices();
+  void                     undoLast();
+  void                     resetAll();
 
-  glm::vec2 cursorOrigin;
+  //Picking
+  int                      getPickedObjectID(int x, int y);
+  void                     reOrderObjects(int picked);
+
+  //ID and selection
+  int                      getID(){return ids;}
+  void                     setID(int newID){ids = newID;}
+  bool                     isSelected();
+  void                     select();
+  void                     unSelect();
+
+  //Display
+  void                     display();
+  void                     debug();
+
+
+/////////////////////////////////////////////////////
+//Init
 
 protected:
   virtual void cglInit();
+
 };
 
 typedef CglScene* pCglScene;

@@ -18,6 +18,7 @@ class CglGroup
     ~CglGroup();
     void compute();
     bool isSelected();
+    int numObjects(){return listObject.size();}
 
   protected:
   private:

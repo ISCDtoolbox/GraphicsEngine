@@ -13,12 +13,12 @@ CglGroup::CglGroup(std::vector<pCglObject> groupOfObjects)
   bbmax = glm::vec3(-100000);
 
   //Centres du groupe
-  for(int i = 0 ; i < listObject.size() ; i++){
+  for(int i = 0 ; i < numObjects() ; i++){
     pCenters.push_back(listObject[i]->getCenterPtr());
   }
 
   //BBOX
-  for(int i = 0 ; i < listObject.size() ; i++){
+  for(int i = 0 ; i < numObjects() ; i++){
     glm::vec3 mini = listObject[i]->getBBMIN();
     glm::vec3 maxi = listObject[i]->getBBMAX();
     bbmin.x = min(bbmin.x, mini.x);
@@ -39,7 +39,7 @@ void CglGroup::compute(){
 
   //On vérifie si un membre du groupe est sélectionné
   bool match = false;
-  for(int i = 0 ; i < listObject.size() ; i++){
+  for(int i = 0 ; i < numObjects() ; i++){
     if(listObject[i]->isSelected()){
       match = true;
       selected = true;
@@ -50,7 +50,7 @@ void CglGroup::compute(){
 
   //On sélectionne les membres du groupe
   if(selected)
-    for(int i = 0 ; i < listObject.size() ; i++)
+    for(int i = 0 ; i < numObjects() ; i++)
       listObject[i]->select();
 
   //On update éventuellement le centre de rotation des objets
@@ -64,7 +64,7 @@ void CglGroup::compute(){
     group_center = float( 1.0f/pCenters.size() ) * tmpCenter;
 
     //On envoie le centre aux objets
-    for(int i = 0 ; i < listObject.size() ; i++){
+    for(int i = 0 ; i < numObjects() ; i++){
       listObject[i]->setRotationCenter(group_center);
     }
   }

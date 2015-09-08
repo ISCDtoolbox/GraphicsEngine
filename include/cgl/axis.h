@@ -35,4 +35,6 @@ private:
   GLuint backColorBuffer;
 };
 
+typedef CglAxis* pCglAxis;
+
 #endif

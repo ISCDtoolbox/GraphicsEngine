@@ -44,7 +44,7 @@ void CglObject::linkSceneParameters(glm::mat4 *MODEL, glm::mat4 *VIEW, glm::mat4
 void CglObject::pickingDisplay(){
 
   if(!hidden){
-    int shaderID = pcv->simpleShader.mProgramID;
+    int shaderID = pcv->simpleID();
     glUseProgram(shaderID);
     int MatrixID = glGetUniformLocation(shaderID, "MVP");
     int colorID  = glGetUniformLocation(shaderID, "COL");

@@ -111,7 +111,7 @@ void CglAxis::display()
     //std::vector<float>     gradient_heights = {-1, 1};
     //White to blue
     if(pcv->profile.dark_theme){
-      gradient_colors  = {glm::vec3(0), glm::vec3(0.15), glm::vec3(0.65)};
+      gradient_colors  = {glm::vec3(0.1), glm::vec3(0.25), glm::vec3(0.65)};
       gradient_heights = {-1, 0, 1};
     }
     else{
@@ -137,10 +137,10 @@ void CglAxis::display()
   }
 
   //Initialization
-  glUseProgram(pcv->simpleShader.mProgramID);
+  glUseProgram(pcv->simpleID());
   glEnableVertexAttribArray( 0);
-  GLuint MatrixID = glGetUniformLocation(pcv->simpleShader.mProgramID, "MVP");
-  GLuint colorID  = glGetUniformLocation(pcv->simpleShader.mProgramID, "COL");
+  GLuint MatrixID = glGetUniformLocation(pcv->simpleID(), "MVP");
+  GLuint colorID  = glGetUniformLocation(pcv->simpleID(), "COL");
 
 
 
@@ -151,7 +151,7 @@ void CglAxis::display()
     glLineWidth(1.0);
     glBindBuffer(              GL_ARRAY_BUFFER, gridBuffer);
     glVertexAttribPointer(     0, 3, GL_FLOAT, GL_FALSE, 0, ( void*)0);
-    glBindAttribLocation(      pcv->simpleShader.mProgramID, 0, "vertex_position");
+    glBindAttribLocation(      pcv->simpleID(), 0, "vertex_position");
     uniformVec3(colorID, pcv->profile.grid_color);
     glPolygonMode(GL_FRONT, GL_LINE);
     glDrawArrays(GL_LINES, 0, grid.size()/3);
@@ -159,7 +159,7 @@ void CglAxis::display()
 
   //Axes
   if(pcv->profile.displayAxes){
-    pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
+    pCglScene scene = pcv->getScene();;
     //glDisable(GL_DEPTH_TEST);
     glViewport(0,0,150,150);
     glm::mat4 neutralProj = glm::perspective(70.0, view->ratio, view->m_znear, view->m_zfar);
@@ -169,7 +169,7 @@ void CglAxis::display()
     glLineWidth(2.0);
     glBindBuffer(              GL_ARRAY_BUFFER, axesBuffer);
     glVertexAttribPointer(     0, 3, GL_FLOAT, GL_FALSE, 0, ( void*)0);
-    glBindAttribLocation(      pcv->simpleShader.mProgramID, 0, "vertex_position");
+    glBindAttribLocation(      pcv->simpleID(), 0, "vertex_position");
     glPolygonMode(GL_FRONT, GL_LINE);
     //X
     uniformVec3(colorID, glm::vec3(1,0,0));

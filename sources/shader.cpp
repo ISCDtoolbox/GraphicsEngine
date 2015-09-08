@@ -1,20 +1,20 @@
 #include "cgl/shader.h"
 #include <fstream>
 
-#include "simple_shader_frag.h" 
+#include "simple_shader_frag.h"
 #include "simple_shader_vert.h"
 #include "smooth_shader_vert.h"
 #include "smooth_shader_frag.h"
 
 using namespace std;
 
-SHADER::SHADER(){
+CglShader::CglShader(){
   mVertex_file_path   = "";
   mFragment_file_path = "";
   mProgramID          = 0;
 }
 
-void SHADER::load(string TYPE){
+void CglShader::load(string TYPE){
   std::string VertexShaderCode, FragmentShaderCode;
   if(TYPE=="SIMPLE"){
     VertexShaderCode = std::string(simple_vert_code);
@@ -75,7 +75,7 @@ void SHADER::load(string TYPE){
 }
 
 
-void SHADER::load(string vert_path, string frag_path){
+void CglShader::load(string vert_path, string frag_path){
 
   //Teste
   std::string code = std::string(simple_vert_code);

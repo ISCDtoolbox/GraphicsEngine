@@ -50,7 +50,7 @@ int main(int argc, char **argv){
 
 
 
-    cv.window[idw].show();
+    cv.getWindow(idw)->show();
     InitGlew();
 
 
@@ -166,13 +166,13 @@ int main(int argc, char **argv){
 
 
     //Passage des lumières
-    cv.window[idw].cglAddLight(&cv.light[0]);
-    cv.window[idw].cglAddLight(&cv.light[1]);
-    cv.window[idw].cglAddLight(&cv.light[2]);
+    cv.getWindow(idw)->cglAddLight(cv.getLight(0));
+    cv.getWindow(idw)->cglAddLight(cv.getLight(1));
+    cv.getWindow(idw)->cglAddLight(cv.getLight(2));
 
 
 
-    cv.window[idw].show();
+    cv.getWindow(idw)->show();
     InitGlew();
 
     cout << idw << " " << ids << endl;
@@ -187,17 +187,17 @@ int main(int argc, char **argv){
       mesh[i]->setCenter(centers[i]);
       mesh[i]->setMODEL(mats[i]);
       //Création des groupes
-      pCglScene scene = cv.scene[cv.window[cv.winid()].ids];
+      pCglScene scene = cv.getScene(cv.getWindow(cv.winid())->ids);
       set<int> indGroups(groups.begin(), groups.end());
       for (set<int>::iterator i = indGroups.begin(); i != indGroups.end(); i++) {
         std::vector<pCglObject> objectsToGroup;
-        for(int j = 0 ; j < scene->listObject.size() ; j++){
+        for(int j = 0 ; j < scene->numObjects() ; j++){
           if((groups[j]==*i) && (groups[j]!=-1)){
-            objectsToGroup.push_back(scene->listObject[j]);
+            objectsToGroup.push_back(scene->getObject(j));
           }
         }
         if(objectsToGroup.size()>1){
-          scene->listGroup.push_back(new CglGroup(objectsToGroup));
+          scene->getGroupList()->push_back(new CglGroup(objectsToGroup));
         }
       }
       mesh[i]->setFileName(names[i]);
@@ -210,7 +210,7 @@ int main(int argc, char **argv){
     idw = cv.cglWindow(0,0,800,800);
     ids = cv.cglScene();
     cv.cglSetScene(ids, idw);
-    cv.window[idw].show();
+    cv.getWindow(idw)->show();
 
     InitGlew();
 
@@ -225,9 +225,9 @@ int main(int argc, char **argv){
     }
 
     //Passage des lumières
-    cv.window[idw].cglAddLight(&cv.light[0]);
-    cv.window[idw].cglAddLight(&cv.light[1]);
-    cv.window[idw].cglAddLight(&cv.light[2]);
+    cv.getWindow(idw)->cglAddLight(cv.getLight(0));
+    cv.getWindow(idw)->cglAddLight(cv.getLight(1));
+    cv.getWindow(idw)->cglAddLight(cv.getLight(2));
 
     /*
     //Seconde fenetre

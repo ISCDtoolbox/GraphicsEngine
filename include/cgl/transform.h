@@ -30,4 +30,6 @@ public:
   void reset();
 };
 
+typedef CglTransform* pCglTransform;
+
 #endif

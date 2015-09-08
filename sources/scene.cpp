@@ -20,10 +20,10 @@ void CglScene::addObject(pCglObject object)
 {
   //Ajout de l'objet à la scène
   listObject.push_back(object);
-  object->linkSceneParameters(&MODEL, &VIEW, &PROJ, &center, &m_up, &m_cam, listObject.size()+100);
+  object->linkSceneParameters(&MODEL, &VIEW, &PROJ, &center, &m_up, &m_cam, numObjects()+100);
 
   //Création des axes
-  if(listObject.size()==1){
+  if(numObjects()==1){
     axis = new CglAxis();
     axis->linkSceneParameters(&MODEL, &VIEW, &PROJ, &center, &m_up, &m_cam, 0);
     axis->view = view;
@@ -39,7 +39,7 @@ void CglScene::display()
   glEnable(GL_CULL_FACE);
 
   if(pcv->profile.globalScale){
-    for(int i = 0 ; i < listObject.size() ; i++){
+    for(int i = 0 ; i < numObjects() ; i++){
       listObject[i]->setScaleFactor(globalScale);
     }
   }
@@ -50,30 +50,30 @@ void CglScene::display()
   for (int i = 0; i < listGroup.size(); i++)
     listGroup[i]->compute();
 
-  for (int iObj = 0; iObj < listObject.size(); iObj++)
+  for (int iObj = 0; iObj < numObjects(); iObj++)
     listObject[iObj]->applyTransformation();
 
   axis->applyTransformation();
   axis->display();
 
-  for (int iObj = 0; iObj < listObject.size(); iObj++)
+  for (int iObj = 0; iObj < numObjects(); iObj++)
     if(!listObject[iObj]->isHidden())
       listObject[iObj]->shadowsDisplay();
-  for (int iObj = 0; iObj < listObject.size(); iObj++)
+  for (int iObj = 0; iObj < numObjects(); iObj++)
     if(listObject[iObj]->isHidden())
       listObject[iObj]->shadowsDisplay();
 
   //Display de l'ensemble des artefacts
-  for (int iObj = 0; iObj < listObject.size(); iObj++)
+  for (int iObj = 0; iObj < numObjects(); iObj++)
     listObject[iObj]->artifactsDisplay();
 
 
 
   //Display des meshes
-  for (int iObj = 0; iObj < listObject.size(); iObj++)
+  for (int iObj = 0; iObj < numObjects(); iObj++)
     if(!listObject[iObj]->isHidden())
       listObject[iObj]->display();
-  for (int iObj = 0; iObj < listObject.size(); iObj++)
+  for (int iObj = 0; iObj < numObjects(); iObj++)
     if(listObject[iObj]->isHidden())
       listObject[iObj]->display();
 
@@ -87,7 +87,7 @@ int CglScene::getPickedObjectID(int x, int y){
   GLint viewport[4];
   glGetIntegerv(GL_VIEWPORT,viewport);
   glFlush();
-  for(int i = 0 ; i < listObject.size() ; i++)
+  for(int i = 0 ; i < numObjects() ; i++)
     listObject[i]->pickingDisplay();
   glFlush();
   glReadPixels(x,viewport[3]-y,1,1,GL_RGB,GL_UNSIGNED_BYTE,(void *)pixel);
@@ -102,14 +102,13 @@ void CglScene::reOrderObjects(int picked){
 
 void CglScene::toogleFlyingMode(){
   pcv->profile.displayAxes = ((pcv->profile.flyingMode)?1:0);
-  pcv->mice.lastPassivePos = pcv->mice.lastPos = glm::vec2(view->width/2, view->height/2);
+  pcv->centerMouse();
 
   //FROM FLYING TO NORMAL
   if(pcv->profile.flyingMode){
     m_cam *= 1.0f * glm::length(m_cam);
     m_look = -m_cam;
     glutSetCursor(GLUT_CURSOR_RIGHT_ARROW);
-    pcv->mice.lastPos = glm::vec2(view->width/2, view->height/2);
     m_right = glm::normalize(glm::vec3(m_cam.z, 0, -m_cam.x));
     m_up = glm::cross(m_right, m_look);
   }
@@ -208,7 +207,7 @@ void CglScene::undoLast(){
 void CglScene::resetAll(){
   while(transform.lastMatrices.size()>0)
     undoLast();
-  for(int i = 0 ; i < listObject.size() ; i++)
+  for(int i = 0 ; i < numObjects() ; i++)
     listObject[i]->resetAll();
   m_cam = glm::vec3(1,1,1);
   m_up = glm::normalize(glm::vec3(-1, 1., -1));

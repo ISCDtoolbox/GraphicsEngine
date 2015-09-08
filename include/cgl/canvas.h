@@ -15,44 +15,59 @@
 #include <cgl/keyboard.h>
 #include <cgl/scene.h>
 #include <cgl/window.h>
-#include <cgl/transform.h>
 #include <cgl/profile.h>
 #include <cgl/shader.h>
 
 class CGL_API CglCanvas
 {
+
+/////////////////////////////////////////////////////
+//Attributes
+
 public:
+  CglProfile profile;
+
+private:
+
   std::vector<CglLight>    light;
   std::vector<pCglScene>   scene;
   std::vector<CglWindow>   window;
   std::vector<pCglObject>  object;
   CglMouse    mice;
   CglKeyboard keyboard;
-  CglProfile  profile;
-  SHADER        simpleShader, smoothShader;
+  CglShader   simpleShader, smoothShader;
 
-  //private:
-  int winid();
+
+/////////////////////////////////////////////////////
+//Methods
 
 public:
-  // graphic engine constructor + destructor
+
+  //Constructors and destructors
   CglCanvas(){};
   CglCanvas(int argc, char **argv);
   virtual ~CglCanvas(){};
 
+  //Scenes, windows... creation
   int  cglWindow(int x, int y, int w, int h);
   int  cglScene();
+  int  cglObject(pCglObject obj);
+  void cglSetLights();
   void cglSetScene(int ids, int idw);
-  void cglLighting();
-
-  int cglObject(pCglObject obj);
   void cglSetObject(int ido, int ids);
 
-private:
-  virtual void reshape(int w, int h);
-  virtual void display();
+  //Accessors
+  pCglLight  getLight( int lightID);
+  pCglScene  getScene( int sceneID);
+  pCglWindow getWindow(int windowID);
+  pCglScene  getScene();
+  pCglWindow getWindow();
+  int        simpleID();
+  int        smoothID();
+  void       centerMouse();
+  int        winid();
 
-public:
+  //Glut wrap functions
   static void reshapeWrap(int w, int h);
   static void displayWrap();
   static void mouseWrap(int b, int s, int x, int y);
@@ -62,7 +77,17 @@ public:
   static void keyUpWrap(unsigned char key,int x,int y);
   static void specialWrap(int key, int x, int y);
 
+  //Main loop
   void cglMainLoop();
+
+
+/////////////////////////////////////////////////////
+//Private virtual methods, which need an instance of canvas
+
+private:
+  virtual void reshape(int w, int h);
+  virtual void display();
+
 };
 
 

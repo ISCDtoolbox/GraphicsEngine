@@ -3,7 +3,7 @@
 
 #include "defs.h"
 
-class SHADER
+class CglShader
 {
 private:
   std::string mVertex_file_path;
@@ -11,9 +11,11 @@ private:
 
 public:
   GLuint      mProgramID;
-  SHADER();
+  CglShader();
   void load(std::string vert_path, std::string frag_path);
   void load(std::string TYPE);
 };
+
+typedef CglShader* pCglShader;
 
 #endif

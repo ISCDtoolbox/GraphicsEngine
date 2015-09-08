@@ -18,8 +18,8 @@ CglMouse::CglMouse()
 }
 
 glm::vec3 get_arcball_vector(glm::vec2 cursor) {
-  int W = pcv->window[pcv->winid()].view.width;
-  int H = pcv->window[pcv->winid()].view.height;
+  int W = pcv->getWindow()->view.width;
+  int H = pcv->getWindow()->view.height;
   glm::vec3 P = glm::vec3(1.0*cursor.x/W*2 - 1.0,
                           1.0*cursor.y/H*2 - 1.0,
                           0);
@@ -34,7 +34,7 @@ glm::vec3 get_arcball_vector(glm::vec2 cursor) {
 
 void CglMouse::motion(int x, int y)
 {
-  pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
+  pCglScene scene = pcv->getScene();
 
   //GLuint   tm;
   //glm::vec3    v;
@@ -54,45 +54,45 @@ void CglMouse::motion(int x, int y)
         glm::mat4 ROTOBJECT = glm::mat4( glm::angleAxis(0.01f * d.x, glm::vec3(0,1,0))  );
 
         if(pcv->profile.classicalMode)
-          ROT = glm::mat4(  glm::angleAxis(0.01f * d.y, scene->m_right)  *  glm::angleAxis(0.01f * d.x, glm::vec3(0,1,0))  );
+          ROT = glm::mat4(  glm::angleAxis(0.01f * d.y, scene->getRight())  *  glm::angleAxis(0.01f * d.x, glm::vec3(0,1,0))  );
         else if(pcv->profile.accumulatedMode)
-          ROT = glm::mat4( glm::angleAxis(0.01f * d.y, scene->m_right) * glm::angleAxis(0.01f * d.x, scene->m_up) );
+          ROT = glm::mat4( glm::angleAxis(0.01f * d.y, scene->getRight()) * glm::angleAxis(0.01f * d.x, scene->getUp()) );
 
         if (scene->isSelected())
-          scene->transform.setRotation(ROT);
-        for (unsigned int i = 0; i < scene->listObject.size(); i++)
-          if (scene->listObject[i]->isSelected())
-            scene->listObject[i]->transform.setRotation(ROTOBJECT);
+          scene->getTransform()->setRotation(ROT);
+        for (unsigned int i = 0; i < scene->getObjectList()->size(); i++)
+          if (scene->getObject(i)->isSelected())
+            scene->getObject(i)->transform.setRotation(ROTOBJECT);
       }
 
       if(m_button[1]){
         glm::vec3 tr;
-        if(scene->m_cam.y==0)
+        if(scene->getCam().y==0)
           tr = 0.00015f * (
-               d.x * glm::normalize(glm::vec3(scene->m_right.x,0,scene->m_right.z)) +
+               d.x * glm::normalize(glm::vec3(scene->getRight().x,0,scene->getRight().z)) +
                -d.y * glm::vec3(0,1,0)
                );
         else{
           tr = 0.0010f * (
-               d.x * glm::normalize(glm::vec3(scene->m_right.x,0,scene->m_right.z)) +
-               -d.y * glm::normalize(glm::vec3(scene->m_up.x,0,scene->m_up.z))
+               d.x * glm::normalize(glm::vec3(scene->getRight().x,0,scene->getRight().z)) +
+               -d.y * glm::normalize(glm::vec3(scene->getUp().x,0,scene->getUp().z))
                );
         }
 
         //glm::vec3 tr = 0.5f * (dX * glm::vec3(1,0,0) - dY * glm::vec3(0,0,1));
         //glm::vec3 tr = dX * scene->m_right + dY * scene->m_up;
         if (scene->isSelected())
-          scene->transform.setTranslation(tr);
-        for (unsigned int i = 0; i < scene->listObject.size(); i++)
-          if (scene->listObject[i]->isSelected())
-            scene->listObject[i]->transform.setTranslation(tr);
+          scene->getTransform()->setTranslation(tr);
+        for (unsigned int i = 0; i < scene->getObjectList()->size(); i++)
+          if (scene->getObject(i)->isSelected())
+            scene->getObject(i)->transform.setTranslation(tr);
       }
     }
     lastPos = currPos;
 }
 
 void CglMouse::passiveMotion(int x, int y){
-  pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
+  pCglScene scene = pcv->getScene();
   glm::vec2 currPassivePos(x,y);
   if (currPassivePos != lastPassivePos) {
     glm::vec3 va = get_arcball_vector(lastPassivePos);
@@ -102,15 +102,15 @@ void CglMouse::passiveMotion(int x, int y){
     lastPassivePos = currPassivePos;
 
     if(pcv->profile.flyingMode){
-      glutWarpPointer(scene->view->width/2, scene->view->height/2);
-      glm::mat4 LOOKROT = glm::mat4( glm::angleAxis(-2.0f * d.y, scene->m_right) * glm::angleAxis(2.0f * d.x, glm::vec3(0,1,0))  );
+      glutWarpPointer(scene->getView()->width/2, scene->getView()->height/2);
+      glm::mat4 LOOKROT = glm::mat4( glm::angleAxis(-2.0f * d.y, scene->getRight()) * glm::angleAxis(2.0f * d.x, glm::vec3(0,1,0))  );
       if (scene->isSelected()){
-        scene->transform.setRotation(LOOKROT);
+        scene->getTransform()->setRotation(LOOKROT);
       }
     }
     else{
-      for (unsigned int i = 0; i < scene->listObject.size(); i++){
-        CglObject *obj = scene->listObject[i];
+      for (unsigned int i = 0; i < scene->getObjectList()->size(); i++){
+        pCglObject obj = scene->getObject(i);
         if (obj->isSelected()){
           if(obj->isConstrainedInRotation())
             obj->setConstrainedRotation(5.0f * d.y);
@@ -128,12 +128,12 @@ void CglMouse::passiveMotion(int x, int y){
 
 
 void save(bool cond){
-  pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
+  pCglScene scene = pcv->getScene();
   if(cond){
     if (scene->isSelected())
       scene->saveTransformations();
-    for (unsigned int i = 0; i < scene->listObject.size(); i++){
-      CglObject *obj = scene->listObject[i];
+    for (unsigned int i = 0; i < scene->getObjectList()->size(); i++){
+      CglObject *obj = scene->getObject(i);
       if (obj->isSelected()){
         //if((!obj->isConstrainedInRotation()) && (!obj->isConstrainedInTranslation()))
           obj->saveTransformations();
@@ -144,7 +144,7 @@ void save(bool cond){
 
 void CglMouse::mouse(int b, int s, int x, int y)
 {
-  pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
+  pCglScene scene = pcv->getScene();
 
   //GLint  key;
   //m_tm = glutGet(GLUT_ELAPSED_TIME);
@@ -155,8 +155,8 @@ void CglMouse::mouse(int b, int s, int x, int y)
   isReleased = (s == GLUT_UP  );
 
   if(isReleased){
-    for (unsigned int i = 0; i < scene->listObject.size(); i++){
-      CglObject *obj = scene->listObject[i];
+    for (unsigned int i = 0; i < scene->getObjectList()->size(); i++){
+      CglObject *obj = scene->getObject(i);
       if ( (obj->isConstrainedInRotation()) || ((obj->isConstrainedInTranslation())) )
         obj->unConstrain();
     }
@@ -181,14 +181,13 @@ void CglMouse::mouse(int b, int s, int x, int y)
       bool  ctrl = ((glutGetModifiers() && GLUT_ACTIVE_CTRL) ? 1:0);
 
       if((s==GLUT_UP) && (!pcv->profile.flyingMode)){
-        pCglScene scene = pcv->scene[pcv->window[pcv->winid()].ids];
         int pickedID = scene->getPickedObjectID(x, y);
         bool match = false;
         int  IndPicked = -1;
 
         //On récupère l'indice de l'objet pické
-        for(int i = 0 ; i < scene->listObject.size() ; i++){
-          if (scene->listObject[i]->isPicked(pickedID)){
+        for(int i = 0 ; i < scene->getObjectList()->size() ; i++){
+          if (scene->getObject(i)->isPicked(pickedID)){
             match = true;
             IndPicked = i;
           }
@@ -196,25 +195,25 @@ void CglMouse::mouse(int b, int s, int x, int y)
         //Si on ne picke pas, on déselectionne tout et on sélectionne la scène
         if(!match){
           scene->select();
-          for(int i = 0 ; i < scene->listObject.size() ; i++)
-            scene->listObject[i]->unSelect();
+          for(int i = 0 ; i < scene->getObjectList()->size() ; i++)
+            scene->getObject(i)->unSelect();
         }
 
         if(match){
            //On change l'état de sélection de l'objet pické
-          scene->listObject[IndPicked]->toogleSelected();
+          scene->getObject(IndPicked)->toogleSelected();
 
           if(!ctrl){
             //On déselectionne tous les autres objets
-            for(int i = 0 ; i < scene->listObject.size() ; i++)
+            for(int i = 0 ; i < scene->getObjectList()->size() ; i++)
               if(i!=IndPicked)
-                scene->listObject[i]->unSelect();
+                scene->getObject(i)->unSelect();
           }
 
           //Si un selectionné, deselectionne la scène
           bool someSelected = false;
-          for(int i = 0 ; i < scene->listObject.size() ; i++)
-            if(scene->listObject[i]->isSelected())
+          for(int i = 0 ; i < scene->getObjectList()->size() ; i++)
+            if(scene->getObject(i)->isSelected())
               someSelected = true;
           if(someSelected)
             scene->unSelect();
@@ -222,7 +221,7 @@ void CglMouse::mouse(int b, int s, int x, int y)
             scene->select();
 
           //On met le dernier objet pické au dessus de tous les autres si il est sélectionné
-          if(scene->listObject[IndPicked]->isSelected())
+          if(scene->getObject(IndPicked)->isSelected())
             scene->reOrderObjects(IndPicked);
         }//End match
       }//End GLUT_UP
