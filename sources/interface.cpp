@@ -49,13 +49,17 @@ void CglButton::display(){
 void CglInterface::init(int nb){
   isMouseOnPanel = false;
   float space = 2.0 / (nb + 1) ;
-  string path_to_icons = "/home/loic/Téléchargements/android_l_icons_free/PNG/48/";
-  std::vector<string> icons = {"Programming/save-48.png"};
+
+  std::vector<string> icons =  {"icon-exit.png",
+                                "icon-info.png",
+                                "icon-blank.png",
+                                "icon-OK.png",
+                                "icon-parameters.png"};
   for(int i = 0 ; i < nb ; i++){
     pCglButton b = new CglButton(glm::vec2(0.15,0.15),
                                 glm::vec2(0.8, (i+1) * space - 1),
                                 glm::vec3(1,1,1),
-                                "/home/loic/icon3.png");
+                                pcv->profile.path + "icons/" + icons[i]);
     buttons.push_back(b);
   }
 }

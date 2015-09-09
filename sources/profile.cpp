@@ -1,7 +1,11 @@
 #include "cgl/profile.h"
+#include "ext.h"
 
 CglProfile::CglProfile()
 {
+  //Reading from cmakefile
+  path              = EXT_PATH;
+
   displayAxes       = true;
   displayAxesLabels = false;
   displayBackgroundGradient = true;

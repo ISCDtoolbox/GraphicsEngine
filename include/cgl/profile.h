@@ -7,13 +7,14 @@
 class CglProfile
 {
   public:
-    //Constructor from config file
     CglProfile();
     ~CglProfile();
     glm::vec3 color();
     void update_theme();
 
   public:
+
+    std::string path;
     CglColorGenerator colorGenerator;
 
     bool  displayShadows;

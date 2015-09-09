@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 2.8)
 project(SUscCGL )
 set(CMAKE_BUILD_TYPE "Release")
 
+
+set(CMAKE_SOURCE_DIRECTORY ${CMAKE_SOURCE_DIR})
+configure_file("${CMAKE_SOURCE_DIR}/include/ext.h.in" "${CMAKE_SOURCE_DIR}/include/ext.h")
+
 #Include de GLM
 include(ExternalProject)
 ExternalProject_Add(
@@ -17,17 +21,17 @@ ExternalProject_Add(
 
 #Flags and libraries
 set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -Wno-deprecated -O0")
-
 find_package(PNG REQUIRED)
 find_package(GLUT)
 find_package(OpenGL)
 find_package(X11)
 find_package(GLEW)
-
 set(CORELIBS ${GLEW_LIBRARY} ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES} ${PNG_LIBRARY})
+
 #Include files
 include_directories("include/" "library/libmesh/" ${PNG_INCLUDE_DIR} "${CMAKE_CURRENT_BINARY_DIR}/library/glm/src/glm")
 file(GLOB_RECURSE source_files sources/* include/cgl/* include/*)
+
 #Link
 add_library(SUscCGL SHARED ${source_files})
 add_dependencies(SUscCGL glm)
