@@ -21,12 +21,13 @@ ExternalProject_Add(
 
 #Flags and libraries
 set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -Wno-deprecated -O0")
-find_package(PNG REQUIRED)
 find_package(GLUT)
 find_package(OpenGL)
 find_package(X11)
 find_package(GLEW)
-set(CORELIBS ${GLEW_LIBRARY} ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES} ${PNG_LIBRARY})
+
+
+set(CORELIBS ${GLEW_LIBRARY} ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES} )
 
 #Include files
 include_directories("include/" "library/libmesh/" ${PNG_INCLUDE_DIR} "${CMAKE_CURRENT_BINARY_DIR}/library/glm/src/glm")

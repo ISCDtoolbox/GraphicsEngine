@@ -1,5 +1,6 @@
 #include "cgl/texture.h"
-#include "png.h"
+#include "cgl/lodepng.h"
+
 using namespace std;
 
 void CglTexture::loadBMP(string filename)
@@ -50,6 +51,25 @@ void CglTexture::loadBMP(string filename)
 }
 
 
+void CglTexture::loadPNG(string filename){
+  // Load file and decode image.
+  std::vector<unsigned char> image;
+  unsigned error = lodepng::decode(image, width, height, filename.c_str());
+  if(error != 0){
+    std::cout << "error " << error << ": " << lodepng_error_text(error) << std::endl; exit(1);
+  }
+
+  // Enable the texture for OpenGL.
+  glEnable(GL_TEXTURE_2D);
+  glGenTextures(1, &ID);
+  glBindTexture(GL_TEXTURE_2D, ID);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); //GL_NEAREST = no smoothing
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &image[0]);
+}
+
+
+/*
 void CglTexture::loadPNG(string filename)
 {
     // This function was originally written by David Grayson for
@@ -204,4 +224,4 @@ void CglTexture::loadPNG(string filename)
     free(image_data);
     free(row_pointers);
     fclose(fp);
-}
+}*/

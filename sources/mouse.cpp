@@ -267,6 +267,9 @@ void CglMouse::checkButtons(int b, int s, int x, int y){
           for (unsigned int i = 0; i < pcv->getScene()->numObjects() ; i++)
             pcv->getScene()->getObject(i)->toogleMesh();
         }
+        if( i == 4 ){
+          exit(1);
+        }
       }
     }
   }

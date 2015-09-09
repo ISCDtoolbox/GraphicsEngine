@@ -6,8 +6,8 @@
 class CglTexture
 {
   private:
-    int     width, height;
-    GLuint  ID;
+    unsigned width, height;
+    GLuint   ID;
   public:
     CglTexture(){};
     ~CglTexture(){};

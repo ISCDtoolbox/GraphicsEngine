@@ -29,10 +29,10 @@ void CglButton::display(){
 
   glBegin(GL_QUAD_STRIP);
     glColor3f(color.x, color.y, color.z);
-    glTexCoord2f(0.0, 0.0);   glVertex3f(center.x - size.x/2, center.y - size.y/2, z);
-    glTexCoord2f(1.0, 0.0);   glVertex3f(center.x + size.x/2, center.y - size.y/2, z);
-    glTexCoord2f(0.0, 1.0);   glVertex3f(center.x - size.x/2, center.y + size.y/2, z);
-    glTexCoord2f(1.0, 1.0);   glVertex3f(center.x + size.x/2, center.y + size.y/2, z);
+    glTexCoord2f(0.0, 1.0);   glVertex3f(center.x - size.x/2, center.y - size.y/2, z);
+    glTexCoord2f(1.0, 1.0);   glVertex3f(center.x + size.x/2, center.y - size.y/2, z);
+    glTexCoord2f(0.0, 0.0);   glVertex3f(center.x - size.x/2, center.y + size.y/2, z);
+    glTexCoord2f(1.0, 0.0);   glVertex3f(center.x + size.x/2, center.y + size.y/2, z);
   glEnd();
 
   glDisable(GL_BLEND);
