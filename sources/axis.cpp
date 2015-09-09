@@ -161,8 +161,8 @@ void CglAxis::display()
   if(pcv->profile.displayAxes){
     pCglScene scene = pcv->getScene();;
     //glDisable(GL_DEPTH_TEST);
-    glViewport(0,0,150,150);
-    glm::mat4 neutralProj = glm::perspective(70.0, view->ratio, view->m_znear, view->m_zfar);
+    glViewport(0,0,view->width/6,view->width/6);
+    glm::mat4 neutralProj = glm::perspective(70.0, 1.0, view->m_znear, view->m_zfar);
     glm::mat4 MVP = glm::scale(neutralProj * *pVIEW * MODEL, glm::vec3(view->zoom));
 
     glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &MVP[0][0]);

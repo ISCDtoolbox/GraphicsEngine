@@ -540,7 +540,7 @@ void CglMesh::display()
     if(isSelected())
       uniformVec3(colorID, selection_color);
     else
-      uniformVec3(colorID, edge_color);
+      uniformVec3(colorID, glm::vec3(0));
 
     glDisable(GL_POLYGON_OFFSET_FILL);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

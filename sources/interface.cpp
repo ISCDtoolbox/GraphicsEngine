@@ -7,12 +7,12 @@ extern CglCanvas *pcv;
 //Button class
 
 //Constructor
-CglButton::CglButton(glm::vec2 s, glm::vec2 c, glm::vec3 col, string texturePath){
+CglButton::CglButton(float s, glm::vec2 c, glm::vec3 col, string texturePath){
   size    = s;
   center  = c;
   color   = col;
-  mins    = glm::vec2(c.x - s.x/2, c.y - s.y/2);
-  maxs    = glm::vec2(c.x + s.x/2, c.y + s.y/2);
+  mins    = glm::vec2(c.x - s/2, c.y - s/2);
+  maxs    = glm::vec2(c.x + s/2, c.y + s/2);
   //texture.loadBMP(texturePath);
   texture.loadPNG(texturePath);
 }
@@ -26,13 +26,14 @@ void CglButton::display(){
   glBindTexture(GL_TEXTURE_2D, texture.getID());
 
   float z = 1;
+  float ratio = pcv->getScene()->getView()->ratio;
 
   glBegin(GL_QUAD_STRIP);
     glColor3f(color.x, color.y, color.z);
-    glTexCoord2f(0.0, 1.0);   glVertex3f(center.x - size.x/2, center.y - size.y/2, z);
-    glTexCoord2f(1.0, 1.0);   glVertex3f(center.x + size.x/2, center.y - size.y/2, z);
-    glTexCoord2f(0.0, 0.0);   glVertex3f(center.x - size.x/2, center.y + size.y/2, z);
-    glTexCoord2f(1.0, 0.0);   glVertex3f(center.x + size.x/2, center.y + size.y/2, z);
+    glTexCoord2f(0.0, 1.0);   glVertex3f(center.x - (size/2)/ratio, center.y - size/2, z);
+    glTexCoord2f(1.0, 1.0);   glVertex3f(center.x + (size/2)/ratio, center.y - size/2, z);
+    glTexCoord2f(0.0, 0.0);   glVertex3f(center.x - (size/2)/ratio, center.y + size/2, z);
+    glTexCoord2f(1.0, 0.0);   glVertex3f(center.x + (size/2)/ratio, center.y + size/2, z);
   glEnd();
 
   glDisable(GL_BLEND);
@@ -56,7 +57,7 @@ void CglInterface::init(int nb){
                                 "icon-OK.png",
                                 "icon-parameters.png"};
   for(int i = 0 ; i < nb ; i++){
-    pCglButton b = new CglButton(glm::vec2(0.15,0.15),
+    pCglButton b = new CglButton(0.15,
                                 glm::vec2(0.8, (i+1) * space - 1),
                                 glm::vec3(1,1,1),
                                 pcv->profile.path + "icons/" + icons[i]);
@@ -67,7 +68,7 @@ void CglInterface::init(int nb){
 //Display
 void CglInterface::display(){
   glm::vec2 pos = pcv->getMouse()->getCursorPosition();
-  int panelBorder = 650;
+  int panelBorder = (1 + 0.8 - (1-0.8)) * pcv->getScene()->getView()->width/2;
   if (pos.x > panelBorder){
     for(int i = 0 ; i < buttons.size() ; i++){
       buttons[i]->display();

@@ -10,12 +10,13 @@
 class CglButton{
   private:
     CglTexture texture;
-    glm::vec2  size, center;
+    float      size;
+    glm::vec2  center;
     glm::vec3  color;
     glm::vec2  mins, maxs;
 
   public:
-    CglButton(glm::vec2 s, glm::vec2 c, glm::vec3 col, string texturePath);
+    CglButton(float s, glm::vec2 c, glm::vec3 col, string texturePath);
     ~CglButton(){};
     void display();
     glm::vec2 getMins(){return mins;}
@@ -30,7 +31,6 @@ typedef CglButton* pCglButton;
 
 class CglInterface{
   private:
-    //pCglMouse             mouse;
     std::vector<pCglButton> buttons;
     bool                    isMouseOnPanel;
   public:
