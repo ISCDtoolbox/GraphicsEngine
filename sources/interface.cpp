@@ -13,11 +13,13 @@ CglButton::CglButton(glm::vec2 s, glm::vec2 c, glm::vec3 col, string texturePath
   color   = col;
   mins    = glm::vec2(c.x - s.x/2, c.y - s.y/2);
   maxs    = glm::vec2(c.x + s.x/2, c.y + s.y/2);
-  texture.load(texturePath);
+  //texture.loadBMP(texturePath);
+  texture.loadPNG(texturePath);
 }
 
 //Display
 void CglButton::display(){
+  glEnable(GL_BLEND);
   glDisable(GL_DEPTH_TEST);
   glUseProgram(0);
   glEnable(GL_TEXTURE_2D);
@@ -33,6 +35,7 @@ void CglButton::display(){
     glTexCoord2f(1.0, 1.0);   glVertex3f(center.x + size.x/2, center.y + size.y/2, z);
   glEnd();
 
+  glDisable(GL_BLEND);
   glDisable(GL_TEXTURE_2D);
   glEnable(GL_DEPTH_TEST);
 }
@@ -40,16 +43,19 @@ void CglButton::display(){
 
 ////////////////////////////////////////////////////////////////
 //Interface class
+//<a href="https://icons8.com/color-icons">Flat color icons by Icons8</a>
 
 //Constructor
 void CglInterface::init(int nb){
   isMouseOnPanel = false;
   float space = 2.0 / (nb + 1) ;
+  string path_to_icons = "/home/loic/Téléchargements/android_l_icons_free/PNG/48/";
+  std::vector<string> icons = {"Programming/save-48.png"};
   for(int i = 0 ; i < nb ; i++){
     pCglButton b = new CglButton(glm::vec2(0.15,0.15),
                                 glm::vec2(0.8, (i+1) * space - 1),
                                 glm::vec3(1,1,1),
-                                "/home/loic/icon1.bmp");
+                                "/home/loic/icon3.png");
     buttons.push_back(b);
   }
 }

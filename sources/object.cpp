@@ -13,7 +13,6 @@ CglObject::CglObject():transform()
   selected = false;
   box      = false;
   line     = false;
-  smooth   = true;
   hidden   = false;
   isMesh   = false;
 
@@ -111,7 +110,6 @@ glm::vec3* CglObject::getCenterPtr(){return &center;}
 //Toogle render modes
 void CglObject::toogleBBox()   {box        = !box;}
 void CglObject::toogleMesh()   {line       = !line;}
-void CglObject::toogleSmooth() {smooth     = !smooth;}
 
 //Selection accessors
 bool CglObject::isPicked(int ID){return objectID == ID;}

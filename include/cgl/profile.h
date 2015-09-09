@@ -22,6 +22,7 @@ class CglProfile
     bool  displayAxesLabels;
     bool  displayReflection;
     bool  displayBackgroundGradient;
+    bool  smooth;
 
     bool  perspective;
 

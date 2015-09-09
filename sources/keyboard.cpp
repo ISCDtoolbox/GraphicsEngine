@@ -117,13 +117,6 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
       scene->getObject(i)->toogleMesh();
   }
 
-  //Smooth to flat shading
-  //if (key == 'f'){
-  //  for (unsigned int i = 0; i < scene->numObjects(); i++)
-  //    if( scene->listObject[i]->isSelected())
-  //      scene->listObject[i]->toogleSmooth();
-  //}
-
   //Reset Transformations
   if (key == 'e'){
     if(scene->isSelected()){

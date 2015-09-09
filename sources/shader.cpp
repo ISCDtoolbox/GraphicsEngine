@@ -5,6 +5,8 @@
 #include "simple_shader_vert.h"
 #include "smooth_shader_vert.h"
 #include "smooth_shader_frag.h"
+#include "flat_shader_vert.h"
+#include "flat_shader_frag.h"
 
 using namespace std;
 
@@ -23,6 +25,10 @@ void CglShader::load(string TYPE){
   else if(TYPE=="SMOOTH"){
     VertexShaderCode = std::string(smooth_vert_code);
     FragmentShaderCode = std::string(smooth_frag_code);
+  }
+  else if(TYPE=="FLAT"){
+    VertexShaderCode = std::string(flat_vert_code);
+    FragmentShaderCode = std::string(flat_frag_code);
   }
 
   // Crée les shaders

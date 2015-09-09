@@ -11,10 +11,9 @@ class CglTexture
   public:
     CglTexture(){};
     ~CglTexture(){};
-    void    load(string filename);
+    void    loadBMP(string filename);
+    void    loadPNG(string filename);
     GLuint  getID(){return ID;}
-  protected:
-  private:
 };
 
 #endif // CGLTEXTURE_H

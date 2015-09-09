@@ -36,7 +36,7 @@ private:
   std::vector<pCglObject>  object;
   CglMouse                 mice;
   CglKeyboard              keyboard;
-  CglShader                simpleShader, smoothShader;
+  CglShader                simpleShader, smoothShader, flatShader;
   CglInterface             interface;
 
 
@@ -68,6 +68,7 @@ public:
   pCglMouse     getMouse();
   int           simpleID();
   int           smoothID();
+  int           flatID();
   void          centerMouse();
   int           winid();
 

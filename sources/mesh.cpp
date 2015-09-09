@@ -300,7 +300,7 @@ void CglMesh::shadowsDisplay(){
     //glEnable(GL_BLEND);
     glEnableVertexAttribArray( 0);
     glEnableVertexAttribArray( 1);
-    int shaderID = pcv->smoothID();
+    int shaderID = ((pcv->profile.smooth)?pcv->smoothID():pcv->flatID());
     glUseProgram(shaderID);
     int MatrixID = glGetUniformLocation(shaderID, "MVP");
     int colorID  = glGetUniformLocation(shaderID, "COL");
@@ -445,7 +445,7 @@ void CglMesh::artifactsDisplay(){
       glBindBuffer(GL_ARRAY_BUFFER, axeBuffer);
       glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), &pts[0][0], GL_STATIC_DRAW);
       glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, ( void*)0);
-      glBindAttribLocation(pcv->simpleID(), 0, "vertex_position");
+      glBindAttribLocation(shaderID, 0, "vertex_position");
       MVP = *pPROJ * *pVIEW * *pMODEL;
       glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &MVP[0][0]);
       if(isConstrainedInRotation())
@@ -477,7 +477,7 @@ void CglMesh::display()
 
   //Initialization
   glm::mat4 MVP = *pPROJ * *pVIEW * *pMODEL * glm::scale(MODEL, glm::vec3(scaleFactor));
-  int shaderID = ((smooth)? pcv->smoothID() : pcv->simpleID());
+  int shaderID = ((pcv->profile.smooth)? pcv->smoothID() : pcv->flatID());
   glUseProgram(shaderID);
   int MatrixID = glGetUniformLocation(shaderID, "MVP");
   glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &MVP[0][0]);
@@ -510,7 +510,7 @@ void CglMesh::display()
   pCglScene scene = pcv->getScene();
   glm::vec3 selection_color = ((idGroup==-1)?pcv->profile.sele_color:scene->getGroup(idGroup)->group_color);
 
-  if(smooth){
+  //if(pcv->profile.smooth){
     GLuint MID      = glGetUniformLocation(shaderID, "M");
     GLuint VID      = glGetUniformLocation(shaderID, "V");
     glUniformMatrix4fv( MID, 1, GL_FALSE, &MODEL[0][0]);
@@ -526,13 +526,13 @@ void CglMesh::display()
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1.0,1.0);
     glDrawElements(GL_TRIANGLES, 3 * tria.size(), GL_UNSIGNED_INT, (void*)0);
-  }
+  //}
 
-  else{
-    uniformVec3(colorID, face_color);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDrawElements(GL_TRIANGLES, 3 * tria.size(), GL_UNSIGNED_INT, (void*)0);
-  }
+  //else{
+  //  uniformVec3(colorID, face_color);
+  //  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  //  glDrawElements(GL_TRIANGLES, 3 * tria.size(), GL_UNSIGNED_INT, (void*)0);
+  //}
 
   if(line){
     glDisable(GL_POLYGON_OFFSET_FILL);

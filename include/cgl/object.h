@@ -46,7 +46,7 @@ class CGL_API CglObject
     bool selected;
     bool box;
     bool line;
-    bool smooth;
+
     bool hidden;
     //Constrained movements
     bool      isRotationConstrained,   isTranslationConstrained;
@@ -101,7 +101,6 @@ class CGL_API CglObject
     //render modes
     void  toogleBBox();
     void  toogleMesh();
-    void  toogleSmooth();
     //Constrained movements
     bool  isConstrainedInRotation();
     bool  isConstrainedInTranslation();

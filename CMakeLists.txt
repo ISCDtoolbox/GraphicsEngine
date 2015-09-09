@@ -17,13 +17,16 @@ ExternalProject_Add(
 
 #Flags and libraries
 set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -Wno-deprecated -O0")
+
+find_package(PNG REQUIRED)
 find_package(GLUT)
 find_package(OpenGL)
 find_package(X11)
 find_package(GLEW)
-set(CORELIBS ${GLEW_LIBRARY} ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES})
+
+set(CORELIBS ${GLEW_LIBRARY} ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES} ${PNG_LIBRARY})
 #Include files
-include_directories("include/" "library/libmesh/" "${CMAKE_CURRENT_BINARY_DIR}/library/glm/src/glm")
+include_directories("include/" "library/libmesh/" ${PNG_INCLUDE_DIR} "${CMAKE_CURRENT_BINARY_DIR}/library/glm/src/glm")
 file(GLOB_RECURSE source_files sources/* include/cgl/* include/*)
 #Link
 add_library(SUscCGL SHARED ${source_files})
@@ -51,10 +54,12 @@ target_link_libraries(SUcgl SUscCGL)
 
 add_custom_target(
   HEADERFILES
-  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" simple_frag_code "../shaders/shader.frag" simple_shader_frag.h
-  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" simple_vert_code "../shaders/shader.vert" simple_shader_vert.h
+  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" simple_frag_code "../shaders/shader.frag"        simple_shader_frag.h
+  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" simple_vert_code "../shaders/shader.vert"        simple_shader_vert.h
   COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" smooth_frag_code "../shaders/smooth_shader.frag" smooth_shader_frag.h
   COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" smooth_vert_code "../shaders/smooth_shader.vert" smooth_shader_vert.h
+  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" flat_frag_code   "../shaders/flat_shader.frag"   flat_shader_frag.h
+  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" flat_vert_code   "../shaders/flat_shader.vert"   flat_shader_vert.h
   DEPENDS embedfile
   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/include"
   COMMENT "Creates header files"

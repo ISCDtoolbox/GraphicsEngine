@@ -37,6 +37,7 @@ void CglScene::display()
 {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_CULL_FACE);
+  glEnable( GL_MULTISAMPLE );
 
   if(pcv->profile.globalScale){
     for(int i = 0 ; i < numObjects() ; i++){

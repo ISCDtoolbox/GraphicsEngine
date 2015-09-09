@@ -8,6 +8,7 @@ CglProfile::CglProfile()
 
   displayShadows    = true;
   displayBottomGrid = false;//true;
+  smooth            = false;
 
   displayReflection = true;
 

@@ -10,9 +10,9 @@ CglCanvas::CglCanvas(int argc, char **argv){
   glutInit(&argc, argv);
 
   if(pcv->profile.stereo)
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STEREO);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STEREO | GLUT_MULTISAMPLE);
   else
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 
   cglSetLights();
   profile = CglProfile();
@@ -67,6 +67,7 @@ pCglInterface CglCanvas::getInterface(){ return &interface;}
 pCglMouse     CglCanvas::getMouse(){     return &mice;}
 int           CglCanvas::simpleID(){     return simpleShader.mProgramID;}
 int           CglCanvas::smoothID(){     return smoothShader.mProgramID;}
+int           CglCanvas::flatID(){       return flatShader.mProgramID;}
 
 void       CglCanvas::centerMouse(){
   mice.lastPassivePos = mice.lastPos = glm::vec2(pcv->getScene()->getView()->width/2, pcv->getScene()->getView()->height/2);
@@ -140,6 +141,7 @@ void CglCanvas::specialWrap(int key, int x, int y){
 void CglCanvas::cglMainLoop(){
   simpleShader.load("SIMPLE");
   smoothShader.load("SMOOTH");
+  flatShader.load("FLAT");
   interface.init(5);
   mice.setGUI();
   glutMainLoop();

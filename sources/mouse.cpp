@@ -260,6 +260,13 @@ void CglMouse::checkButtons(int b, int s, int x, int y){
         if(i == 1){
           pcv->profile.displayBottomGrid = !pcv->profile.displayBottomGrid;
         }
+        if(i==2){
+          pcv->profile.smooth = !pcv->profile.smooth;
+        }
+        if( i == 3 ){
+          for (unsigned int i = 0; i < pcv->getScene()->numObjects() ; i++)
+            pcv->getScene()->getObject(i)->toogleMesh();
+        }
       }
     }
   }
