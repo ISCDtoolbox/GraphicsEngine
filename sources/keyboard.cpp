@@ -278,6 +278,7 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
     pcv->profile.update_theme();
   }
 
+
   lastKey = key;
 
 }

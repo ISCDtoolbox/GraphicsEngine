@@ -35,7 +35,7 @@ public:
   int cglAddLight(pCglLight li);
 
   void reshape(int w, int h);
-
+  pCglView getView(){return &view;}
 	void show();
 	void display();
 	void resize(int w, int h);

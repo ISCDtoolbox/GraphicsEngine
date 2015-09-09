@@ -251,6 +251,10 @@ void CglMouse::checkButtons(int b, int s, int x, int y){
       glm::vec2 bX = glm::vec2( width/2 * minis.x + width/2, width/2 * maxis.x + width/2 );
       glm::vec2 bY = glm::vec2( height/2 * minis.y + height/2, height/2 * maxis.y + height/2 );
 
+      if(i == 0){
+        cout << bX.x << "/" << bX.y << " \t " << bY.x << "/" << bY.y << endl;
+      }
+
       if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
         cout << "button " << i << " pressed!" << endl;
         if(i == 0){

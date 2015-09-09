@@ -63,7 +63,9 @@ pCglScene     CglCanvas::getScene( int sceneID){  return scene[sceneID]; }
 pCglWindow    CglCanvas::getWindow(int windowID){ return &(window[windowID]);}
 pCglScene     CglCanvas::getScene(){     return scene[window[winid()].ids]; }
 pCglWindow    CglCanvas::getWindow(){    return &(window[winid()]);}
+
 pCglInterface CglCanvas::getInterface(){ return &interface;}
+
 pCglMouse     CglCanvas::getMouse(){     return &mice;}
 int           CglCanvas::simpleID(){     return simpleShader.mProgramID;}
 int           CglCanvas::smoothID(){     return smoothShader.mProgramID;}
@@ -142,7 +144,8 @@ void CglCanvas::cglMainLoop(){
   simpleShader.load("SIMPLE");
   smoothShader.load("SMOOTH");
   flatShader.load("FLAT");
-  interface.init(5);
+  //interface.init(5, 0.8);
+  interface.init(glm::vec2(0,0), 5, 0.25);
   mice.setGUI();
   glutMainLoop();
 }

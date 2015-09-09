@@ -37,7 +37,7 @@ private:
   CglMouse                 mice;
   CglKeyboard              keyboard;
   CglShader                simpleShader, smoothShader, flatShader;
-  CglInterface             interface;
+  CglRadialInterface       interface;
 
 
 /////////////////////////////////////////////////////

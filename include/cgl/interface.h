@@ -11,9 +11,11 @@ class CglButton{
   private:
     CglTexture texture;
     float      size;
-    glm::vec2  center;
     glm::vec3  color;
     glm::vec2  mins, maxs;
+
+  public:
+    glm::vec2  center;
 
   public:
     CglButton(float s, glm::vec2 c, glm::vec3 col, string texturePath);
@@ -30,17 +32,38 @@ typedef CglButton* pCglButton;
 //Interface class
 
 class CglInterface{
-  private:
+  protected:
     std::vector<pCglButton> buttons;
     bool                    isMouseOnPanel;
   public:
     CglInterface(){};
     ~CglInterface(){};
-    void init(int nb);
-    void display();
+    virtual void init(){};
+    virtual void display(){};
     std::vector<pCglButton>* getButtonList(){return &buttons;}
 };
 typedef CglInterface* pCglInterface;
+
+
+class CglLinearInterface: public CglInterface{
+  protected:
+    float offset;
+  public:
+    void init(int nb, float off);
+    void display();
+};
+typedef CglLinearInterface* pCglLinearInterface;
+
+
+class CglRadialInterface: public CglInterface{
+  protected:
+    float     radius;
+    glm::vec2 center;
+  public:
+    void init(glm::vec2 cen, int nb, float rad);
+    void display();
+};
+typedef CglRadialInterface* pCglRadialInterface;
 
 
 #endif // CGLINTERFACE_H
