@@ -59,37 +59,30 @@ void CglWindow::show()
   //view.setView();
 }
 
+void CglWindow::displayBuffer(int buffer){
+  pCglScene scene = pcv->getScene(ids);
+  glm::vec3 col   = pcv->profile.back_color;
+
+  float offset = ( (pcv->profile.stereo) ? scene->getView()->m_eyesep / 2 : 0.0f );
+  int stereo = ( (buffer == GL_BACK_LEFT) ? -1 : 1 );
+
+  glDrawBuffer(buffer);
+  glClearColor(col.x, col.y, col.z, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  scene->getView()->camOffset = stereo * offset;
+  scene->display();
+}
 
 void CglWindow::display()
 {
-  pCglScene scene = pcv->getScene(ids);
-  glm::vec3 col = pcv->profile.back_color;
-
   //STEREO
   if(pcv->profile.stereo){
-    //LEFT
-    glDrawBuffer(GL_BACK_LEFT);
-    glClearColor(col.x, col.y, col.z, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene->getView()->camOffset = scene->getView()->m_eyesep / 2;
-    scene->display();
-    //RIGHT
-    glDrawBuffer(GL_BACK_RIGHT);
-    glClearColor(col.x, col.y, col.z, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene->getView()->camOffset = -scene->getView()->m_eyesep / 2;
-    scene->display();
+    displayBuffer(GL_BACK_LEFT);
+    displayBuffer(GL_BACK_RIGHT);
   }
-
   else{
-    glDrawBuffer(GL_BACK_RIGHT);
-    glClearColor(col.x, col.y, col.z, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    scene->getView()->camOffset = 0.0f;
-    scene->display();
+    displayBuffer(GL_BACK_LEFT);
   }
-
-
   glutSwapBuffers();
 }
 

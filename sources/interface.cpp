@@ -52,7 +52,7 @@ CglInterface::CglInterface(){
   icons =  {"color.png",
             "grid.png",
             "layer.png",
-            "settings.png",
+            "mesh.png",
             "exit.png"};
 }
 
@@ -83,8 +83,7 @@ void CglLinearInterface::init(int nb, float off){
   hovered.clear();
   type = "LINEAR";
   folder = ((pcv->profile.dark_theme)?"White/":"Black/");
-  if(pcv->profile.colorIcons)
-    folder = "Color/";
+  folder = ((pcv->profile.colorIcons)?"Color/":folder);
   isMouseOnPanel = false;
   float space = 2.0 / (nb + 1) ;
 
@@ -109,6 +108,7 @@ void CglLinearInterface::display(){
 
   if(active){
     glEnable(GL_BLEND);
+    glDisable(GL_DEPTH_TEST);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     for(int i = 0 ; i < nb ; i++){
@@ -122,6 +122,7 @@ void CglLinearInterface::display(){
       glEnd();
     }
 
+    glEnable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
 
     for(int i = 0 ; i < buttons.size() ; i++){
@@ -136,7 +137,8 @@ void CglLinearInterface::display(){
 
 void CglRadialInterface::init(glm::vec2 cen, int nb, float rad){
   type              = "RADIAL";
-  folder            = ((pcv->profile.colorIcons)?"Color/":"Black/");
+  folder            = ((pcv->profile.dark_theme)?"White/":"Black/");
+  folder            = ((pcv->profile.colorIcons)?"Color/":folder);
   float ratio       = pcv->getScene()->getView()->ratio;
   active            = true;
   isMouseOnPanel    = true;
@@ -180,10 +182,11 @@ void CglRadialInterface::displayWheel(int step){
   glEnable(GL_BLEND);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glBegin(GL_QUAD_STRIP);
-  glShadeModel(GL_FLAT);
+  //glShadeModel(GL_FLAT);
+  glDisable(GL_DEPTH_TEST);
 
-  float innerRad = radius - 0.1;
-  float outerRad = radius + 0.1;
+  float innerRad = radius - 0.08;
+  float outerRad = radius + 0.08;
   glm::vec4 col;
 
   for(int i = 0 ; i < buttons.size() ; i++){
@@ -213,6 +216,7 @@ void CglRadialInterface::displayWheel(int step){
 
 
   glEnd();
-  glShadeModel(GL_SMOOTH);
+  glEnable(GL_DEPTH_TEST);
+  //glShadeModel(GL_SMOOTH);
   glDisable(GL_BLEND);
 }

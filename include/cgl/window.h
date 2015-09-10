@@ -41,6 +41,8 @@ public:
 	void resize(int w, int h);
   void title(const char *title);
 	void cglMainLoop();
+
+	void displayBuffer(int buffer);
 };
 
 typedef CglWindow * pCglWindow;

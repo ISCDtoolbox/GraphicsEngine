@@ -94,9 +94,12 @@ void CglMouse::motion(int x, int y)
   }
   lastPos = currPos;
 
+
   //Check motion for buttons
+  if( pcv->getInterface()->isActive() ){
   int w = pcv->getScene()->getView()->width;
   int h = pcv->getScene()->getView()->height;
+  bool noneHovered = true;
   for(int i = 0 ; i < buttons->size() ; i++){
     glm::vec2 minis = (*buttons)[i]->getMins();
     glm::vec2 maxis = (*buttons)[i]->getMaxs();
@@ -105,7 +108,11 @@ void CglMouse::motion(int x, int y)
     if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
       cout << "button " << i << " hovered!" << endl;
       pcv->getInterface()->hover(i);
+      noneHovered = false;
     }
+  }
+  if(noneHovered)
+    pcv->getInterface()->hover(-1);
   }
 }
 

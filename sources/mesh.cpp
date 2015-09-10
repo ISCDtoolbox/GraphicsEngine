@@ -537,9 +537,9 @@ void CglMesh::display()
     glBindAttribLocation(      shaderID, 0, "vertex_position");
 
     if(isSelected())
-      uniformVec3(colorID, selection_color);
+      uniformVec3(colorID, 0.2f * selection_color);
     else
-      uniformVec3(colorID, glm::vec3(0));
+      uniformVec3(colorID, 0.1f * face_color);
 
     glDisable(GL_POLYGON_OFFSET_FILL);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
