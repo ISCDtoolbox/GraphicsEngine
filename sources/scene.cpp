@@ -12,6 +12,7 @@ CglScene::CglScene():transform(){
   center = glm::vec3(0,0,0);
   VIEW = glm::lookAt(m_cam, m_look, m_up);
   globalScale = 100000.0f;//For use of minimums later
+  background = new CglBackground();
 }
 CglScene::~CglScene(){}
 
@@ -54,6 +55,8 @@ void CglScene::display()
   for (int iObj = 0; iObj < numObjects(); iObj++)
     listObject[iObj]->applyTransformation();
 
+
+  background->display();
   axis->applyTransformation();
   axis->display();
 
@@ -80,6 +83,8 @@ void CglScene::display()
   pcv->getInterface()->display();
 
   glClear(GL_DEPTH_BUFFER_BIT);
+
+
   //debug();
 }
 

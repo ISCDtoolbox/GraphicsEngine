@@ -1,6 +1,6 @@
 #include <cgl/canvas.h>
 #include <cgl/mouse.h>
-#include <cgl/cube.h>
+#include <cgl/interface.h>
 extern CglCanvas *pcv;
 
 
@@ -48,51 +48,65 @@ void CglMouse::motion(int x, int y)
   //if(arcball)
   currPos = glm::vec2(x,y);
 
-  if (currPos != lastPos) {
+  if ((currPos != lastPos) && !pcv->getInterface()->isActive() ){
 
     glm::mat4 ID = glm::mat4(1.0f);
     glm::vec2 d = currPos - lastPos;
     glm::mat4 ROT(1);
 
-      if(m_button[0]){
-        glm::mat4 ROTOBJECT = glm::mat4( glm::angleAxis(0.01f * d.x, glm::vec3(0,1,0))  );
+    if(m_button[0]){
+      glm::mat4 ROTOBJECT = glm::mat4( glm::angleAxis(0.01f * d.x, glm::vec3(0,1,0))  );
 
-        if(pcv->profile.classicalMode)
-          ROT = glm::mat4(  glm::angleAxis(0.01f * d.y, scene->getRight())  *  glm::angleAxis(0.01f * d.x, glm::vec3(0,1,0))  );
-        else if(pcv->profile.accumulatedMode)
-          ROT = glm::mat4( glm::angleAxis(0.01f * d.y, scene->getRight()) * glm::angleAxis(0.01f * d.x, scene->getUp()) );
+      if(pcv->profile.classicalMode)
+        ROT = glm::mat4(  glm::angleAxis(0.01f * d.y, scene->getRight())  *  glm::angleAxis(0.01f * d.x, glm::vec3(0,1,0))  );
+      else if(pcv->profile.accumulatedMode)
+        ROT = glm::mat4( glm::angleAxis(0.01f * d.y, scene->getRight()) * glm::angleAxis(0.01f * d.x, scene->getUp()) );
 
-        if (scene->isSelected())
-          scene->getTransform()->setRotation(ROT);
-        for (unsigned int i = 0; i < scene->getObjectList()->size(); i++)
-          if (scene->getObject(i)->isSelected())
-            scene->getObject(i)->transform.setRotation(ROTOBJECT);
-      }
-
-      if(m_button[1]){
-        glm::vec3 tr;
-        if(scene->getCam().y==0)
-          tr = 0.00015f * (
-               d.x * glm::normalize(glm::vec3(scene->getRight().x,0,scene->getRight().z)) +
-               -d.y * glm::vec3(0,1,0)
-               );
-        else{
-          tr = 0.0010f * (
-               d.x * glm::normalize(glm::vec3(scene->getRight().x,0,scene->getRight().z)) +
-               -d.y * glm::normalize(glm::vec3(scene->getUp().x,0,scene->getUp().z))
-               );
-        }
-
-        //glm::vec3 tr = 0.5f * (dX * glm::vec3(1,0,0) - dY * glm::vec3(0,0,1));
-        //glm::vec3 tr = dX * scene->m_right + dY * scene->m_up;
-        if (scene->isSelected())
-          scene->getTransform()->setTranslation(tr);
-        for (unsigned int i = 0; i < scene->getObjectList()->size(); i++)
-          if (scene->getObject(i)->isSelected())
-            scene->getObject(i)->transform.setTranslation(tr);
-      }
+      if (scene->isSelected())
+        scene->getTransform()->setRotation(ROT);
+      for (unsigned int i = 0; i < scene->getObjectList()->size(); i++)
+        if (scene->getObject(i)->isSelected())
+          scene->getObject(i)->transform.setRotation(ROTOBJECT);
     }
-    lastPos = currPos;
+
+    if(m_button[1]){
+      glm::vec3 tr;
+      if(scene->getCam().y==0)
+        tr =  0.00015f * (
+              d.x * glm::normalize(glm::vec3(scene->getRight().x,0,scene->getRight().z)) +
+              -d.y * glm::vec3(0,1,0)
+              );
+      else{
+        tr =  0.0010f * (
+              d.x * glm::normalize(glm::vec3(scene->getRight().x,0,scene->getRight().z)) +
+              -d.y * glm::normalize(glm::vec3(scene->getUp().x,0,scene->getUp().z))
+              );
+      }
+
+      //glm::vec3 tr = 0.5f * (dX * glm::vec3(1,0,0) - dY * glm::vec3(0,0,1));
+      //glm::vec3 tr = dX * scene->m_right + dY * scene->m_up;
+      if (scene->isSelected())
+        scene->getTransform()->setTranslation(tr);
+      for (unsigned int i = 0; i < scene->getObjectList()->size(); i++)
+        if (scene->getObject(i)->isSelected())
+          scene->getObject(i)->transform.setTranslation(tr);
+    }
+  }
+  lastPos = currPos;
+
+  //Check motion for buttons
+  int w = pcv->getScene()->getView()->width;
+  int h = pcv->getScene()->getView()->height;
+  for(int i = 0 ; i < buttons->size() ; i++){
+    glm::vec2 minis = (*buttons)[i]->getMins();
+    glm::vec2 maxis = (*buttons)[i]->getMaxs();
+    glm::vec2 bX = glm::vec2( w/2 * minis.x + w/2, w/2 * maxis.x + w/2 );
+    glm::vec2 bY = glm::vec2( h/2 * minis.y + h/2, h/2 * maxis.y + h/2 );
+    if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
+      cout << "button " << i << " hovered!" << endl;
+      pcv->getInterface()->hover(i);
+    }
+  }
 }
 
 void CglMouse::passiveMotion(int x, int y){
@@ -126,6 +140,24 @@ void CglMouse::passiveMotion(int x, int y){
 
   }
   currPos = glm::vec2(x,y);
+
+  //Check motion for buttons
+  int w = pcv->getScene()->getView()->width;
+  int h = pcv->getScene()->getView()->height;
+  bool noneHovered = true;
+  for(int i = 0 ; i < buttons->size() ; i++){
+    glm::vec2 minis = (*buttons)[i]->getMins();
+    glm::vec2 maxis = (*buttons)[i]->getMaxs();
+    glm::vec2 bX = glm::vec2( w/2 * minis.x + w/2, w/2 * maxis.x + w/2 );
+    glm::vec2 bY = glm::vec2( h/2 * minis.y + h/2, h/2 * maxis.y + h/2 );
+    if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
+      cout << "button " << i << " hovered!" << endl;
+      pcv->getInterface()->hover(i);
+      noneHovered = false;
+    }
+  }
+  if(noneHovered)
+    pcv->getInterface()->hover(-1);
 }
 
 
@@ -239,26 +271,51 @@ void CglMouse::mouse(int b, int s, int x, int y)
   checkButtons(b, s, x, y);
 }
 
+
 void CglMouse::checkButtons(int b, int s, int x, int y){
-  if(s==GLUT_DOWN){
-    for(int i = 0 ; i < buttons->size() ; i++){
-      int width  = pcv->getScene()->getView()->width;
-      int height = pcv->getScene()->getView()->height;
-      //Mapped from -1 to 1
-      glm::vec2 minis = (*buttons)[i]->getMins();
-      glm::vec2 maxis = (*buttons)[i]->getMaxs();
-      //Mapped from 0 to width, 0 to height
-      glm::vec2 bX = glm::vec2( width/2 * minis.x + width/2, width/2 * maxis.x + width/2 );
-      glm::vec2 bY = glm::vec2( height/2 * minis.y + height/2, height/2 * maxis.y + height/2 );
 
-      if(i == 0){
-        cout << bX.x << "/" << bX.y << " \t " << bY.x << "/" << bY.y << endl;
-      }
+  int w = pcv->getScene()->getView()->width;
+  int h = pcv->getScene()->getView()->height;
+  string interfaceType = pcv->getInterface()->getType();
+  bool  ctrl = ((glutGetModifiers() && GLUT_ACTIVE_CTRL) ? 1:0);
 
-      if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
-        cout << "button " << i << " pressed!" << endl;
+  if(ctrl && (interfaceType=="RADIAL") && (s==GLUT_DOWN) && (b == GLUT_LEFT_BUTTON)){
+    glm::vec2 unitPos = glm::vec2( float(x-w/2)/(w/2) , float(y-h/2)/(h/2) );
+    pcv->getInterface()->init(unitPos, 5, 0.25);
+  }
+
+
+  bool clickActivated;
+  if(interfaceType == "LINEAR")
+    clickActivated = (s==GLUT_DOWN);
+  else if(interfaceType == "RADIAL")
+    clickActivated = (s == GLUT_UP);
+
+
+  if(interfaceType=="RADIAL"){
+    if( s == GLUT_UP ){
+      pcv->getInterface()->unactive();
+    }
+  }
+
+
+  for(int i = 0 ; i < buttons->size() ; i++){
+    //Mapped from -1 to 1
+    glm::vec2 minis = (*buttons)[i]->getMins();
+    glm::vec2 maxis = (*buttons)[i]->getMaxs();
+    //Mapped from 0 to width, 0 to height
+    glm::vec2 bX = glm::vec2( w/2 * minis.x + w/2, w/2 * maxis.x + w/2 );
+    glm::vec2 bY = glm::vec2( h/2 * minis.y + h/2, h/2 * maxis.y + h/2 );
+
+    if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
+      if(clickActivated){
+        //if(i == 0){
+        //  cout << bX.x << "/" << bX.y << " \t " << bY.x << "/" << bY.y << endl;
+        //}
+        cout << "button " << i << " activated!" << endl;
         if(i == 0){
           pcv->profile.dark_theme = !pcv->profile.dark_theme;
+          pcv->getInterface()->updateTextures();
           pcv->profile.update_theme();
         }
         if(i == 1){
@@ -275,9 +332,10 @@ void CglMouse::checkButtons(int b, int s, int x, int y){
           exit(1);
         }
       }
+      else{
+        cout << "button " << i << " hovered!" << endl;
+        pcv->getInterface()->hover(i);
+      }
     }
   }
-
-
-
 }

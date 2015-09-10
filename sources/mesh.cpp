@@ -4,7 +4,6 @@ extern "C" {
 }
 
 #include <cgl/canvas.h>
-
 extern CglCanvas *pcv;
 
 CglMesh::CglMesh(char *name)
@@ -44,7 +43,7 @@ CglMesh::CglMesh(char *name)
       GmfGetLin(inm,GmfVertices,&fp1,&fp2,&fp3,&ppt->ref);
       ppt->c[0] = fp1;
       ppt->c[1] = fp2;
-      ppt->c[2] = 0.;
+      ppt->c[2] = fp3;
     }
     else
       GmfGetLin(inm,GmfVertices,&ppt->c[0],&ppt->c[1],&ppt->c[2],&ppt->ref);

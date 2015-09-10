@@ -20,6 +20,7 @@ class CglButton{
   public:
     CglButton(float s, glm::vec2 c, glm::vec3 col, string texturePath);
     ~CglButton(){};
+    void updateTexture(string texturePath);
     void display();
     glm::vec2 getMins(){return mins;}
     glm::vec2 getMaxs(){return maxs;}
@@ -34,13 +35,27 @@ typedef CglButton* pCglButton;
 class CglInterface{
   protected:
     std::vector<pCglButton> buttons;
+    std::vector<string>     icons;
+    std::vector<bool>       hovered;
+    std::string             folder;
+    std::string             type;
+    bool                    active;
     bool                    isMouseOnPanel;
+
   public:
-    CglInterface(){};
+    CglInterface();
     ~CglInterface(){};
-    virtual void init(){};
+    void unactive(){active = false;}
+    bool isActive(){return active;}
+    bool isMouseOnZone(){return isMouseOnPanel;}
+    void updateTextures();
+    std::string getType(){return type;}
+    virtual void init(int nb, float off){};
+    virtual void init(glm::vec2 cen, int nb, float rad){};
     virtual void display(){};
     std::vector<pCglButton>* getButtonList(){return &buttons;}
+
+    void hover(int indButton);
 };
 typedef CglInterface* pCglInterface;
 
@@ -62,6 +77,7 @@ class CglRadialInterface: public CglInterface{
   public:
     void init(glm::vec2 cen, int nb, float rad);
     void display();
+    void displayWheel(int step);
 };
 typedef CglRadialInterface* pCglRadialInterface;
 

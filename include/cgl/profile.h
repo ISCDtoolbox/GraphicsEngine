@@ -41,6 +41,7 @@ class CglProfile
     bool  globalScale;
     bool  groupRotation;
 
+    bool colorIcons;
     bool dark_theme;
     glm::vec3 dark_back_color,  dark_grid_color,  dark_idle_color;
     glm::vec3 clear_back_color, clear_grid_color, clear_idle_color;

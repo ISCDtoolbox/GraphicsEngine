@@ -276,6 +276,7 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
   if(key=='B'){
     pcv->profile.dark_theme = !pcv->profile.dark_theme;
     pcv->profile.update_theme();
+    pcv->getInterface()->updateTextures();
   }
 
 

@@ -16,14 +16,6 @@
 
 class CGL_API CglAxis : public CglObject
 {
-public:
-  CglAxis();
-  ~CglAxis(){};
-  void gradient(std::vector<float> hei, std::vector<glm::vec3> col);
-  void gradient(std::vector<glm::vec2> hei, std::vector<glm::vec3> col);
-  void display();
-  CglView *view;
-
 private:
   vector<float> grid;
   vector<float> axes;
@@ -31,10 +23,23 @@ private:
   vector<float> colors;
   GLuint gridBuffer;
   GLuint axesBuffer;
-  GLuint backBuffer;
-  GLuint backColorBuffer;
-};
 
+public:
+  CglAxis();
+  ~CglAxis(){};
+  void display();
+  CglView *view;
+};
 typedef CglAxis* pCglAxis;
+
+
+class CGL_API CglBackground : public CglObject{
+  private:
+    void gradient(std::vector<float> hei, std::vector<glm::vec3> col);
+    void gradient(std::vector<glm::vec2> hei, std::vector<glm::vec3> col);
+  public:
+    void display();
+};
+typedef CglBackground* pCglBackground;
 
 #endif

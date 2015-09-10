@@ -144,8 +144,10 @@ void CglCanvas::cglMainLoop(){
   simpleShader.load("SIMPLE");
   smoothShader.load("SMOOTH");
   flatShader.load("FLAT");
-  //interface.init(5, 0.8);
-  interface.init(glm::vec2(0,0), 5, 0.25);
+
+  //interface.init(5, 0.87);
+  interface.init(glm::vec2(0,0), 5, 0.20);
+
   mice.setGUI();
   glutMainLoop();
 }

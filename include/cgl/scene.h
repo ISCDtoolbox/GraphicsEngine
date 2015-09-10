@@ -28,6 +28,7 @@ private:
   std::vector<pCglGroup>  listGroup;
   CglTransform            transform;
   pCglAxis                axis;
+  pCglBackground          background;
   pCglView                view;
 
   //View parameters
@@ -62,6 +63,7 @@ public:
   pCglAxis                 getAxis(){return axis;}
   pCglView                 getView(){return view;}
   void                     setView(pCglView newView){view = newView;}
+  pCglBackground           getBackground(){return background;}
   pCglTransform            getTransform(){return &transform;}
 
   //Accessors and setters for camera parameters

@@ -38,6 +38,7 @@ private:
   CglKeyboard              keyboard;
   CglShader                simpleShader, smoothShader, flatShader;
   CglRadialInterface       interface;
+  //CglLinearInterface       interface;
 
 
 /////////////////////////////////////////////////////

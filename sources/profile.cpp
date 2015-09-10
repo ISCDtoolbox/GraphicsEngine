@@ -1,6 +1,10 @@
 #include "cgl/profile.h"
 #include "ext.h"
 
+
+#include <cgl/canvas.h>
+extern CglCanvas *pcv;
+
 CglProfile::CglProfile()
 {
   //Reading from cmakefile
@@ -47,7 +51,7 @@ CglProfile::CglProfile()
   value          = 1;
   mixWithWhite   = 1;
 
-
+  colorIcons = true;
   dark_theme = true;
   update_theme();
 
