@@ -61,13 +61,13 @@ void CglWindow::show()
 
 void CglWindow::displayBuffer(int buffer){
   pCglScene scene = pcv->getScene(ids);
-  glm::vec3 col   = pcv->profile.back_color;
+  //glm::vec3 col   = pcv->profile.back_color;
 
   float offset = ( (pcv->profile.stereo) ? scene->getView()->m_eyesep / 2 : 0.0f );
   int stereo = ( (buffer == GL_BACK_LEFT) ? -1 : 1 );
 
   glDrawBuffer(buffer);
-  glClearColor(col.x, col.y, col.z, 1.0);
+  //glClearColor(col.x, col.y, col.z, 1.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   scene->getView()->camOffset = stereo * offset;
   scene->display();

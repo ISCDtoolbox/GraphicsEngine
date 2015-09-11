@@ -99,22 +99,34 @@ void CglAxis::display()
 
 
 
-
-
-
 void CglBackground::display(){
   //Background gradient
   if(pcv->profile.displayBackgroundGradient){
     std::vector<float>     gradient_heights;
     std::vector<glm::vec3> gradient_colors;
-    if(pcv->profile.dark_theme){
-      gradient_colors  = {glm::vec3(0.1), glm::vec3(0.25), glm::vec3(0.65)};
-      gradient_heights = {-1, 0, 1};
+
+    CGL_THEME theme = pcv->profile.theme;
+    if(theme == CGL_THEME_DARK){
+      gradient_colors  = {glm::vec3(0.0), glm::vec3(0.25), glm::vec3(0.65)};
+      gradient_heights = {-1, 0.25, 1};
     }
-    else{
+    else if (theme == CGL_THEME_BLACK){
+      gradient_colors  = {glm::vec3(0), glm::vec3(0)};
+      gradient_heights = {-1, 1};
+    }
+    else if (theme == CGL_THEME_CLEAR){
       gradient_colors  = {glm::vec3(1), glm::vec3(1), glm::vec3(0.5, 0.5, 0.65)};
       gradient_heights = {-1, -0.2, 1};
     }
+    else if (theme == CGL_THEME_WHITE){
+      gradient_colors  = {glm::vec3(1), glm::vec3(1)};
+      gradient_heights = {-1, 1};
+    }
+    else if (theme == CGL_THEME_FANCY){
+      gradient_colors  = {glm::vec3(1,0,0), glm::vec3(1,1,0), glm::vec3(0,1,0), glm::vec3(0,0,1), glm::vec3(1,0,1)};
+      gradient_heights = {-1, -0.5, 0, 0.5, 1};
+    }
+
     glUseProgram(0);
     glDisable(GL_DEPTH_TEST);
     glShadeModel(GL_SMOOTH);

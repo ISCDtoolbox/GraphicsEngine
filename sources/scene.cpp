@@ -79,7 +79,9 @@ void CglScene::display()
     if(listObject[iObj]->isHidden())
       listObject[iObj]->display();
 
-  //Boutons
+
+
+  //GUI
   pcv->getInterface()->display();
 
   glClear(GL_DEPTH_BUFFER_BIT);

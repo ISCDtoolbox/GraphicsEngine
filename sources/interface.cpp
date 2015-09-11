@@ -51,15 +51,25 @@ void CglButton::display(){
 CglInterface::CglInterface(){
   icons =  {"color.png",
             "grid.png",
-            "layer.png",
+            "normals.png",
             "mesh.png",
             "exit.png"};
 }
 
-void CglInterface::updateTextures(){
-  folder = ((pcv->profile.dark_theme)?"White/":"Black/");
-  if(pcv->profile.colorIcons)
+string CglInterface::getIconsFolder(){
+  CGL_THEME theme = pcv->profile.theme;
+  string folder;
+  if(theme == CGL_THEME_BLACK)
+    folder = "White/";
+  else if(theme == CGL_THEME_WHITE)
+    folder = "Black/";
+  else
     folder = "Color/";
+  return folder;
+}
+
+void CglInterface::updateTextures(){
+  folder = getIconsFolder();
   for(int i = 0 ; i < buttons.size() ; i++){
     buttons[i]->updateTexture(pcv->profile.path + "icons/" + folder + icons[i]);
   }
@@ -81,11 +91,10 @@ void CglInterface::hover(int indButton){
 
 void CglLinearInterface::init(int nb, float off){
   hovered.clear();
-  type = "LINEAR";
-  folder = ((pcv->profile.dark_theme)?"White/":"Black/");
-  folder = ((pcv->profile.colorIcons)?"Color/":folder);
-  isMouseOnPanel = false;
-  float space = 2.0 / (nb + 1) ;
+  type            = "LINEAR";
+  folder          = getIconsFolder();
+  isMouseOnPanel  = false;
+  float space     = 2.0 / (nb + 1) ;
 
   for(int i = 0 ; i < nb ; i++){
     pCglButton b = new CglButton(0.15,
@@ -137,8 +146,7 @@ void CglLinearInterface::display(){
 
 void CglRadialInterface::init(glm::vec2 cen, int nb, float rad){
   type              = "RADIAL";
-  folder            = ((pcv->profile.dark_theme)?"White/":"Black/");
-  folder            = ((pcv->profile.colorIcons)?"Color/":folder);
+  folder            = getIconsFolder();
   float ratio       = pcv->getScene()->getView()->ratio;
   active            = true;
   isMouseOnPanel    = true;
@@ -157,6 +165,7 @@ void CglRadialInterface::init(glm::vec2 cen, int nb, float rad){
     hovered.push_back(false);
   }
   radius = rad;
+  updateTextures();
 }
 
 void CglRadialInterface::display(){
@@ -185,8 +194,8 @@ void CglRadialInterface::displayWheel(int step){
   //glShadeModel(GL_FLAT);
   glDisable(GL_DEPTH_TEST);
 
-  float innerRad = radius - 0.08;
-  float outerRad = radius + 0.08;
+  float innerRad = radius - 0.12;
+  float outerRad = radius + 0.12;
   glm::vec4 col;
 
   for(int i = 0 ; i < buttons.size() ; i++){

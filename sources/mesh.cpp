@@ -50,14 +50,14 @@ CglMesh::CglMesh(char *name)
   }
 
   //read triangles
-  tria.resize(nt+1);
+  tria.resize(nt);
   GmfGotoKwd(inm,GmfTriangles);
   for (k=0; k<nt; k++) {
     pt = &tria[k];
     GmfGetLin(inm,GmfTriangles,&pt->v[0],&pt->v[1],&pt->v[2],&pt->ref);
   }
 
-  normal.resize(np+1);
+  normal.resize(np);
   if ( nn ) {
     GmfGotoKwd(inm,GmfNormals);
     for (k=0; k<nn; k++) {
@@ -319,18 +319,13 @@ void CglMesh::shadowsDisplay(){
 
     pCglScene scene = pcv->getScene();
     glm::vec3 selection_color = ((idGroup==-1)?pcv->profile.sele_color:scene->getGroup(idGroup)->group_color);
-    if(pcv->profile.dark_theme){
-      if(isSelected())
-        uniformVec3(colorID, (glm::vec3(0.2) + selection_color) * 0.25f);
-      else
-        uniformVec3(colorID, (glm::vec3(0.2) + face_color) * 0.25f);
-    }
-    else{
-      if(isSelected())
-        uniformVec3(colorID, (glm::vec3(3) + selection_color) * 0.25f);
-      else
-        uniformVec3(colorID, (glm::vec3(3) + face_color) * 0.25f);
-    }
+
+    glm::vec2 mix = pcv->profile.reflection_mix;
+    if(isSelected())
+      uniformVec3( colorID, (glm::vec3(mix.x) + mix.y * selection_color) );
+    else
+      uniformVec3( colorID, (glm::vec3(mix.x) + mix.y * face_color) );
+
     glm::mat4 reflection = glm::translate( glm::scale( MVP,  glm::vec3(1,-1,1)) , glm::vec3(0, 1.24 * (pcv->profile.bottomDistance + center.y + (*pMODEL)[3].y) ,0));
     glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &reflection[0][0]);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

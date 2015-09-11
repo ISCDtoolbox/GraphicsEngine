@@ -9,6 +9,8 @@
 #ifndef _CGL_DEF_H
 #define _CGL_DEF_H
 
+#include <enums.h>
+
 #include <iostream>
 #include <cstdlib>
 #include <vector>

@@ -1,5 +1,6 @@
 #ifndef CglGROUP_H
 #define CglGROUP_H
+#include "cgl/defs.h"
 
 #include <cgl/object.h>
 

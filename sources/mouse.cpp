@@ -97,22 +97,22 @@ void CglMouse::motion(int x, int y)
 
   //Check motion for buttons
   if( pcv->getInterface()->isActive() ){
-  int w = pcv->getScene()->getView()->width;
-  int h = pcv->getScene()->getView()->height;
-  bool noneHovered = true;
-  for(int i = 0 ; i < buttons->size() ; i++){
-    glm::vec2 minis = (*buttons)[i]->getMins();
-    glm::vec2 maxis = (*buttons)[i]->getMaxs();
-    glm::vec2 bX = glm::vec2( w/2 * minis.x + w/2, w/2 * maxis.x + w/2 );
-    glm::vec2 bY = glm::vec2( h/2 * minis.y + h/2, h/2 * maxis.y + h/2 );
-    if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
-      cout << "button " << i << " hovered!" << endl;
-      pcv->getInterface()->hover(i);
-      noneHovered = false;
+    int w = pcv->getScene()->getView()->width;
+    int h = pcv->getScene()->getView()->height;
+    bool noneHovered = true;
+    for(int i = 0 ; i < buttons->size() ; i++){
+      glm::vec2 minis = (*buttons)[i]->getMins();
+      glm::vec2 maxis = (*buttons)[i]->getMaxs();
+      glm::vec2 bX = glm::vec2( w/2 * minis.x + w/2, w/2 * maxis.x + w/2 );
+      glm::vec2 bY = glm::vec2( h/2 * minis.y + h/2, h/2 * maxis.y + h/2 );
+      if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
+        cout << "button " << i << " hovered!" << endl;
+        pcv->getInterface()->hover(i);
+        noneHovered = false;
+      }
     }
-  }
-  if(noneHovered)
-    pcv->getInterface()->hover(-1);
+    if(noneHovered)
+      pcv->getInterface()->hover(-1);
   }
 }
 
@@ -149,22 +149,24 @@ void CglMouse::passiveMotion(int x, int y){
   currPos = glm::vec2(x,y);
 
   //Check motion for buttons
-  int w = pcv->getScene()->getView()->width;
-  int h = pcv->getScene()->getView()->height;
-  bool noneHovered = true;
-  for(int i = 0 ; i < buttons->size() ; i++){
-    glm::vec2 minis = (*buttons)[i]->getMins();
-    glm::vec2 maxis = (*buttons)[i]->getMaxs();
-    glm::vec2 bX = glm::vec2( w/2 * minis.x + w/2, w/2 * maxis.x + w/2 );
-    glm::vec2 bY = glm::vec2( h/2 * minis.y + h/2, h/2 * maxis.y + h/2 );
-    if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
-      cout << "button " << i << " hovered!" << endl;
-      pcv->getInterface()->hover(i);
-      noneHovered = false;
+  if(pcv->getInterface()->isActive()){
+    int w = pcv->getScene()->getView()->width;
+    int h = pcv->getScene()->getView()->height;
+    bool noneHovered = true;
+    for(int i = 0 ; i < buttons->size() ; i++){
+      glm::vec2 minis = (*buttons)[i]->getMins();
+      glm::vec2 maxis = (*buttons)[i]->getMaxs();
+      glm::vec2 bX = glm::vec2( w/2 * minis.x + w/2, w/2 * maxis.x + w/2 );
+      glm::vec2 bY = glm::vec2( h/2 * minis.y + h/2, h/2 * maxis.y + h/2 );
+      if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
+        cout << "button " << i << " hovered!" << endl;
+        pcv->getInterface()->hover(i);
+        noneHovered = false;
+      }
     }
+    if(noneHovered)
+      pcv->getInterface()->hover(-1);
   }
-  if(noneHovered)
-    pcv->getInterface()->hover(-1);
 }
 
 
@@ -291,58 +293,56 @@ void CglMouse::checkButtons(int b, int s, int x, int y){
     pcv->getInterface()->init(unitPos, 5, 0.25);
   }
 
-
   bool clickActivated;
   if(interfaceType == "LINEAR")
     clickActivated = (s==GLUT_DOWN);
   else if(interfaceType == "RADIAL")
     clickActivated = (s == GLUT_UP);
 
+  if(pcv->getInterface()->isActive()){
+    for(int i = 0 ; i < buttons->size() ; i++){
+      //Mapped from -1 to 1
+      glm::vec2 minis = (*buttons)[i]->getMins();
+      glm::vec2 maxis = (*buttons)[i]->getMaxs();
+      //Mapped from 0 to width, 0 to height
+      glm::vec2 bX = glm::vec2( w/2 * minis.x + w/2, w/2 * maxis.x + w/2 );
+      glm::vec2 bY = glm::vec2( h/2 * minis.y + h/2, h/2 * maxis.y + h/2 );
+
+      if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
+        if(clickActivated){
+          //if(i == 0){
+          //  cout << bX.x << "/" << bX.y << " \t " << bY.x << "/" << bY.y << endl;
+          //}
+          cout << "button " << i << " activated!" << endl;
+          if(i == 0){
+            pcv->profile.switch_theme();
+            pcv->getInterface()->updateTextures();
+          }
+          if(i == 1){
+            pcv->profile.displayBottomGrid = !pcv->profile.displayBottomGrid;
+          }
+          if(i==2){
+            pcv->profile.smooth = !pcv->profile.smooth;
+          }
+          if( i == 3 ){
+            for (unsigned int i = 0; i < pcv->getScene()->numObjects() ; i++)
+              pcv->getScene()->getObject(i)->toogleMesh();
+          }
+          if( i == 4 ){
+            exit(1);
+          }
+        }
+        else{
+          cout << "button " << i << " hovered!" << endl;
+          pcv->getInterface()->hover(i);
+        }
+      }
+    }
+  }
 
   if(interfaceType=="RADIAL"){
     if( s == GLUT_UP ){
       pcv->getInterface()->unactive();
-    }
-  }
-
-
-  for(int i = 0 ; i < buttons->size() ; i++){
-    //Mapped from -1 to 1
-    glm::vec2 minis = (*buttons)[i]->getMins();
-    glm::vec2 maxis = (*buttons)[i]->getMaxs();
-    //Mapped from 0 to width, 0 to height
-    glm::vec2 bX = glm::vec2( w/2 * minis.x + w/2, w/2 * maxis.x + w/2 );
-    glm::vec2 bY = glm::vec2( h/2 * minis.y + h/2, h/2 * maxis.y + h/2 );
-
-    if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
-      if(clickActivated){
-        //if(i == 0){
-        //  cout << bX.x << "/" << bX.y << " \t " << bY.x << "/" << bY.y << endl;
-        //}
-        cout << "button " << i << " activated!" << endl;
-        if(i == 0){
-          pcv->profile.dark_theme = !pcv->profile.dark_theme;
-          pcv->getInterface()->updateTextures();
-          pcv->profile.update_theme();
-        }
-        if(i == 1){
-          pcv->profile.displayBottomGrid = !pcv->profile.displayBottomGrid;
-        }
-        if(i==2){
-          pcv->profile.smooth = !pcv->profile.smooth;
-        }
-        if( i == 3 ){
-          for (unsigned int i = 0; i < pcv->getScene()->numObjects() ; i++)
-            pcv->getScene()->getObject(i)->toogleMesh();
-        }
-        if( i == 4 ){
-          exit(1);
-        }
-      }
-      else{
-        cout << "button " << i << " hovered!" << endl;
-        pcv->getInterface()->hover(i);
-      }
     }
   }
 }

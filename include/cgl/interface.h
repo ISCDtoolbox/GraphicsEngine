@@ -50,6 +50,7 @@ class CglInterface{
     bool isMouseOnZone(){return isMouseOnPanel;}
     void updateTextures();
     std::string getType(){return type;}
+    std::string getIconsFolder();
     virtual void init(int nb, float off){};
     virtual void init(glm::vec2 cen, int nb, float rad){};
     virtual void display(){};
