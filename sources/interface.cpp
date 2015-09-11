@@ -18,6 +18,7 @@ CglButton::CglButton(float s, glm::vec2 c, glm::vec3 col, string texturePath){
 
 void CglButton::updateTexture(string texturePath){
   texture.loadPNG(texturePath);
+  display();
 }
 
 //Display

@@ -111,7 +111,7 @@ void CglBackground::display(){
       gradient_heights = {-1, 0.25, 1};
     }
     else if (theme == CGL_THEME_BLACK){
-      gradient_colors  = {glm::vec3(0), glm::vec3(0)};
+      gradient_colors  = {glm::vec3(0.1), glm::vec3(0.1)};
       gradient_heights = {-1, 1};
     }
     else if (theme == CGL_THEME_CLEAR){

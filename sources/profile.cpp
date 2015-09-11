@@ -74,9 +74,9 @@ void CglProfile::update_theme(){
     grid_color = glm::vec3(0);
     idle_color = glm::vec3(0);
     sele_color    = glm::vec3(1, 0.6, 0);
-    displayReflection = false;
+    displayReflection = true;
     reflection_mix = glm::vec2(0.2, 0.25);
-    displayShadows = true;
+    displayShadows = false;
     shadow_factor = 0.5;
   }
 }
