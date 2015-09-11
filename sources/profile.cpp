@@ -14,14 +14,12 @@ CglProfile::CglProfile()
   displayAxesLabels = false;
   displayBackgroundGradient = true;
 
-  displayShadows    = true;
   displayBottomGrid = false;
-  smooth            = false;
-
-  displayReflection = true;
 
   stereo            = false;
   perspective       = true;
+
+  smooth            = false;
 
   classicalMode     = true;
   accumulatedMode   = false;
@@ -37,19 +35,91 @@ CglProfile::CglProfile()
   bottomDistance    = 0.1;
   bottomAngle       = 0.0;//G(float)3.14159/4;
 
-  saturation     = 0.65;
-  value          = 1;
-  mixWithWhite   = 1;
 
-  theme      = CGL_THEME_DARK;
+  interface      = CGL_INTERFACE_LINEAR;
+  interface_type = CGL_BUTTONS_EXTENDED;
+  colors         = CGL_COLORS_WHITES;
+  theme          = CGL_THEME_DARK;
+
+  update_colors();
   update_theme();
 }
-
-CglProfile::~CglProfile(){}
 
 glm::vec3 CglProfile::color(){
   return colorGenerator.generateColor();
 }
+
+
+
+
+void CglProfile::switch_interface(){
+  int n;
+  for( int i = CGL_INTERFACE_LINEAR; i <= CGL_INTERFACE_RADIAL ; i++ ){
+    if ( i == colors ){
+      if ( i != CGL_INTERFACE_RADIAL )
+        n = i+1;
+      else
+        n = 0;
+    }
+  }
+  interface = static_cast<CGL_INTERFACE>(n);
+}
+
+
+
+
+
+void CglProfile::switch_colors(){
+  int n;
+  for( int i = CGL_COLORS_FLASHY; i <= CGL_COLORS_WARM ; i++ ){
+    if ( i == colors ){
+      if ( i != CGL_COLORS_WARM )
+        n = i+1;
+      else
+        n = 0;
+    }
+  }
+  colors = static_cast<CGL_COLORS>(n);
+  update_colors();
+  update_objects_colors();
+}
+
+void CglProfile::update_colors(){
+  saturation  = 0.65;
+  value       = 1;
+  if ( colors == CGL_COLORS_FLASHY ){
+    mixFactor   = 0;
+    mixColor    = glm::vec3(1);
+  }
+  else if ( colors == CGL_COLORS_PASTEL ){
+    mixFactor   = 0.5;
+    mixColor    = glm::vec3(1);
+  }
+  else if ( colors == CGL_COLORS_WHITES ){
+    mixFactor   = 0.9;
+    mixColor    = glm::vec3(1);
+  }
+  else if ( colors == CGL_COLORS_COLD ){
+    mixFactor   = 0.7;
+    mixColor    = glm::vec3(0.7,0.7,1);
+  }
+  else if ( colors == CGL_COLORS_WARM ){
+    mixFactor   = 0.8;
+    mixColor    = glm::vec3(1,0.8,0.2);
+  }
+}
+
+void CglProfile::update_objects_colors(){
+  for(int i = 0 ; i < pcv->getObjectList()->size() ; i++){
+    pCglObject obj = (*pcv->getObjectList())[i];
+    if (obj->isMeshObject())
+      obj->setColor(color());
+  }
+}
+
+
+
+
 
 void CglProfile::update_theme(){
   if( (theme == CGL_THEME_DARK) || (theme == CGL_THEME_BLACK) ){
@@ -82,16 +152,15 @@ void CglProfile::update_theme(){
 }
 
 void CglProfile::switch_theme(){
-  //cout << "Old theme = " << pcv->profile.theme << endl;
   int new_theme;
   for( int t = CGL_THEME_DARK; t <= CGL_THEME_FANCY ; t++ ){
-    if ( t == pcv->profile.theme ){
+    if ( t == theme ){
       if ( t != CGL_THEME_FANCY )
         new_theme = t+1;
       else
         new_theme = 0;
     }
   }
-  pcv->profile.theme = static_cast<CGL_THEME>(new_theme);
+  theme = static_cast<CGL_THEME>(new_theme);
   update_theme();
 }

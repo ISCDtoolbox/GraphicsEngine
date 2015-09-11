@@ -277,6 +277,13 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
     pcv->profile.switch_theme();
     pcv->getInterface()->updateTextures();
   }
+  //Colors
+  if(key=='C'){
+    pcv->profile.switch_colors();
+  }
+  if(key=='c'){
+    pcv->profile.update_objects_colors();
+  }
 
 
   lastKey = key;

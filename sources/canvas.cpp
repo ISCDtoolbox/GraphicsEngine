@@ -15,7 +15,7 @@ CglCanvas::CglCanvas(int argc, char **argv){
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 
   cglSetLights();
-  profile = CglProfile();
+  //profile = CglProfile();
 }
 
 
@@ -64,7 +64,12 @@ pCglWindow    CglCanvas::getWindow(int windowID){ return &(window[windowID]);}
 pCglScene     CglCanvas::getScene(){     return scene[window[winid()].ids]; }
 pCglWindow    CglCanvas::getWindow(){    return &(window[winid()]);}
 
-pCglInterface CglCanvas::getInterface(){ return &interface;}
+pCglInterface CglCanvas::getInterface(){
+  if(profile.interface == CGL_INTERFACE_LINEAR)
+    return &linearInterface;
+  else if(profile.interface == CGL_INTERFACE_RADIAL)
+    return &radialInterface;
+}
 
 pCglMouse     CglCanvas::getMouse(){     return &mice;}
 int           CglCanvas::simpleID(){     return simpleShader.mProgramID;}
@@ -145,8 +150,8 @@ void CglCanvas::cglMainLoop(){
   smoothShader.load("SMOOTH");
   flatShader.load("FLAT");
 
-  //interface.init(5, 0.9);
-  interface.init(glm::vec2(0,0), 5, 0.17);
+  linearInterface.init(0.9);
+  radialInterface.init(glm::vec2(0,0), 0.17);
 
   mice.setGUI();
   glutMainLoop();

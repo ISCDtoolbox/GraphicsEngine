@@ -60,6 +60,8 @@ class CGL_API CglObject
     void setRotationCenter(glm::vec3 &center);
     void setScaleFactor(float sf);
 
+    void setColor(glm::vec3 col);
+
     void setMODEL(glm::mat4 M);
     void setCenter(glm::vec3 C);
     void setGroupID(int id);

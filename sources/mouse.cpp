@@ -285,18 +285,18 @@ void CglMouse::checkButtons(int b, int s, int x, int y){
 
   int w = pcv->getScene()->getView()->width;
   int h = pcv->getScene()->getView()->height;
-  string interfaceType = pcv->getInterface()->getType();
+  CGL_INTERFACE interface = pcv->profile.interface;
   bool  ctrl = ((glutGetModifiers() && GLUT_ACTIVE_CTRL) ? 1:0);
 
-  if(ctrl && (interfaceType=="RADIAL") && (s==GLUT_DOWN) && (b == GLUT_LEFT_BUTTON)){
+  if(ctrl && (interface == CGL_INTERFACE_RADIAL) && (s==GLUT_DOWN) && (b == GLUT_LEFT_BUTTON)){
     glm::vec2 unitPos = glm::vec2( float(x-w/2)/(w/2) , float(y-h/2)/(h/2) );
-    pcv->getInterface()->init(unitPos, 5, 0.25);
+    pcv->getInterface()->init(unitPos, 0.25);
   }
 
   bool clickActivated;
-  if(interfaceType == "LINEAR")
+  if(interface == CGL_INTERFACE_LINEAR)
     clickActivated = (s==GLUT_DOWN);
-  else if(interfaceType == "RADIAL")
+  else if(interface == CGL_INTERFACE_RADIAL)
     clickActivated = (s == GLUT_UP);
 
   if(pcv->getInterface()->isActive()){
@@ -310,27 +310,7 @@ void CglMouse::checkButtons(int b, int s, int x, int y){
 
       if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
         if(clickActivated){
-          //if(i == 0){
-          //  cout << bX.x << "/" << bX.y << " \t " << bY.x << "/" << bY.y << endl;
-          //}
-          cout << "button " << i << " activated!" << endl;
-          if(i == 0){
-            pcv->profile.switch_theme();
-            pcv->getInterface()->updateTextures();
-          }
-          if(i == 1){
-            pcv->profile.displayBottomGrid = !pcv->profile.displayBottomGrid;
-          }
-          if(i==2){
-            pcv->profile.smooth = !pcv->profile.smooth;
-          }
-          if( i == 3 ){
-            for (unsigned int i = 0; i < pcv->getScene()->numObjects() ; i++)
-              pcv->getScene()->getObject(i)->toogleMesh();
-          }
-          if( i == 4 ){
-            exit(1);
-          }
+          pcv->getInterface()->getButton(i)->activate();
         }
         else{
           cout << "button " << i << " hovered!" << endl;
@@ -340,7 +320,7 @@ void CglMouse::checkButtons(int b, int s, int x, int y){
     }
   }
 
-  if(interfaceType=="RADIAL"){
+  if(interface == CGL_INTERFACE_RADIAL){
     if( s == GLUT_UP ){
       pcv->getInterface()->unactive();
     }

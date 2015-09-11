@@ -29,7 +29,6 @@ public:
   CglProfile profile;
 
 private:
-
   std::vector<CglLight>    light;
   std::vector<pCglScene>   scene;
   std::vector<CglWindow>   window;
@@ -37,8 +36,9 @@ private:
   CglMouse                 mice;
   CglKeyboard              keyboard;
   CglShader                simpleShader, smoothShader, flatShader;
-  CglRadialInterface       interface;
-  //CglLinearInterface       interface;
+
+  CglRadialInterface       radialInterface;
+  CglLinearInterface       linearInterface;
 
 
 /////////////////////////////////////////////////////
@@ -67,6 +67,9 @@ public:
   pCglWindow    getWindow();
   pCglInterface getInterface();
   pCglMouse     getMouse();
+
+  std::vector<pCglObject>* getObjectList(){return &object;}
+
   int           simpleID();
   int           smoothID();
   int           flatID();

@@ -9,10 +9,15 @@ class CglProfile
 {
   public:
     CglProfile();
-    ~CglProfile();
+    ~CglProfile(){};
     glm::vec3 color();
+
     void switch_theme();
     void update_theme();
+    void switch_colors();
+    void update_colors();
+    void update_objects_colors();
+    void switch_interface();
 
   public:
     std::string path;
@@ -24,13 +29,14 @@ class CglProfile
     bool  displayAxesLabels;
     bool  displayReflection;
     bool  displayBackgroundGradient;
-    bool  smooth;
 
     bool  perspective;
 
     bool  flyingMode;
     bool  classicalMode;
     bool  accumulatedMode;
+
+    bool smooth;
 
     bool  stereo;
 
@@ -42,15 +48,23 @@ class CglProfile
     bool  globalScale;
     bool  groupRotation;
 
+    //GUI settings
+    CGL_INTERFACE interface = CGL_INTERFACE_RADIAL;
+    CGL_BUTTONS   interface_type = CGL_BUTTONS_BASIC;
+
+    //Theme settings
     CGL_THEME  theme;
     glm::vec2  reflection_mix;
     glm::vec3  sele_color;
     glm::vec3  back_color, grid_color, idle_color;
     float      shadow_factor;
 
-    float saturation;
-    float value;
-    float mixWithWhite;
+    //Mesh colors
+    CGL_COLORS colors;
+    float      saturation;
+    float      value;
+    float      mixFactor;
+    glm::vec3  mixColor;
 
   protected:
   private:

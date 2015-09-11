@@ -20,10 +20,9 @@ glm::vec3 CglColorGenerator::generateColor(){
   h -= int(h);
   rgb rgbColor = hsv2rgb(hsv{double(h)*360, pcv->profile.saturation, pcv->profile.value});
   inc++;
-  glm::vec3 mix = glm::vec3(1);
   glm::vec3 col = glm::vec3(rgbColor.r, rgbColor.g, rgbColor.b);
-  float mixFactor = pcv->profile.mixWithWhite;//1 = pure color, 0 = pure white
-  return mixFactor * col + (1-mixFactor) * mix;
+  float fac = pcv->profile.mixFactor;
+  return (1-fac) * col + fac * pcv->profile.mixColor;
 }
 
 hsv CglColorGenerator::rgb2hsv(rgb in){
