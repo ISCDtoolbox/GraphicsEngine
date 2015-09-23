@@ -9,6 +9,7 @@ class CglProfile
 {
   public:
     CglProfile();
+    void read_configuration_file(std::string fileName);
     ~CglProfile(){};
     glm::vec3 color();
 
@@ -16,8 +17,10 @@ class CglProfile
     void update_theme();
     void switch_colors();
     void update_colors();
+    void update_ground();
     void update_objects_colors();
     void switch_interface();
+
 
   public:
     std::string path;
@@ -48,7 +51,6 @@ class CglProfile
     CGL_ARRANGEMENT initial_arrangement;
     bool            independantScale;
     bool            globalScale;
-    bool            groupRotation;
 
     //Camera settings
     CGL_CAM         camera;

@@ -28,7 +28,6 @@ CglCanvas::CglCanvas(int argc, char **argv){
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 
   cglSetLights();
-  //profile = CglProfile();
 }
 
 

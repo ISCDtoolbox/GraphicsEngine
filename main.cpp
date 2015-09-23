@@ -16,8 +16,7 @@ int main(int argc, char **argv){
     cv.load_meshes_from_file("cgl.save", ids);
   }
 
-  else if (argc > 1)
-  {
+  else if (argc > 1){
     cv.initWindow(idw, ids, 800, 800);
     vector<CglMesh*> mesh;
     for (int i=0; i < argc - 1; i++){
@@ -27,7 +26,9 @@ int main(int argc, char **argv){
       ido = cv.cglObject(mesh[i]);
       cv.cglSetObject(ido, ids);
     }
-    cv.getScene(ids)->place_objects_on_grid();
+
+    if(cv.profile.initial_arrangement == CGL_ARRANGEMENT_GRID)
+      cv.getScene(ids)->place_objects_on_grid();
   }
 
   else{ cout << "Invalid arguments" << endl; exit(1); }

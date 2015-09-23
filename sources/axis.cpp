@@ -121,10 +121,6 @@ void CglBackground::display(){
     gradient_colors  = {glm::vec3(1), glm::vec3(1)};
     gradient_heights = {-1, 1};
   }
-  else if (theme == CGL_THEME_FANCY){
-    gradient_colors  = {glm::vec3(1,0,0), glm::vec3(1,1,0), glm::vec3(0,1,0), glm::vec3(0,0,1), glm::vec3(1,0,1)};
-    gradient_heights = {-1, -0.5, 0, 0.5, 1};
-  }
 
   glUseProgram(0);
   glDisable(GL_DEPTH_TEST);

@@ -66,21 +66,17 @@ void CglGroup::compute(){
     for(int i = 0 ; i < numObjects() ; i++)
       listObject[i]->select();
 
-  //On update éventuellement le centre de rotation des objets
-  if(pcv->profile.groupRotation){
-
-    //On calcule le centre du groupe
-    glm::vec3 tmpCenter;
-    for(int i = 0 ; i < pCenters.size() ; i++){
-      tmpCenter += *pCenters[i];
-    }
-    group_center = float( 1.0f/pCenters.size() ) * tmpCenter;
-
-    //On envoie le centre aux objets
-    for(int i = 0 ; i < numObjects() ; i++){
-      listObject[i]->setRotationCenter(group_center);
-    }
+  //On calcule le centre du groupe
+  glm::vec3 tmpCenter;
+  for(int i = 0 ; i < pCenters.size() ; i++){
+    tmpCenter += *pCenters[i];
   }
+  group_center = float( 1.0f/pCenters.size() ) * tmpCenter;
+  //On envoie le centre aux objets
+  for(int i = 0 ; i < numObjects() ; i++){
+    listObject[i]->setRotationCenter(group_center);
+  }
+
 }
 
 bool CglGroup::isSelected(){return selected;}
