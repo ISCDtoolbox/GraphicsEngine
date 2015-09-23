@@ -47,7 +47,7 @@ class CglInterface{
     bool                    isMouseOnPanel;
 
   public:
-    CglInterface(){};
+    CglInterface(){active=false;};
     ~CglInterface(){};
     void unactive(){active = false;}
     bool isActive(){return active;}

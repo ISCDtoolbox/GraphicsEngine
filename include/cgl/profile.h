@@ -23,51 +23,50 @@ class CglProfile
     std::string path;
     CglColorGenerator colorGenerator;
 
-    bool  displayShadows;
-    bool  displayBottomGrid;
-    bool  displayAxes;
-    bool  displayAxesLabels;
-    bool  displayReflection;
-    bool  displayBackgroundGradient;
+    bool            displayAxes;
+    bool            smooth;
 
-    bool  perspective;
+    bool            perspective;
 
-    bool  flyingMode;
-    bool  classicalMode;
-    bool  accumulatedMode;
+    bool            stereo;
+    bool            invertVertical;
+    bool            fullscreen;
 
-    bool smooth;
 
-    bool  stereo;
+    CGL_INTERFACE   interface;
+    CGL_BUTTONS     buttons;
 
-    float bottomDistance;
-    float bottomAngle;
+    //Ground settings
+    CGL_GROUND      ground;
+    bool            displayBottomGrid;
+    bool            displayReflection;
+    bool            displayShadows;
+    float           bottomDistance;
+    float           bottomAngle;
 
-    bool  invertVertical;
-    bool  independantScale;
-    bool  globalScale;
-    bool  groupRotation;
+    //Initial arrangement
+    CGL_ARRANGEMENT initial_arrangement;
+    bool            independantScale;
+    bool            globalScale;
+    bool            groupRotation;
 
-    //GUI settings
-    CGL_INTERFACE interface = CGL_INTERFACE_RADIAL;
-    CGL_BUTTONS   interface_type = CGL_BUTTONS_BASIC;
+    //Camera settings
+    CGL_CAM         camera;
+    bool            flyingMode;
 
     //Theme settings
-    CGL_THEME  theme;
-    glm::vec2  reflection_mix;
-    glm::vec3  sele_color;
-    glm::vec3  back_color, grid_color, idle_color;
-    float      shadow_factor;
+    CGL_THEME       theme;
+    glm::vec2       reflection_mix;
+    glm::vec3       sele_color;
+    glm::vec3       back_color, grid_color, idle_color;
+    float           shadow_factor;
 
     //Mesh colors
-    CGL_COLORS colors;
-    float      saturation;
-    float      value;
-    float      mixFactor;
-    glm::vec3  mixColor;
-
-  protected:
-  private:
+    CGL_COLORS      colors;
+    float           saturation;
+    float           value;
+    float           mixFactor;
+    glm::vec3       mixColor;
 };
 
 #endif // PROFILE_H

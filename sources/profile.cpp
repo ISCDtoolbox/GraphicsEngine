@@ -11,8 +11,6 @@ CglProfile::CglProfile()
   path              = EXT_PATH;
 
   displayAxes       = true;
-  displayAxesLabels = false;
-  displayBackgroundGradient = true;
 
   displayBottomGrid = false;
 
@@ -21,8 +19,6 @@ CglProfile::CglProfile()
 
   smooth            = false;
 
-  classicalMode     = true;
-  accumulatedMode   = false;
   flyingMode        = false;
 
   invertVertical    = true;
@@ -32,14 +28,17 @@ CglProfile::CglProfile()
 
   groupRotation     = true;
 
+  fullscreen        = false;
+
   bottomDistance    = 0.1;
   bottomAngle       = 0.0;//G(float)3.14159/4;
 
-
-  interface      = CGL_INTERFACE_LINEAR;
-  interface_type = CGL_BUTTONS_EXTENDED;
-  colors         = CGL_COLORS_WHITES;
-  theme          = CGL_THEME_DARK;
+  initial_arrangement = CGL_ARRANGEMENT_GRID;
+  camera              = CGL_CAM_UPPER_SPHERE;
+  interface           = CGL_INTERFACE_LINEAR;
+  buttons             = CGL_BUTTONS_EXTENDED;
+  colors              = CGL_COLORS_FLASHY;
+  theme               = CGL_THEME_DARK;
 
   update_colors();
   update_theme();

@@ -30,7 +30,7 @@ private:
 
 public:
 	CglView();
-	virtual ~CglView();
+	virtual ~CglView(){};
 	void setPersp(double fovy, double znear, double zfar);
 
 	void setView();

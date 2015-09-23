@@ -46,7 +46,7 @@ void CglButton::display(){
 }
 
 void CglButton::activate(){
-  if(pcv->profile.interface_type == CGL_BUTTONS_BASIC){
+  if(pcv->profile.buttons == CGL_BUTTONS_BASIC){
     if( rank == 0 ){
       pcv->profile.switch_theme();
       pcv->getInterface()->updateTextures();
@@ -65,7 +65,7 @@ void CglButton::activate(){
       exit(1);
     }
   }
-  else if(pcv->profile.interface_type == CGL_BUTTONS_EXTENDED){
+  else if(pcv->profile.buttons == CGL_BUTTONS_EXTENDED){
     if( rank == 0 ){
       pcv->profile.switch_theme();
       pcv->getInterface()->updateTextures();
@@ -96,6 +96,9 @@ void CglButton::activate(){
       if(objectsToGroup.size()>1){
         pcv->getScene()->getGroupList()->push_back(new CglGroup(objectsToGroup));
       }
+
+
+
     }
     if( rank == 7 ){
       exit(1);
@@ -108,8 +111,8 @@ void CglButton::activate(){
 ////////////////////////////////////////////////////////////////
 //Interface class
 void CglInterface::init_buttons(){
-  CGL_BUTTONS interface = pcv->profile.interface_type;
-  if(interface == CGL_BUTTONS_BASIC){
+  CGL_BUTTONS buttons_type = pcv->profile.buttons;
+  if(buttons_type == CGL_BUTTONS_BASIC){
     nbButtons = 5;
     icons =  {"fill.png",
               "grid.png",
@@ -117,7 +120,7 @@ void CglInterface::init_buttons(){
               "mesh.png",
               "exit.png"};
   }
-  else if(interface == CGL_BUTTONS_EXTENDED){
+  else if(buttons_type == CGL_BUTTONS_EXTENDED){
     nbButtons = 8;
     icons =  {"fill.png",
               "color.png",
@@ -185,9 +188,10 @@ void CglLinearInterface::init(float off){
 
 void CglLinearInterface::display(){
   glm::vec2 pos = pcv->getMouse()->getCursorPosition();
+  glm::vec3 but = pcv->getMouse()->getMouseButtons();
   int panelBorder = (1 + offset - (1-offset)) * pcv->getScene()->getView()->width/2;
   isMouseOnPanel = ((pos.x > panelBorder) ? true:false);
-  active = isMouseOnPanel;
+  active = ( isMouseOnPanel && (but == glm::vec3(0,0,0)) );
 
   if(active){
     glEnable(GL_BLEND);

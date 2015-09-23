@@ -39,6 +39,7 @@ public:
   void checkButtons(int b, int s, int x, int y);
   glm::vec3 projsph(glm::vec2 diff);
   glm::vec2 getCursorPosition(){return currPos;}
+  glm::vec3 getMouseButtons(){return glm::vec3(m_button[0], m_button[1], m_button[2]);}
 };
 
 typedef CglMouse* pCglMouse;

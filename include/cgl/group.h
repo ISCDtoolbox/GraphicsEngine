@@ -17,6 +17,7 @@ class CglGroup
 
     CglGroup(std::vector<pCglObject> groupOfObjects);
     ~CglGroup();
+    void unGroup();
     void compute();
     bool isSelected();
     int numObjects(){return listObject.size();}

@@ -99,9 +99,9 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
 
   // ZOOM
   if(((key == 'z') || (key == 'Z')) && (lastKey!='t') && (lastKey!='r')){
-    if ((glm::length(scene->getCam())>0.15) && (key=='z'))
+    if ((glm::length(scene->getCam())>0.05) && (key=='z'))
       scene->getView()->zoom *= 0.95;
-    else if( (glm::length(scene->getCam())<1.75) && (key=='Z') )
+    else if( (glm::length(scene->getCam())<10) && (key=='Z') )
       scene->getView()->zoom *= 1.05;
   }
 
@@ -202,6 +202,7 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
           scene->getGroup(iG)->listObject[iO]->resetGroupID();
         }
         scene->getGroupList()->erase(scene->getGroupList()->begin() + iG);
+        scene->getGroup(iG)->unGroup();
       }
     }
   }
@@ -283,6 +284,18 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
   }
   if(key=='c'){
     pcv->profile.update_objects_colors();
+  }
+
+  //Fullscreen
+  if(key=='F'){
+    pcv->profile.fullscreen = !pcv->profile.fullscreen;
+    if (pcv->profile.fullscreen)
+      glutFullScreen();
+    else{
+      glutReshapeWindow(pcv->getScene()->getView()->width, pcv->getScene()->getView()->height);
+      //glutPositionWindow(0,0);
+      //glutReshapeFunc(pcv->getScene()->getView()->width, pcv->getScene()->getView()->height);
+    }
   }
 
 

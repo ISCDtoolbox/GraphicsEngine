@@ -10,16 +10,10 @@ CglView::CglView()
   m_eyesep = 0.027;
   m_eye    = TV_LEFT;
   m_ctyp   = TV_DEF;
-  setPersp(70.0, 0.01, 3.0);
+  setPersp(70.0, 0.001, 15.0);
   zoom     = 1.0f;
   camOffset= 0.0f;
 }
-
-
-CglView::~CglView()
-{
-}
-
 
 void CglView::setPersp(double fovy, double znear, double zfar)
 {

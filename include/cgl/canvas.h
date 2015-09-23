@@ -59,6 +59,9 @@ public:
   void cglSetScene(int ids, int idw);
   void cglSetObject(int ido, int ids);
 
+  void initWindow(int &idw, int &ids, int width, int height);
+  void load_meshes_from_file(string fileName, int idSce);
+
   //Accessors
   pCglLight     getLight( int lightID);
   pCglScene     getScene( int sceneID);

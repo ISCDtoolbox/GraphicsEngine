@@ -146,13 +146,14 @@ void CglScene::applyTransformation()
                        m_up);
     m_right = glm::cross(m_look,m_up);
   }
+
   //CLASSICAL MODE
-  else if (pcv->profile.classicalMode){
+  else if (pcv->profile.camera == CGL_CAM_UPPER_SPHERE){
     MODEL = glm::translate(MODEL, transform.tr);
     m_cam   =  view->zoom * glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_cam,1)));
     if (m_cam.y< 0){
       m_cam.y = 0;
-      m_up = glm::vec3(0,1,0);
+      m_up = glm::normalize(glm::vec3(0,m_up.y,0));
     }
     else{
       m_up    = glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_up,1)));
@@ -161,8 +162,9 @@ void CglScene::applyTransformation()
     VIEW = glm::lookAt(m_cam + view->camOffset * m_right, m_look, m_up);
     m_right = glm::cross(m_look,m_up);
   }
+
   //ACCUMULATED MODE
-  else if(pcv->profile.accumulatedMode){
+  else if(pcv->profile.camera == CGL_CAM_FULL_SPHERE){
     MODEL = glm::translate(MODEL, transform.tr);
     m_cam   =  view->zoom * glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_cam,1)));
     m_right = glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_right,1)));
@@ -263,3 +265,31 @@ void CglScene::cglInit()
 bool CglScene::isSelected(){return selected;}
 void CglScene::select(){  selected = true;}
 void CglScene::unSelect(){selected = false;}
+
+//Placement des objets sur une grille
+void CglScene::place_objects_on_grid(){
+  int nM = 0;
+  for(int i = 0 ; i < listObject.size() ; i++)
+    if(listObject[i]->isMeshObject())
+      nM++;
+
+  int nRow = int(sqrt(nM));
+  int nCol = nM/nRow;
+  if(nRow * nCol != nM)
+    nCol++;
+  float dist = 0.35;
+  float offX = ((nCol%2==0)? 0.5 * dist*nCol/2.0f : dist*nCol/2.0f - dist/2.0f );
+  float offZ = ((nRow%2==0)? 0.5 * dist*nRow/2.0f : dist*nRow/2.0f - dist/2.0f );
+
+  for(int i = 0 ; i < listObject.size() ; i++){
+    if(listObject[i]->isMeshObject()){
+      glm::vec3 c = glm::vec3( -offX + dist * (i%nCol), 0, -offZ + dist * (i/nCol));
+      glm::mat4 M = glm::mat4(1);
+      M[3][0] = c.x;
+      M[3][1] = c.y;
+      M[3][2] = c.z;
+      listObject[i]->setCenter(c);
+      listObject[i]->setMODEL(M);
+    }
+  }
+}

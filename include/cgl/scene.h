@@ -81,6 +81,7 @@ public:
   void                     update_matrices();
   void                     undoLast();
   void                     resetAll();
+  void                     place_objects_on_grid();
 
   //Picking
   int                      getPickedObjectID(int x, int y);

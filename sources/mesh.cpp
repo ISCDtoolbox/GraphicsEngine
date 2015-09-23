@@ -250,6 +250,10 @@ glm::mat4 shadowMatrix(glm::vec4 ground, glm::vec4 light){
     return shadowMat;
 }
 
+glm::mat4 reflectionMatrix(glm::mat4 M, glm::vec3 N){
+
+}
+
 void CglMesh::shadowsDisplay(){
 
   glEnable(GL_CULL_FACE);
@@ -326,7 +330,16 @@ void CglMesh::shadowsDisplay(){
     else
       uniformVec3( colorID, (glm::vec3(mix.x) + mix.y * face_color) );
 
-    glm::mat4 reflection = glm::translate( glm::scale( MVP,  glm::vec3(1,-1,1)) , glm::vec3(0, 1.24 * (pcv->profile.bottomDistance + center.y + (*pMODEL)[3].y) ,0));
+    glm::mat4 ID(1);
+    glm::vec3 cc             =  glm::vec3((*pMODEL)[3]);
+    glm::mat4 reflection     =  *pPROJ  *
+                                *pVIEW  *
+                                *pMODEL *
+                                glm::translate(ID, glm::vec3(0, - pcv->profile.bottomDistance - cc.y, 0)) *
+                                glm::scale(ID, glm::vec3(1,-1,1)) *
+                                glm::translate(ID, glm::vec3(0, + pcv->profile.bottomDistance + cc.y, 0)) *
+                                glm::scale(MODEL, glm::vec3(scaleFactor));
+
     glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &reflection[0][0]);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glCullFace(GL_FRONT);
