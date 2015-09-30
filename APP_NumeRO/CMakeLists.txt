@@ -1,0 +1,11 @@
+cmake_minimum_required(VERSION 2.8)
+set(CMAKE_BUILD_TYPE "Release")
+set(PROJECT_NAME "Numero")
+set(CMAKE_SOURCE_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+project(${PROJECT_NAME})
+configure_file("${CMAKE_SOURCE_DIR}/app_numero.cpp" "${CMAKE_SOURCE_DIR}/app_numero.cpp")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "$ENV{HOME}/bin")
+include_directories("/usr/include/SUscCGL/")
+add_executable(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/app_numero.cpp")
+target_link_libraries(${PROJECT_NAME} SUscCGL)

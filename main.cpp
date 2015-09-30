@@ -9,7 +9,7 @@ using namespace std;
 int main(int argc, char **argv){
 
   int idw, ids, ido;
-  CglCanvas cv(argc,argv);
+  CglCanvas cv(argc,argv,"SUscCGL.config");
 
   if((argc==2) && (string(argv[1])=="cgl.save")){
     cv.initWindow(idw, ids, 800, 800);

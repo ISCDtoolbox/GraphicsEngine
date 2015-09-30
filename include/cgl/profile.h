@@ -17,7 +17,6 @@ class CglProfile
     void update_theme();
     void switch_colors();
     void update_colors();
-    void update_ground();
     void update_objects_colors();
     void switch_interface();
 

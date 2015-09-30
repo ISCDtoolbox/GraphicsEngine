@@ -58,7 +58,7 @@ void CglMouse::motion(int x, int y)
       glm::mat4 ROTOBJECT = glm::mat4( glm::angleAxis(0.01f * d.x, glm::vec3(0,1,0))  );
 
       if(pcv->profile.camera == CGL_CAM_UPPER_SPHERE)
-        ROT = glm::mat4(  glm::angleAxis(0.01f * d.y, scene->getRight())  *  glm::angleAxis(0.01f * d.x, glm::vec3(0,1,0))  );
+        ROT = glm::mat4(  glm::angleAxis(0.01f * d.y, glm::normalize(scene->getRight()))  *  glm::angleAxis(0.01f * d.x, glm::vec3(0,1,0))  );
       else if(pcv->profile.camera == CGL_CAM_FULL_SPHERE)
         ROT = glm::mat4( glm::angleAxis(0.01f * d.y, scene->getRight()) * glm::angleAxis(0.01f * d.x, scene->getUp()) );
 

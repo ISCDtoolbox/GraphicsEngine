@@ -20,7 +20,6 @@ CglProfile::CglProfile()
   read_configuration_file(path + "SUscCGL.config");
   update_colors();
   update_theme();
-  update_ground();
 }
 
 
@@ -89,8 +88,8 @@ void CglProfile::read_configuration_file(string fileName){
 				colors              = static_cast<CGL_COLORS>(stoi(str.substr(str.find(" ")+1,str.length())));
       if(firstWord == "THEME")
 				theme               = static_cast<CGL_THEME>(stoi(str.substr(str.find(" ")+1,str.length())));
-      if(firstWord == "GROUND")
-				ground              = static_cast<CGL_GROUND>(stoi(str.substr(str.find(" ")+1,str.length())));
+      //if(firstWord == "GROUND")
+			//	ground              = static_cast<CGL_GROUND>(stoi(str.substr(str.find(" ")+1,str.length())));
 
       //Fixed variables
       if(firstWord == "INVERT_VERTICAL")
@@ -193,7 +192,22 @@ void CglProfile::update_objects_colors(){
 }
 
 
-void CglProfile::update_ground(){
+void CglProfile::update_theme(){
+  //Theme update
+  if( (theme == CGL_THEME_DARK) || (theme == CGL_THEME_BLACK) ){
+    grid_color = glm::vec3(0.65, 0.65, 0.65);
+    idle_color = glm::vec3(0.8,  0.8,  0.8);
+    sele_color = glm::vec3(1,    0.6,  0);
+    ground     = CGL_GROUND_REFLECTION;
+  }
+  if( (theme == CGL_THEME_CLEAR) || (theme == CGL_THEME_WHITE) ){
+    grid_color = glm::vec3(0.4,  0.4,  0.4);
+    idle_color = glm::vec3(0.15, 0.15, 0.15);
+    sele_color = glm::vec3(1,    0.6,  0);
+    ground         = CGL_GROUND_SHADOWS;
+  }
+
+  //Ground update
   if( ground == CGL_GROUND_SHADOWS ){
     displayReflection = false;
     displayShadows    = true;
@@ -208,23 +222,6 @@ void CglProfile::update_ground(){
     displayReflection = false;
     displayShadows    = false;
   }
-}
-
-
-void CglProfile::update_theme(){
-  if( (theme == CGL_THEME_DARK) || (theme == CGL_THEME_BLACK) ){
-    grid_color = glm::vec3(0.65, 0.65, 0.65);
-    idle_color = glm::vec3(0.8,  0.8,  0.8);
-    sele_color = glm::vec3(1,    0.6,  0);
-    ground     = CGL_GROUND_REFLECTION;
-  }
-  if( (theme == CGL_THEME_CLEAR) || (theme == CGL_THEME_WHITE) ){
-    grid_color = glm::vec3(0.4,  0.4,  0.4);
-    idle_color = glm::vec3(0.15, 0.15, 0.15);
-    sele_color = glm::vec3(1,    0.6,  0);
-    ground         = CGL_GROUND_SHADOWS;
-  }
-  update_ground();
 }
 
 void CglProfile::switch_theme(){

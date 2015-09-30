@@ -18,7 +18,7 @@ template<typename T> std::vector<T> split(const std::string& line) {
 ///////////////////////////////////////////////////////////////////////////
 //Constructor
 
-CglCanvas::CglCanvas(int argc, char **argv){
+CglCanvas::CglCanvas(int argc, char **argv, string config_file){
   pcv = this;
   glutInit(&argc, argv);
 
@@ -28,6 +28,8 @@ CglCanvas::CglCanvas(int argc, char **argv){
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 
   cglSetLights();
+
+  pcv->profile.read_configuration_file(config_file);
 }
 
 
@@ -67,7 +69,7 @@ void CglCanvas::cglSetObject(int ido, int ids){
 }
 
 void CglCanvas::initWindow(int &idw, int &ids, int width, int height){
-  idw = cglWindow(0,0,800,800);
+  idw = cglWindow(0,0,width,height);
   ids = cglScene();
   cglSetScene(ids, idw);
   getWindow(idw)->show();

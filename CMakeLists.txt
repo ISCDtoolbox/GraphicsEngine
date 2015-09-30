@@ -8,16 +8,16 @@ configure_file("${CMAKE_SOURCE_DIR}/include/ext.h.in" "${CMAKE_SOURCE_DIR}/inclu
 
 #Include de GLM
 include(ExternalProject)
-ExternalProject_Add(
-  glm
-  PREFIX "./library/glm"
-  GIT_REPOSITORY https://github.com/g-truc/glm.git
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ""
-  INSTALL_COMMAND ""
-  LOG_DOWNLOAD ON
-  LOG_INSTALL ON
-)
+#ExternalProject_Add(
+#  glm
+#  PREFIX "./library/glm"
+#  GIT_REPOSITORY https://github.com/g-truc/glm.git
+#  CONFIGURE_COMMAND ""
+#  BUILD_COMMAND ""
+#  INSTALL_COMMAND ""
+#  LOG_DOWNLOAD ON
+#  LOG_INSTALL ON
+#)
 
 #Flags and libraries
 set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -Wno-deprecated -O0")
@@ -40,21 +40,24 @@ add_library(mesh SHARED library/libmesh/libmesh5.h library/libmesh/libmesh5.c)
 target_link_libraries(SUscCGL ${CORELIBS} mesh)
 add_dependencies(SUscCGL HEADERFILES)
 
-#Allows for copying the icons in another folder
-#add_dependencies(SUscCGL ICONFILES)
-#add_custom_target(
-#  ICONFILES
-#  COMMAND cp icon.bmp "$ENV{HOME}/bin"
-#  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/icons"
-#  COMMENT "Copies icon files"
-#)
+#Installation lors d'un make install, permet de ne builder que la librairie.
+install(TARGETS mesh
+        ARCHIVE DESTINATION "/usr/lib/"
+        LIBRARY DESTINATION "/usr/lib/"
+        RUNTIME DESTINATION "/usr/bin/")
+install(TARGETS SUscCGL
+        ARCHIVE DESTINATION "/usr/lib/"
+        LIBRARY DESTINATION "/usr/lib/"
+        RUNTIME DESTINATION "/usr/bin/")
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/"
+        DESTINATION "/usr/include/SUscCGL")
 
 
 #Compilation
-project(SUcgl)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "$ENV{HOME}/bin")
-add_executable(SUcgl main.cpp)
-target_link_libraries(SUcgl SUscCGL)
+#project(SUcgl)
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "$ENV{HOME}/bin")
+#add_executable(SUcgl main.cpp)
+#target_link_libraries(SUcgl SUscCGL)
 
 
 add_custom_target(
@@ -72,5 +75,10 @@ add_custom_target(
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 add_executable(embedfile sources/embedfile.cpp)
+
+
+
+
+
 
 

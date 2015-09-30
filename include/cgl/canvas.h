@@ -48,7 +48,7 @@ public:
 
   //Constructors and destructors
   CglCanvas(){};
-  CglCanvas(int argc, char **argv);
+  CglCanvas(int argc, char **argv, std::string config_file);
   virtual ~CglCanvas(){};
 
   //Scenes, windows... creation

@@ -250,9 +250,6 @@ glm::mat4 shadowMatrix(glm::vec4 ground, glm::vec4 light){
     return shadowMat;
 }
 
-glm::mat4 reflectionMatrix(glm::mat4 M, glm::vec3 N){
-
-}
 
 void CglMesh::shadowsDisplay(){
 
