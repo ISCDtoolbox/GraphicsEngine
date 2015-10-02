@@ -1,5 +1,3 @@
-
-
 #include "cgl/group.h"
 #include "cgl/canvas.h"
 

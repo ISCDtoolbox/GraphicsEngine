@@ -17,23 +17,15 @@ extern CglCanvas *pcv;
 CglProfile::CglProfile()
 {
   path              = EXT_PATH;
-  read_configuration_file(path + "SUscCGL.config");
+  read_configuration_file("");
   update_colors();
   update_theme();
 }
 
 
 void CglProfile::read_configuration_file(string fileName){
-  std::ifstream in;
-	in.open(fileName);
-	std::string str;
 
-  if(!in.is_open()){
-    cout << "Wrong config file path: " << fileName << endl;
-    exit(1);
-  }
-
-	//Fix defaults parameters
+  //Fix defaults parameters
   //Fixed variables
   invertVertical    = false;
   displayAxes       = false;
@@ -57,67 +49,78 @@ void CglProfile::read_configuration_file(string fileName){
   theme               = CGL_THEME_DARK;
   ground              = CGL_GROUND_SHADOWS;
 
-	while(!in.eof()) {
-		while(getline(in,str)) {
-			std::string::size_type begin = str.find_first_not_of(" \f\t\v");
-			//Skips blank lines
-			if(begin == std::string::npos)
-				continue;
-			//Skips #
-			if(std::string("#").find(str[begin]) != std::string::npos)
-				continue;
-			std::string firstWord;
-			try {
-				firstWord = str.substr(0,str.find(" "));
-			}
-			catch(std::exception& e) {
-				firstWord = str.erase(str.find_first_of(" "),str.find_first_not_of(" "));
-			}
-			std::transform(firstWord.begin(),firstWord.end(),firstWord.begin(), ::toupper);
+  if(fileName != ""){
+    std::ifstream in;
+    in.open(fileName);
+    std::string str;
 
-      //Enums
-			if(firstWord == "INITIAL_ARRANGEMENT")
-        initial_arrangement = static_cast<CGL_ARRANGEMENT>(stoi(str.substr(str.find(" ")+1,str.length())));
-			if(firstWord == "CAMERA")
-				camera              = static_cast<CGL_CAM>(stoi(str.substr(str.find(" ")+1,str.length())));
-      if(firstWord == "INTERFACE")
-				interface           = static_cast<CGL_INTERFACE>(stoi(str.substr(str.find(" ")+1,str.length())));
-      if(firstWord == "BUTTONS")
-				buttons             = static_cast<CGL_BUTTONS>(stoi(str.substr(str.find(" ")+1,str.length())));
-      if(firstWord == "COLORS")
-				colors              = static_cast<CGL_COLORS>(stoi(str.substr(str.find(" ")+1,str.length())));
-      if(firstWord == "THEME")
-				theme               = static_cast<CGL_THEME>(stoi(str.substr(str.find(" ")+1,str.length())));
-      //if(firstWord == "GROUND")
-			//	ground              = static_cast<CGL_GROUND>(stoi(str.substr(str.find(" ")+1,str.length())));
+    if(!in.is_open()){
+      cerr << "Invalid conf file: " + fileName << endl;
+      exit(1);
+    }
 
-      //Fixed variables
-      if(firstWord == "INVERT_VERTICAL")
-        invertVertical = true;
-      if(firstWord == "DISPLAY_AXES")
-        displayAxes    = true;
-      if(firstWord == "INDEPENDANT_SCALE")
-        independantScale = true;
-      if(firstWord == "GLOBAL_SCALE")
-        globalScale = true;
-      if(firstWord == "STEREO")
-        stereo = true;
-      if(firstWord == "BOTTOM_DISTANCE")
-        bottomDistance = stof(str.substr(str.find(" ")+1,str.length()));
-      if(firstWord == "BOTTOM_ANGLE")
-        bottomAngle    = stof(str.substr(str.find(" ")+1,str.length()));
+    while(!in.eof()) {
+      while(getline(in,str)) {
+	std::string::size_type begin = str.find_first_not_of(" \f\t\v");
+	//Skips blank lines
+	if(begin == std::string::npos)
+	  continue;
+	//Skips #
+	if(std::string("#").find(str[begin]) != std::string::npos)
+	  continue;
+	std::string firstWord;
+	try {
+	  firstWord = str.substr(0,str.find(" "));
+	}
+	catch(std::exception& e) {
+	  firstWord = str.erase(str.find_first_of(" "),str.find_first_not_of(" "));
+	}
+	std::transform(firstWord.begin(),firstWord.end(),firstWord.begin(), ::toupper);
 
-      //Start up, launching application
-      if(firstWord == "PERSPECTIVE")
-        perspective = true;
-      if(firstWord == "BOTTOM_GRID")
-        displayBottomGrid = true;
-      if(firstWord == "SMOOTH")
-        smooth = true;
-      if(firstWord == "FULLSCREEN")
-        fullscreen = true;
-      if(firstWord == "FLYING_MODE")
-        flyingMode = true;
+	//Enums
+	if(firstWord == "INITIAL_ARRANGEMENT")
+	  initial_arrangement = static_cast<CGL_ARRANGEMENT>(stoi(str.substr(str.find(" ")+1,str.length())));
+	if(firstWord == "CAMERA")
+	  camera              = static_cast<CGL_CAM>(stoi(str.substr(str.find(" ")+1,str.length())));
+	if(firstWord == "INTERFACE")
+	  interface           = static_cast<CGL_INTERFACE>(stoi(str.substr(str.find(" ")+1,str.length())));
+	if(firstWord == "BUTTONS")
+	  buttons             = static_cast<CGL_BUTTONS>(stoi(str.substr(str.find(" ")+1,str.length())));
+	if(firstWord == "COLORS")
+	  colors              = static_cast<CGL_COLORS>(stoi(str.substr(str.find(" ")+1,str.length())));
+	if(firstWord == "THEME")
+	  theme               = static_cast<CGL_THEME>(stoi(str.substr(str.find(" ")+1,str.length())));
+	//if(firstWord == "GROUND")
+	//	ground              = static_cast<CGL_GROUND>(stoi(str.substr(str.find(" ")+1,str.length())));
+
+	//Fixed variables
+	if(firstWord == "INVERT_VERTICAL")
+	  invertVertical = true;
+	if(firstWord == "DISPLAY_AXES")
+	  displayAxes    = true;
+	if(firstWord == "INDEPENDANT_SCALE")
+	  independantScale = true;
+	if(firstWord == "GLOBAL_SCALE")
+	  globalScale = true;
+	if(firstWord == "STEREO")
+	  stereo = true;
+	if(firstWord == "BOTTOM_DISTANCE")
+	  bottomDistance = stof(str.substr(str.find(" ")+1,str.length()));
+	if(firstWord == "BOTTOM_ANGLE")
+	  bottomAngle    = stof(str.substr(str.find(" ")+1,str.length()));
+
+	//Start up, launching application
+	if(firstWord == "PERSPECTIVE")
+	  perspective = true;
+	if(firstWord == "BOTTOM_GRID")
+	  displayBottomGrid = true;
+	if(firstWord == "SMOOTH")
+	  smooth = true;
+	if(firstWord == "FULLSCREEN")
+	  fullscreen = true;
+	if(firstWord == "FLYING_MODE")
+	  flyingMode = true;
+      }
     }
   }
 }

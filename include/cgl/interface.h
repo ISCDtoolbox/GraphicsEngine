@@ -63,6 +63,8 @@ class CglInterface{
     std::vector<pCglButton>* getButtonList(){return &buttons;}
 
     void hover(int indButton);
+    void checkHoveredButtons(int x, int y);
+    void checkClickedButtons(int b, int s, int x, int y);
 };
 typedef CglInterface* pCglInterface;
 

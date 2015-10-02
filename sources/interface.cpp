@@ -163,6 +163,70 @@ void CglInterface::hover(int indButton){
   }
 }
 
+//Check hovered buttons
+void CglInterface::checkHoveredButtons(int x, int y){
+  if(isActive()){
+    int w = pcv->getScene()->getView()->width;
+    int h = pcv->getScene()->getView()->height;
+    bool noneHovered = true;
+    for(int i = 0 ; i < buttons.size() ; i++){
+      glm::vec2 minis = buttons[i]->getMins();
+      glm::vec2 maxis = buttons[i]->getMaxs();
+      glm::vec2 bX = glm::vec2( w/2 * minis.x + w/2, w/2 * maxis.x + w/2 );
+      glm::vec2 bY = glm::vec2( h/2 * minis.y + h/2, h/2 * maxis.y + h/2 );
+      if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
+        cout << "button " << i << " hovered!" << endl;
+        hover(i);
+        noneHovered = false;
+      }
+    }
+    if(noneHovered)
+      hover(-1);
+  }
+}
+
+//Check clicked buttons
+void CglInterface::checkClickedButtons(int b, int s, int x, int y){
+  int w = pcv->getScene()->getView()->width;
+  int h = pcv->getScene()->getView()->height;
+  CGL_INTERFACE interface = pcv->profile.interface;
+  bool  ctrl = ((glutGetModifiers() && GLUT_ACTIVE_CTRL) ? 1:0);
+
+  if(ctrl && (interface == CGL_INTERFACE_RADIAL) && (s==GLUT_DOWN) && (b == GLUT_LEFT_BUTTON)){
+    glm::vec2 unitPos = glm::vec2( float(x-w/2)/(w/2) , float(y-h/2)/(h/2) );
+    init(unitPos, 0.25);
+  }
+
+  bool clickActivated;
+  if(interface == CGL_INTERFACE_LINEAR)
+    clickActivated = (s==GLUT_DOWN);
+  else if(interface == CGL_INTERFACE_RADIAL)
+    clickActivated = (s == GLUT_UP);
+
+  if(isActive()){
+    for(int i = 0 ; i < buttons.size() ; i++){
+      //Mapped from -1 to 1
+      glm::vec2 minis = buttons[i]->getMins();
+      glm::vec2 maxis = buttons[i]->getMaxs();
+      //Mapped from 0 to width, 0 to height
+      glm::vec2 bX = glm::vec2( w/2 * minis.x + w/2, w/2 * maxis.x + w/2 );
+      glm::vec2 bY = glm::vec2( h/2 * minis.y + h/2, h/2 * maxis.y + h/2 );
+
+      if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
+        if(clickActivated)
+          getButton(i)->activate();
+        else
+          hover(i);
+      }
+    }
+  }
+
+  if(interface == CGL_INTERFACE_RADIAL){
+    if( s == GLUT_UP ){
+      unactive();
+    }
+  }
+}
 
 ////////////////////////////////////////////////////////////////
 //Linear interface

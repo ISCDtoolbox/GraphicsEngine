@@ -30,7 +30,7 @@ int main(int argc, char **argv){
     }
 
     else if (argc > 1){
-      cv.initWindow(idw, ids, 600, 480);
+      cv.initWindow(idw, ids, 800, 800);
       vector<CglMesh*> mesh;
       for (int i=0; i < argc - 1; i++){
         cout << "i: " << i << endl;
@@ -52,6 +52,7 @@ int main(int argc, char **argv){
     return(1);
   }
 
+  
   cv.cglMainLoop();
 
   return 0;

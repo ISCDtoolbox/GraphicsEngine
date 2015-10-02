@@ -186,6 +186,7 @@ void CglMesh::getBBOX()
 
   glm::vec3 size = bbmax - bbmin;
   localScale     = 0.5f * 1.0f / (max( max(size.x, size.y) , size.z ));
+  //Independant scale -> Chaque objet est ramené de sorte que sa plus grande dimension egale 1.
   if(pcv->profile.independantScale){
     scaleFactor = localScale;
   }

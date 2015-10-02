@@ -85,6 +85,7 @@ class CGL_API CglObject
     virtual glm::vec3 getBBMAX(){};
     bool  isMeshObject(){return isMesh;}
     glm::mat4 getMODEL(){return MODEL;}
+    glm::vec3 getRotationCenter(){return *rotationCenter;}
 
     int   getGroupID();
     int   getID();

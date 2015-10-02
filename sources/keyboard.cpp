@@ -64,22 +64,23 @@ void CglKeyboard::special(unsigned char key, int x, int y)
   }
   else{
     float speed;
-    if (glutGetModifiers() && GLUT_ACTIVE_CTRL)
-      speed = 0.001f;
+    if (glutGetModifiers() && GLUT_ACTIVE_CTRL )
+      speed = 0.002f;
     else
-      speed = 0.015f;
+      speed = 0.015f;    
+
     switch (key) {
       case GLUT_KEY_LEFT:
-        scene->getTransform()->setTranslation(-speed * scene->getRight());
+	scene->setCam( scene->getCam() - speed * scene->getRight() );
         break;
       case GLUT_KEY_RIGHT:
-        scene->getTransform()->setTranslation(speed * scene->getRight());
+	scene->setCam( scene->getCam() + speed * scene->getRight() );
         break;
       case GLUT_KEY_DOWN:
-        scene->getTransform()->setTranslation(-speed * glm::normalize(scene->getLook()));
+	scene->setCam( scene->getCam() - speed * glm::normalize(scene->getLook()) );
         break;
       case GLUT_KEY_UP:
-        scene->getTransform()->setTranslation(speed * glm::normalize(scene->getLook()));
+	scene->setCam( scene->getCam() + speed * glm::normalize(scene->getLook()) );
         break;
       default:
         break;
@@ -293,14 +294,10 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
       glutFullScreen();
     else{
       glutReshapeWindow(pcv->getScene()->getView()->width, pcv->getScene()->getView()->height);
-      //glutPositionWindow(0,0);
-      //glutReshapeFunc(pcv->getScene()->getView()->width, pcv->getScene()->getView()->height);
     }
   }
 
-
   lastKey = key;
-
 }
 
 void CglKeyboard::keyboardUp(unsigned char key, int x, int y){}

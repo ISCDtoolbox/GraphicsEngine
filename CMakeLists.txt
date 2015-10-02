@@ -8,16 +8,16 @@ configure_file("${CMAKE_SOURCE_DIR}/include/ext.h.in" "${CMAKE_SOURCE_DIR}/inclu
 
 #Include de GLM
 include(ExternalProject)
-#ExternalProject_Add(
-#  glm
-#  PREFIX "./library/glm"
-#  GIT_REPOSITORY https://github.com/g-truc/glm.git
-#  CONFIGURE_COMMAND ""
-#  BUILD_COMMAND ""
-#  INSTALL_COMMAND ""
-#  LOG_DOWNLOAD ON
-#  LOG_INSTALL ON
-#)
+ExternalProject_Add(
+  glm
+  PREFIX "./library/glm"
+  GIT_REPOSITORY https://github.com/g-truc/glm.git
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
+  LOG_DOWNLOAD ON
+  LOG_INSTALL ON
+)
 
 #Flags and libraries
 set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -Wno-deprecated -O0")

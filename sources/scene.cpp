@@ -2,6 +2,9 @@
 #include <cgl/canvas.h>
 extern CglCanvas *pcv;
 
+#include <glm/gtx/intersect.hpp>
+#include <glm/gtx/vector_angle.hpp>
+
 // object constructor
 CglScene::CglScene():transform(){
   selected = true;
@@ -49,6 +52,7 @@ void CglScene::display()
   update_matrices();
   applyTransformation();
 
+
   for (int i = 0; i < listGroup.size(); i++)
     listGroup[i]->compute();
 
@@ -59,6 +63,8 @@ void CglScene::display()
   background->display();
   axis->applyTransformation();
   axis->display();
+
+//applyTransformation();
 
   for (int iObj = 0; iObj < numObjects(); iObj++)
     if(!listObject[iObj]->isHidden())
@@ -91,7 +97,7 @@ void CglScene::display()
 }
 
 
-int CglScene::getPickedObjectID(int x, int y){
+int CglScene::getPickedID(int x, int y){
   unsigned char pixel[3];
   GLint viewport[4];
   glGetIntegerv(GL_VIEWPORT,viewport);
@@ -100,8 +106,192 @@ int CglScene::getPickedObjectID(int x, int y){
     listObject[i]->pickingDisplay();
   glFlush();
   glReadPixels(x,viewport[3]-y,1,1,GL_RGB,GL_UNSIGNED_BYTE,(void *)pixel);
-  return pixel[0];
+
+  int indPicked = -1;
+  //On récupère l'indice de l'objet pické
+  for(int i = 0 ; i < listObject.size() ; i++)
+    if (listObject[i]->isPicked(pixel[0]))
+      indPicked = i;
+  return indPicked;
 }
+
+void CglScene::onPick(bool ctrl, int ind){
+  bool match = false;
+  int  nObjs = listObject.size();
+  if (ind!=-1)
+    match = true;
+
+  //Si on ne picke pas, on déselectionne tout et on sélectionne la scène
+  if(!match){
+    select();
+    for(int i = 0 ; i < nObjs ; i++)
+      listObject[i]->unSelect();
+  }
+
+  if(match){
+    //On change l'état de sélection de l'objet pické
+    listObject[ind]->toogleSelected();
+
+    if(!ctrl){
+      //On déselectionne tous les autres objets
+      for(int i = 0 ; i < nObjs ; i++)
+	if(i!=ind)
+	  listObject[i]->unSelect();
+    }
+
+    //Si un selectionné, deselectionne la scène
+    bool someSelected = false;
+    for(int i = 0 ; i < nObjs ; i++)
+      if(listObject[i]->isSelected())
+	someSelected = true;
+    if(someSelected)
+      unSelect();
+    else
+      select();
+
+    //On met le dernier objet pické au dessus de tous les autres si il est sélectionné
+    if(listObject[ind]->isSelected())
+      reOrderObjects(ind);
+  }//End match
+}
+
+void CglScene::save(){
+  if (isSelected())
+    saveTransformations();
+  for (unsigned int i = 0; i < listObject.size() ; i++){
+    pCglObject obj = listObject[i];
+    if (obj->isSelected()){
+      //if((!obj->isConstrainedInRotation()) && (!obj->isConstrainedInTranslation()))
+      obj->saveTransformations();
+    }
+  }
+}
+
+
+
+//Dragging
+void CglScene::onDrag(int x, int y){}
+
+float CglScene::orientedAngle(glm::vec3 pt1,
+			      glm::vec3 pt2,
+			      glm::vec3 c,
+			      glm::vec3 ax){
+  float a = glm::orientedAngle(glm::normalize(glm::vec3(pt1.x - c.x,
+							c.y,
+							pt1.z - c.z)),
+			       glm::normalize(glm::vec3(pt2.x - c.x,
+							c.y,
+							pt2.z - c.z)),
+			       ax);
+  return 3.0f * a;
+}
+
+void CglScene::onLeftDrag(int x, int y){
+  glm::vec3 planeNormal(0,1,0);
+  bool intersects, intersectsLast;
+  glm::vec3 ray, lastRay;
+  glm::vec3 inter, lastInter;
+
+  //POUR LA SCENE
+  glm::mat4 ROT(1), ID(1);
+  float dx = x - lastDrag.x;
+  float dy = y - lastDrag.y;
+  float f = 0.01f;
+  if(pcv->profile.camera == CGL_CAM_UPPER_SPHERE)
+    ROT = glm::mat4(  glm::angleAxis(f*dy, glm::normalize(m_right))  *  glm::angleAxis(f*dx, glm::vec3(0,1,0)) );
+  else if(pcv->profile.camera == CGL_CAM_FULL_SPHERE)
+    ROT = glm::mat4( glm::angleAxis(f*dy, m_right) * glm::angleAxis(f*dx, m_up) );
+  if (isSelected())
+    transform.setRotation(ROT);
+
+  //POUR LES OBJETS
+  for (unsigned int i = 0; i < listObject.size() ; i++){
+    pCglObject obj  = listObject[i];
+    if ( (obj->isSelected()) /*&& (obj->getGroupID()==-1)*/ ){
+      glm::vec3 c     = glm::vec3(obj->getRotationCenter()) + glm::vec3(MODEL[3]);
+      glm::vec3 axis  = glm::vec3(0,1,0);
+      ray             = getRayVector(x,y);
+      inter           = intersect(ray, c, planeNormal, intersects);
+      lastRay         = getRayVector(lastDrag.x, lastDrag.y);
+      lastInter       = intersect(lastRay, c, planeNormal, intersectsLast);
+      float     angle = orientedAngle(lastInter, inter, c, axis); 
+      glm::mat4 ROT   = glm::mat4(glm::angleAxis(angle, axis));
+      listObject[i]->transform.setRotation(ROT);
+    }
+  }
+  lastDrag = glm::vec2(x,y);
+}
+
+glm::vec3 CglScene::intersect(glm::vec3 ray,
+			      glm::vec3 plane,
+			      glm::vec3 planeNormal,
+			      bool      &intersects){
+  float      intersectDist;
+  glm::vec3  intersection;
+  intersects = glm::intersectRayPlane(m_cam,
+				      ray, 
+				      plane,
+				      planeNormal,
+				      intersectDist);
+  if(intersects)
+    intersection = m_cam + intersectDist * ray;
+  return intersection;
+}
+
+void CglScene::onMiddleDrag(int x, int y){
+  glm::vec3 plane(0, -pcv->profile.bottomDistance, 0);
+  glm::vec3 planeNormal(0,1,0);
+  bool intersects, intersectsLast;
+  glm::vec3 ray, lastRay;
+  glm::vec3 inter, lastInter;
+
+  ray       = getRayVector(x,y);
+  inter     = intersect(ray, plane, planeNormal, intersects);
+
+  lastRay   = getRayVector(lastDrag.x, lastDrag.y);
+  lastInter = intersect(lastRay, plane, planeNormal, intersectsLast);
+
+  //cout << "curr: " << inter.x <<     "/" << inter.y <<     "/" << inter.z << endl;
+  //cout << "last: " << lastInter.x << "/" << lastInter.y << "/" << lastInter.z << endl;
+
+  if(!isSelected()){
+    if(intersects)
+      for(int i = 0 ; i < listObject.size() ; i++)
+	if (listObject[i]->isSelected())
+	  listObject[i]->transform.setTranslation(inter - lastInter);}
+  else{
+    if(intersects)
+      transform.setTranslation(inter - lastInter);}
+
+  lastDrag = glm::vec2(x,y);
+}
+void CglScene::onRightDrag( int x, int y){}
+
+//Release
+void CglScene::onRelease(int x, int y){
+  for (unsigned int i = 0; i < listObject.size(); i++){
+    CglObject *obj = listObject[i];
+    if ( (obj->isConstrainedInRotation()) || ((obj->isConstrainedInTranslation())) )
+      obj->unConstrain();
+  }
+}
+void CglScene::onLeftRelease(  int x, int y){}
+void CglScene::onMiddleRelease(int x, int y){}
+void CglScene::onRightRelease( int x, int y){
+  bool  ctrl = ((glutGetModifiers() && GLUT_ACTIVE_CTRL) ? 1:0);
+  if( !pcv->profile.flyingMode ){
+    int IndPicked = getPickedID(x, y);
+    onPick(ctrl, IndPicked);
+  }
+}
+
+//Clicks
+void CglScene::onClick(      int x, int y){lastDrag = glm::vec2(x,y);}
+void CglScene::onLeftClick(  int x, int y){save();}
+void CglScene::onMiddleClick(int x, int y){save();}
+void CglScene::onRightClick( int x, int y){}
+
+
 
 
 void CglScene::reOrderObjects(int picked){
@@ -183,8 +373,8 @@ void CglScene::applyTransformation()
 
 void CglScene::update_matrices()
 {
-  if(!pcv->profile.flyingMode)
-    VIEW = glm::lookAt(m_cam + view->camOffset * m_right, m_look, m_up);
+  //if(!pcv->profile.flyingMode)
+  VIEW = glm::lookAt(m_cam + view->camOffset * m_right, m_look, m_up);
 
   if(pcv->profile.perspective)
     PROJ = glm::perspective(view->m_fovy, view->ratio, view->m_znear, view->m_zfar);
@@ -292,4 +482,29 @@ void CglScene::place_objects_on_grid(){
       listObject[i]->setMODEL(M);
     }
   }
+}
+
+glm::vec3 CglScene::getRayVector(int x, int y){
+  //Mouse position to [-1,1]
+  int       w = view->width;
+  int       h = view->height;
+  glm::vec2 window_position(x,y);
+  glm::vec2 normalized_window_position( (x/(w*0.5f) - 1)/float(w/h), 1.0f - y/(h*0.5f));
+
+  //Ray end points
+  float     fov             = view->m_fovy;
+  float     tan             = tanf(fov * 0.5f);
+  glm::vec2 fov_coordinates = tan * normalized_window_position;
+  float     near            = view->m_znear;
+  float     far             = view->m_zfar;
+  glm::vec3 near_point(fov_coordinates.x * near, fov_coordinates.y * near, -near);
+  glm::vec3 far_point( fov_coordinates.x * far,  fov_coordinates.y * far,  -far);
+
+  //World coordinates
+  glm::mat4 inv             = glm::inverse(VIEW);
+  near_point                = m_cam + glm::vec3( inv * glm::vec4(near_point, 1) );
+  far_point                 = m_cam + glm::vec3( inv * glm::vec4(far_point,  1) );
+  glm::vec3 ray             = glm::normalize(far_point - near_point);
+
+  return ray;
 }
