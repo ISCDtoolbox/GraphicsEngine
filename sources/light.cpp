@@ -16,3 +16,5 @@ CglLight::CglLight(glm::vec3 pos, glm::vec3 col, glm::vec3 a_d_s_ratio, float po
   packed[2]           = glm::vec4(a_d_s_ratio, 0);
   packed[3]           = glm::vec4(pow, lob, float(cam), 0);
 }
+
+glm::mat4 CglLight::getLightMatrix(){return packed;}

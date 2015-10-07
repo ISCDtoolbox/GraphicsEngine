@@ -77,4 +77,4 @@ void CglGroup::compute(){
 
 }
 
-bool CglGroup::isSelected(){return selected;}
+

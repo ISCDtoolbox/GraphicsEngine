@@ -4,8 +4,13 @@ set(PROJECT_NAME "Numero")
 set(CMAKE_SOURCE_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 project(${PROJECT_NAME})
-configure_file("${CMAKE_SOURCE_DIR}/app_numero.cpp" "${CMAKE_SOURCE_DIR}/app_numero.cpp")
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "$ENV{HOME}/bin")
-include_directories("/usr/include/SUscCGL/")
+
+configure_file("${CMAKE_SOURCE_DIR}/app_numero.cpp" "${CMAKE_SOURCE_DIR}/app_numero.cpp")
+include_directories("~/include/SUscCGL/" "~/include/"  "${CMAKE_SOURCE_DIR}/../build/library/")
+
 add_executable(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/app_numero.cpp")
 target_link_libraries(${PROJECT_NAME} SUscCGL)
+
+#Penser à lancer "sudo /sbin/ldconfig -v" pour mettre à jour

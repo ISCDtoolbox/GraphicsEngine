@@ -19,6 +19,7 @@ ExternalProject_Add(
   LOG_INSTALL ON
 )
 
+
 #Flags and libraries
 set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -Wno-deprecated -O0")
 find_package(GLUT)
@@ -30,7 +31,7 @@ find_package(GLEW)
 set(CORELIBS ${GLEW_LIBRARY} ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES} )
 
 #Include files
-include_directories("include/" "library/libmesh/" ${PNG_INCLUDE_DIR} "${CMAKE_CURRENT_BINARY_DIR}/library/glm/src/glm")
+include_directories("include/" "library/libmesh/" ${PNG_INCLUDE_DIR} "${CMAKE_CURRENT_BINARY_DIR}/library/glm/src/glm/")
 file(GLOB_RECURSE source_files sources/* include/cgl/* include/*)
 
 #Link
@@ -41,21 +42,28 @@ target_link_libraries(SUscCGL ${CORELIBS} mesh)
 add_dependencies(SUscCGL HEADERFILES)
 
 #Installation lors d'un make install, permet de ne builder que la librairie.
+#set(IN /usr)
+set(IN $ENV{HOME})
 install(TARGETS mesh
-        ARCHIVE DESTINATION "/usr/lib/"
-        LIBRARY DESTINATION "/usr/lib/"
-        RUNTIME DESTINATION "/usr/bin/")
+        ARCHIVE DESTINATION "${IN}/lib/"
+        LIBRARY DESTINATION "${IN}/lib/"
+        RUNTIME DESTINATION "${IN}/bin/")
 install(TARGETS SUscCGL
-        ARCHIVE DESTINATION "/usr/lib/"
-        LIBRARY DESTINATION "/usr/lib/"
-        RUNTIME DESTINATION "/usr/bin/")
+        ARCHIVE DESTINATION "${IN}/lib/"
+        LIBRARY DESTINATION "${IN}/lib/"
+        RUNTIME DESTINATION "${IN}/bin/")
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/"
-        DESTINATION "/usr/include/SUscCGL")
+        DESTINATION "${IN}/include/SUscCGL")
+
+set(CMAKE_INSTALL_MESSAGE NEVER)
+install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/library/glm/src/glm/glm/"
+	DESTINATION "${IN}/include/glm")
+
 
 
 #Compilation
 #project(SUcgl)
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "$ENV{HOME}/bin")
+#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${IN}/bin")
 #add_executable(SUcgl main.cpp)
 #target_link_libraries(SUcgl SUscCGL)
 

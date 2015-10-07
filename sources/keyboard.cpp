@@ -67,7 +67,7 @@ void CglKeyboard::special(unsigned char key, int x, int y)
     if (glutGetModifiers() && GLUT_ACTIVE_CTRL )
       speed = 0.002f;
     else
-      speed = 0.015f;    
+      speed = 0.015f;
 
     switch (key) {
       case GLUT_KEY_LEFT:
@@ -199,8 +199,8 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
     for(int iG = 0 ; iG < scene->numGroups() ; iG++){
       if(scene->getGroup(iG)->isSelected()){
         for(int iO = 0 ; iO < scene->getGroup(iG)->numObjects() ; iO++){
-          scene->getGroup(iG)->listObject[iO]->unSelect();
-          scene->getGroup(iG)->listObject[iO]->resetGroupID();
+          scene->getGroup(iG)->getObject(iO)->unSelect();
+          scene->getGroup(iG)->getObject(iO)->resetGroupID();
         }
         scene->getGroupList()->erase(scene->getGroupList()->begin() + iG);
         scene->getGroup(iG)->unGroup();

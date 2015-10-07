@@ -92,7 +92,6 @@ void CglScene::display()
 
   glClear(GL_DEPTH_BUFFER_BIT);
 
-
   //debug();
 }
 
@@ -209,12 +208,13 @@ void CglScene::onLeftDrag(int x, int y){
     pCglObject obj  = listObject[i];
     if ( (obj->isSelected()) /*&& (obj->getGroupID()==-1)*/ ){
       glm::vec3 c     = glm::vec3(obj->getRotationCenter()) + glm::vec3(MODEL[3]);
+      //planeNormal     = -c + m_cam;
       glm::vec3 axis  = glm::vec3(0,1,0);
       ray             = getRayVector(x,y);
       inter           = intersect(ray, c, planeNormal, intersects);
       lastRay         = getRayVector(lastDrag.x, lastDrag.y);
       lastInter       = intersect(lastRay, c, planeNormal, intersectsLast);
-      float     angle = orientedAngle(lastInter, inter, c, axis); 
+      float     angle = orientedAngle(lastInter, inter, c, axis);
       glm::mat4 ROT   = glm::mat4(glm::angleAxis(angle, axis));
       listObject[i]->transform.setRotation(ROT);
     }
@@ -229,7 +229,7 @@ glm::vec3 CglScene::intersect(glm::vec3 ray,
   float      intersectDist;
   glm::vec3  intersection;
   intersects = glm::intersectRayPlane(m_cam,
-				      ray, 
+				      ray,
 				      plane,
 				      planeNormal,
 				      intersectDist);

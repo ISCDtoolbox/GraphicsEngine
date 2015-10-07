@@ -40,27 +40,25 @@ class CglInterface{
     int                     nbButtons;
     std::vector<pCglButton> buttons;
     std::vector<string>     icons;
-    std::vector<bool>       hovered;
     std::string             folder;
-    std::string             type;
+    std::vector<bool>       hovered;
     bool                    active;
     bool                    isMouseOnPanel;
 
   public:
     CglInterface(){active=false;};
     ~CglInterface(){};
-    void unactive(){active = false;}
-    bool isActive(){return active;}
-    bool isMouseOnZone(){return isMouseOnPanel;}
-    void updateTextures();
-    std::string getType(){return type;}
-    std::string getIconsFolder();
-    pCglButton  getButton(int i){return buttons[i];};
-    void        init_buttons();
-    virtual void init(int nb, float off){};
-    virtual void init(glm::vec2 cen, float rad){};
-    virtual void display(){};
-    std::vector<pCglButton>* getButtonList(){return &buttons;}
+    void                     unactive(){      active = false;}
+    bool                     isActive(){      return active;}
+    bool                     isMouseOnZone(){ return isMouseOnPanel;}
+    void                     updateTextures();
+    std::vector<pCglButton>* getButtonList(){ return &buttons;}
+    pCglButton               getButton(int i){return buttons[i];}
+    void                     init_buttons();
+    virtual void             init(int nb, float off){};
+    virtual void             init(glm::vec2 cen, float rad){};
+    virtual void             display(){};
+    std::string              getIconsFolder();
 
     void hover(int indButton);
     void checkHoveredButtons(int x, int y);

@@ -42,7 +42,6 @@ private:
   float                   globalScale;
   int                     ids;
 
-
 /////////////////////////////////////////////////////
 //Methods
 

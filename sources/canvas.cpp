@@ -54,9 +54,9 @@ int CglCanvas::cglObject(pCglObject obj){
 }
 
 void CglCanvas::cglSetLights(){
-  light.push_back(CglLight(glm::vec3(10,1,10),   glm::vec3(1,1,0.9),   glm::vec3(0.2, 0.65, 0.15), 200.0, 5.0, true));   //FILL
-  light.push_back(CglLight(glm::vec3(-10,-10,1), glm::vec3(1,0.9,0.9), glm::vec3(0.2, 0.65, 0.15), 50.0,  5.0, true));   //SIDE
-  light.push_back(CglLight(glm::vec3(1,1,-10),   glm::vec3(1,1,0.9),   glm::vec3(0.2, 0.45, 0.35), 100.0, 2.0, true));   //BACK
+  light.push_back(CglLight(glm::vec3(10,5,10),   glm::vec3(1,1,0.9),   glm::vec3(0.2, 0.7, 0.1), 200.0, 5.0, false));   //FILL
+  light.push_back(CglLight(glm::vec3(-10,5,-3), glm::vec3(1,0.9,0.9), glm::vec3(0.2, 0.7, 0.1), 50.0,  5.0, false));   //SIDE
+  light.push_back(CglLight(glm::vec3(-10,5,-10),   glm::vec3(1,1,0.9),   glm::vec3(0.2, 0.8, 0.0), 50.0, 2.0, false));   //BACK
 }
 
 void CglCanvas::cglSetScene(int ids, int idw){

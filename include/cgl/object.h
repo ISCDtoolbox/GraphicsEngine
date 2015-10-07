@@ -23,11 +23,11 @@ class CGL_API CglObject
     glm::mat4 MODEL;
     glm::mat4 *pVIEW;
     glm::mat4 *pPROJ;
-    glm::vec3 center;
-    glm::vec3 *rotationCenter;
+    glm::vec3 center;//
+    glm::vec3 *rotationCenter;//
     float     localScale;
     float     scaleFactor;
-    bool isMesh;
+    bool isMesh;//
     //Scene parameters
     glm::vec3 *sceneCenter;
     glm::vec3 *sceneUp;

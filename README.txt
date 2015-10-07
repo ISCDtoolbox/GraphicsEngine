@@ -15,3 +15,10 @@ distribute it under the terms of the LGPL, which in particular states
 that you must release the source code for the modified software.  
 
 See COPYING.LESSER for more information.
+
+Packages recquired on OpenSuse:
+cmake
+glew-devel
+freeglut-devel
+libXmu-devel
+libXi-devel

@@ -6,24 +6,23 @@
 
 class CglGroup
 {
-  public:
-    std::vector<pCglObject> listObject;
-    glm::vec3 group_color;
-    bool selected;
-
+private:
+    std::vector<pCglObject>   listObject;
+    glm::vec3                 group_color;
+    bool                      selected;
     std::vector< glm::vec3* > pCenters;
-    glm::vec3 group_center;
-    glm::vec3 bbmin, bbmax;
+    glm::vec3                 group_center;
+    glm::vec3                 bbmin, bbmax;
 
+public:
     CglGroup(std::vector<pCglObject> groupOfObjects);
     ~CglGroup();
-    void unGroup();
-    void compute();
-    bool isSelected();
-    int numObjects(){return listObject.size();}
-
-  protected:
-  private:
+    void       unGroup();
+    void       compute();
+    int        numObjects(){      return listObject.size();}
+    bool       isSelected(){      return selected;}
+    glm::vec3  getColor(){        return group_color;}
+    pCglObject getObject(int ind){return listObject[ind];}
 };
 
 typedef CglGroup* pCglGroup;

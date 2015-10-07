@@ -24,10 +24,12 @@ void main(){
   vec3 back_light = smoothLight(BACK, COL);
 
   vec3 mix = vec3(1, 1, 1.5);
-  fragmentColor = mix.x * fill_light
-                  + mix.y * side_light
-                  + mix.z * back_light
-                  ;
+  //float norm = mix.x + mix.y + mix.z;
+  vec3 col = (mix.x * fill_light
+             + mix.y * side_light
+             + mix.z * back_light)
+             ;
+  fragmentColor = col;// + (1.0 - max(max(col.x, col.y), col.z));
 }
 
 
@@ -69,6 +71,20 @@ vec3 smoothLight(mat4 light_matrix, vec3 mater_color){
              + mix_ratio.z * spec_color * light_color * light_power * pow(cosAlpha,lobe_size) / (distance*distance)
              ;
 
+  //FOG
+  float near = 1.0f;
+  float far  = 3.0f;
+
+  //if(distance>far){color = vec3(0,0,0);}
+
+  //else if((distance>near) && (distance<far)){
+  //  float ratio = 1.0f - (distance - near)/(far - near);
+  //  color = vec3(0.5f,1.0f,1.0f);
+  //}
+
+
+  //float ratio = 1.0f - (distance - near)/(far - near);
+  //color = vec3(ratio, ratio, ratio);
   return color;
 }
 

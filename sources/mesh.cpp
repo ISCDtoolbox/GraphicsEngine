@@ -320,7 +320,7 @@ void CglMesh::shadowsDisplay(){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
 
     pCglScene scene = pcv->getScene();
-    glm::vec3 selection_color = ((idGroup==-1)?pcv->profile.sele_color:scene->getGroup(idGroup)->group_color);
+    glm::vec3 selection_color = ((idGroup==-1)?pcv->profile.sele_color:scene->getGroup(idGroup)->getColor());
 
     glm::vec2 mix = pcv->profile.reflection_mix;
     if(isSelected())
@@ -375,7 +375,7 @@ void CglMesh::artifactsDisplay(){
     if (scene->numGroups() > 0){
       for(int i = 0 ; i < scene->numGroups() ; i++){
         for(int j = 0 ; j < scene->getGroup(i)->numObjects() ; j++){
-          if(objectID==scene->getGroup(i)->listObject[j]->getID()){
+          if(objectID==scene->getGroup(i)->getObject(j)->getID()){
             idGroup = i;
           }
         }
@@ -384,7 +384,7 @@ void CglMesh::artifactsDisplay(){
     else
       idGroup = -1;
 
-    glm::vec3 selection_color = ((idGroup==-1)?pcv->profile.sele_color:scene->getGroup(idGroup)->group_color);
+    glm::vec3 selection_color = ((idGroup==-1)?pcv->profile.sele_color:scene->getGroup(idGroup)->getColor());
 
     //Contour
     if(isSelected()){
@@ -491,11 +491,11 @@ void CglMesh::display()
   //Light info
   std::vector<CglLight*> lights = pcv->getWindow()->light;
   int fill_light_ID  = glGetUniformLocation(shaderID, "FILL");
-  glUniformMatrix4fv( fill_light_ID, 1, GL_FALSE, &(lights[0]->packed)[0][0]);
+  glUniformMatrix4fv( fill_light_ID, 1, GL_FALSE, &(lights[0]->getLightMatrix())[0][0]);
   int side_light_ID  = glGetUniformLocation(shaderID, "SIDE");
-  glUniformMatrix4fv( side_light_ID, 1, GL_FALSE, &(lights[1]->packed)[0][0]);
+  glUniformMatrix4fv( side_light_ID, 1, GL_FALSE, &(lights[1]->getLightMatrix())[0][0]);
   int back_light_ID  = glGetUniformLocation(shaderID, "BACK");
-  glUniformMatrix4fv( back_light_ID, 1, GL_FALSE, &(lights[2]->packed)[0][0]);
+  glUniformMatrix4fv( back_light_ID, 1, GL_FALSE, &(lights[2]->getLightMatrix())[0][0]);
 
   //Mesh buffer binding
   glEnableVertexAttribArray( 0);
@@ -513,7 +513,7 @@ void CglMesh::display()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
 
   pCglScene scene = pcv->getScene();
-  glm::vec3 selection_color = ((idGroup==-1)?pcv->profile.sele_color:scene->getGroup(idGroup)->group_color);
+  glm::vec3 selection_color = ((idGroup==-1)?pcv->profile.sele_color:scene->getGroup(idGroup)->getColor());
 
   //La partie smooth
   GLuint MID      = glGetUniformLocation(shaderID, "M");
@@ -532,7 +532,7 @@ void CglMesh::display()
 
 
   if(line){
-    shaderID = pcv->simpleID();
+    shaderID = pcv->smoothID();
     glUseProgram(shaderID);
     MatrixID = glGetUniformLocation(shaderID, "MVP");
     glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &MVP[0][0]);
@@ -543,9 +543,9 @@ void CglMesh::display()
     glBindAttribLocation(      shaderID, 0, "vertex_position");
 
     if(isSelected())
-      uniformVec3(colorID, 0.2f * selection_color);
+      uniformVec3(colorID, 0.6f * selection_color);
     else
-      uniformVec3(colorID, 0.1f * face_color);
+      uniformVec3(colorID, 0.6f * face_color);
 
     glDisable(GL_POLYGON_OFFSET_FILL);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

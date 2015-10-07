@@ -3,6 +3,6 @@
 
 #include "string.h"
 
-static string EXT_PATH = "/home/loic/dev/SUscCGL/";
+static string EXT_PATH = "/home/foulonj/dev/SUscCGL/";
 
 #endif
