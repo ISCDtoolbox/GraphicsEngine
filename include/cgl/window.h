@@ -14,35 +14,38 @@
 #include <cgl/view.h>
 
 
-class CGL_API CglWindow
-{
-private:
-	int    m_wpos[2],m_wsiz[2];   // window position + size
-	int    m_vpos[2],m_vsiz[2];   // viewport position + size
-  double m_mold[16],m_mnew[16];
+class CGL_API CglWindow{
 
+private:
+    glm::vec2   position, size;
+    std::string title;
+    int         id;
+    pCglScene   pScene;
+    int         ids;
 
 public:
-  std::vector<pCglLight>  light;
-	int   m_id;
-  int ids;
-	CglView    view;
+    std::vector<pCglLight>  light;
+    CglView                 view;
 
-	CglWindow();
+    public:
+    CglWindow();
 	CglWindow(int x, int y, int w, int h);
-	virtual ~CglWindow();
+	~CglWindow();
+    int cglAddLight(pCglLight li);
 
-  int cglAddLight(pCglLight li);
-
-  void reshape(int w, int h);
-  pCglView getView(){return &view;}
-	void show();
-	void display();
-	void resize(int w, int h);
-  void title(const char *title);
+    void reshape(int w, int h);
+    pCglView getView(){return &view;}
+    void display();
+    void resize(int w, int h);
 	void cglMainLoop();
 
+public:
+    int       getID(){   return id;}
+    pCglScene getScene(){return pScene;}
+
+private:
 	void displayBuffer(int buffer);
+
 };
 
 typedef CglWindow * pCglWindow;

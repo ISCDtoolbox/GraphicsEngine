@@ -72,6 +72,7 @@ public:
   pCglMouse     getMouse();
 
   std::vector<pCglObject>* getObjectList(){return &object;}
+  std::vector<CglLight>* getLightsList(){return &light;}
 
   int           simpleID();
   int           smoothID();

@@ -22,6 +22,7 @@ CglObject::CglObject():transform()
   pVIEW  = NULL;
 
   face_color = pcv->profile.color();
+  material = new CglMaterial(face_color, 0.85, 0.15, 12.0);
   edge_color = 0.8f * face_color;
   idGroup = -1;
   localScale = 1;

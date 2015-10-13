@@ -17,11 +17,13 @@
 class CGL_API CglAxis : public CglObject
 {
 private:
-  vector<float> grid;
+  vector<float> mainGrid;
+  vector<float> secondaryGrid;
   vector<float> axes;
   vector<float> back;
   vector<float> colors;
-  GLuint gridBuffer;
+  GLuint mainGridBuffer;
+  GLuint secondaryGridBuffer;
   GLuint axesBuffer;
 
 public:

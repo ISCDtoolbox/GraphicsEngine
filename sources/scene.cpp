@@ -61,8 +61,7 @@ void CglScene::display()
 
 
   background->display();
-  axis->applyTransformation();
-  axis->display();
+
 
 //applyTransformation();
 
@@ -85,10 +84,13 @@ void CglScene::display()
     if(listObject[iObj]->isHidden())
       listObject[iObj]->display();
 
-
+  axis->applyTransformation();
+  axis->display();
 
   //GUI
   pcv->getInterface()->display();
+
+
 
   glClear(GL_DEPTH_BUFFER_BIT);
 

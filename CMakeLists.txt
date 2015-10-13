@@ -42,8 +42,8 @@ target_link_libraries(SUscCGL ${CORELIBS} mesh)
 add_dependencies(SUscCGL HEADERFILES)
 
 #Installation lors d'un make install, permet de ne builder que la librairie.
-#set(IN /usr)
-set(IN $ENV{HOME})
+set(IN /usr)
+#set(IN $ENV{HOME})
 install(TARGETS mesh
         ARCHIVE DESTINATION "${IN}/lib/"
         LIBRARY DESTINATION "${IN}/lib/"

@@ -11,6 +11,7 @@
 
 #include "defs.h"
 #include <cgl/transform.h>
+#include <cgl/material.h>
 
 class CGL_API CglObject
 {
@@ -19,6 +20,7 @@ class CGL_API CglObject
     string meshFile;
 
   protected:
+    pCglMaterial material;
     //Matrices and vectors
     glm::mat4 MODEL;
     glm::mat4 *pVIEW;

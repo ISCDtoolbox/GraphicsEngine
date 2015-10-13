@@ -305,6 +305,7 @@ void CglMesh::shadowsDisplay(){
     glUseProgram(shaderID);
     int MatrixID = glGetUniformLocation(shaderID, "MVP");
     int colorID  = glGetUniformLocation(shaderID, "COL");
+
     glm::mat4 MVP = *pPROJ * *pVIEW * *pMODEL * glm::scale(MODEL, glm::vec3(scaleFactor));
 
     glEnableVertexAttribArray( 0);
@@ -330,15 +331,27 @@ void CglMesh::shadowsDisplay(){
 
     glm::mat4 ID(1);
     glm::vec3 cc             =  glm::vec3((*pMODEL)[3]);
+
+    glm::mat4 refMODEL       =  glm::translate(ID, glm::vec3(-cc.x, - pcv->profile.bottomDistance - cc.y, -cc.z)) *
+                                glm::scale(ID, glm::vec3(1,-1,1)) *
+                                glm::translate(ID, glm::vec3(cc.x, + pcv->profile.bottomDistance + cc.y, cc.z)) *
+                                glm::scale(MODEL, glm::vec3(scaleFactor));
+
     glm::mat4 reflection     =  *pPROJ  *
                                 *pVIEW  *
                                 *pMODEL *
-                                glm::translate(ID, glm::vec3(0, - pcv->profile.bottomDistance - cc.y, 0)) *
-                                glm::scale(ID, glm::vec3(1,-1,1)) *
-                                glm::translate(ID, glm::vec3(0, + pcv->profile.bottomDistance + cc.y, 0)) *
-                                glm::scale(MODEL, glm::vec3(scaleFactor));
+                                refMODEL;
+
 
     glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &reflection[0][0]);
+
+
+    glm::mat4 M = glm::translate(refMODEL, glm::vec3((*pMODEL)[3]));
+    int MID     = glGetUniformLocation(shaderID, "M");
+    //glm::mat4 M = glm::translate(MODEL, cc);
+    glUniformMatrix4fv( MID, 1, GL_FALSE, &M[0][0]);
+
+
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glCullFace(GL_FRONT);
     glDrawElements(GL_TRIANGLES, 3 * tria.size(), GL_UNSIGNED_INT, (void*)0);
@@ -475,10 +488,10 @@ void CglMesh::artifactsDisplay(){
 
 void CglMesh::display()
 {
+  glEnable(GL_CLIP_DISTANCE0);
   if(hidden)
     glEnable(GL_BLEND);
-  //glEnable(GL_LIGHTING);
-  glEnable(GL_CULL_FACE);
+  //glEnable(GL_CULL_FACE);
 
   //Initialization
   glm::mat4 MVP = *pPROJ * *pVIEW * *pMODEL * glm::scale(MODEL, glm::vec3(scaleFactor));
@@ -488,14 +501,25 @@ void CglMesh::display()
   glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &MVP[0][0]);
   int colorID  = glGetUniformLocation(shaderID, "COL");
 
+
+  int FOGID = glGetUniformLocation(shaderID, "FOG");
+  glUniform1f(FOGID, float((pcv->profile.theme==CGL_THEME_BLACK)||(pcv->profile.theme==CGL_THEME_WHITE)));
+  int FOGCOLID = glGetUniformLocation(shaderID, "FOG_COL");
+  glm::vec3 fog;
+  if(pcv->profile.theme == CGL_THEME_BLACK)
+    fog = glm::vec3(0.1);
+  else if (pcv->profile.theme == CGL_THEME_WHITE)
+    fog = glm::vec3(0.9);
+  uniformVec3(FOGCOLID, fog);
+
   //Light info
   std::vector<CglLight*> lights = pcv->getWindow()->light;
   int fill_light_ID  = glGetUniformLocation(shaderID, "FILL");
-  glUniformMatrix4fv( fill_light_ID, 1, GL_FALSE, &(lights[0]->getLightMatrix())[0][0]);
+  glUniformMatrix4fv( fill_light_ID, 1, GL_FALSE, &(lights[0]->getLightMatrix(material))[0][0]);
   int side_light_ID  = glGetUniformLocation(shaderID, "SIDE");
-  glUniformMatrix4fv( side_light_ID, 1, GL_FALSE, &(lights[1]->getLightMatrix())[0][0]);
+  glUniformMatrix4fv( side_light_ID, 1, GL_FALSE, &(lights[1]->getLightMatrix(material))[0][0]);
   int back_light_ID  = glGetUniformLocation(shaderID, "BACK");
-  glUniformMatrix4fv( back_light_ID, 1, GL_FALSE, &(lights[2]->getLightMatrix())[0][0]);
+  glUniformMatrix4fv( back_light_ID, 1, GL_FALSE, &(lights[2]->getLightMatrix(material))[0][0]);
 
   //Mesh buffer binding
   glEnableVertexAttribArray( 0);
@@ -518,7 +542,8 @@ void CglMesh::display()
   //La partie smooth
   GLuint MID      = glGetUniformLocation(shaderID, "M");
   GLuint VID      = glGetUniformLocation(shaderID, "V");
-  glUniformMatrix4fv( MID, 1, GL_FALSE, &MODEL[0][0]);
+  glm::mat4 M     = glm::translate(MODEL, glm::vec3((*pMODEL)[3]));
+  glUniformMatrix4fv( MID, 1, GL_FALSE, &M[0][0]);
   glUniformMatrix4fv( VID, 1, GL_FALSE, &(*pVIEW)[0][0]);
   if(isSelected())
     uniformVec3(colorID, 1.0f * selection_color);

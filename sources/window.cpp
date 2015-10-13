@@ -2,92 +2,57 @@
 #include <cgl/window.h>
 extern CglCanvas *pcv;
 
-CglWindow::CglWindow(): m_id(-1) /*scene(NULL)*/
-{
+CglWindow::CglWindow(){
+    id   = -1;
+    pScene  = NULL;
 }
+CglWindow::CglWindow(int x, int y, int w, int h){
+    position = glm::vec2(x,y);
+    size     = glm::vec2(w,h);
+    title    = "Window " + to_string(id);
 
+    glutInitWindowPosition(position.x, position.y);
+    glutInitWindowSize(size.x, size.y);
+    id       = glutCreateWindow(title.c_str());
 
-CglWindow::CglWindow(int x, int y, int w, int h)
-{
-  cout << " - [create window " << w << " " << h << "]" << endl;
-  this->m_wpos[0] = x;
-  this->m_wpos[1] = y;
-  this->m_wsiz[0] = w;
-  this->m_wsiz[1] = h;
-  //view.setPos(0.0, 0.0, 1.0);
+    // Function callbacks with wrapper functions
+    glutReshapeFunc(pcv->reshapeWrap);
+    glutDisplayFunc(pcv->displayWrap);
+    glutMouseFunc(pcv->mouseWrap);
+    glutKeyboardFunc(pcv->keyWrap);
+    glutKeyboardUpFunc(pcv->keyUpWrap);
+    glutMotionFunc(pcv->motionWrap);
+    glutPassiveMotionFunc(pcv->passiveMotionWrap);
+    glutSpecialFunc(pcv->specialWrap);
 }
+CglWindow::~CglWindow(){}
 
 
-CglWindow::~CglWindow()
-{
-  cout << " - [destroy window]" << endl;
-}
-
-
-void CglWindow::show()
-{
-  bool VBOs = false;
-
-  cout << " - [open window]" << endl;
-
-  glutInitWindowPosition(m_wpos[0], m_wpos[1]);
-  glutInitWindowSize(m_wsiz[0], m_wsiz[1]);
-  m_id = glutCreateWindow("essai");
-
-  // Function callbacks with wrapper functions
-  glutReshapeFunc(pcv->reshapeWrap);
-  glutDisplayFunc(pcv->displayWrap);
-  glutMouseFunc(pcv->mouseWrap);
-  glutKeyboardFunc(pcv->keyWrap);
-  glutKeyboardUpFunc(pcv->keyUpWrap);
-  glutMotionFunc(pcv->motionWrap);
-  glutPassiveMotionFunc(pcv->passiveMotionWrap);
-  glutSpecialFunc(pcv->specialWrap);
-
-  /* basic openGL calls */
-  glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LEQUAL);
-  //glPolygonOffset(1.0, 1.0 / (float)0x10000);
-  //glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-  //glShadeModel(GL_SMOOTH);
-  //glDisable(GL_NORMALIZE);
-  //glDisable(GL_LINE_SMOOTH);
-  //glDisable(GL_POINT_SMOOTH);
-  //glEnable(GL_DITHER);
-  //glDisable(GL_CULL_FACE);
-
-  //view.setView();
-}
-
-void CglWindow::displayBuffer(int buffer){
-  pCglScene scene = pcv->getScene(ids);
-  //glm::vec3 col   = pcv->profile.back_color;
-
-  float offset = ( (pcv->profile.stereo) ? scene->getView()->m_eyesep / 2 : 0.0f );
-  int stereo = ( (buffer == GL_BACK_LEFT) ? -1 : 1 );
-
-  glDrawBuffer(buffer);
-  //glClearColor(col.x, col.y, col.z, 1.0);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  scene->getView()->camOffset = stereo * offset;
-  scene->display();
-}
-
-void CglWindow::display()
-{
-  //STEREO
+void CglWindow::display(){
   if(pcv->profile.stereo){
     displayBuffer(GL_BACK_LEFT);
     displayBuffer(GL_BACK_RIGHT);
   }
-  else{
+  else
     displayBuffer(GL_BACK_LEFT);
-  }
   glutSwapBuffers();
 }
 
-int CglWindow::cglAddLight(pCglLight li)
-{
+void CglWindow::displayBuffer(int buffer){
+  pCglScene scene = pcv->getScene(ids);
+  float offset    = ( (pcv->profile.stereo) ? scene->getView()->m_eyesep / 2 : 0.0f );
+  int stereo      = ( (buffer == GL_BACK_LEFT) ? -1 : 1 );
+
+  glDrawBuffer(buffer);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  scene->getView()->camOffset = stereo * offset;
+  scene->display();
+}
+
+
+
+int CglWindow::cglAddLight(pCglLight li){
   light.push_back(li);
   return light.size() - 1;
 }

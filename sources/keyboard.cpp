@@ -297,6 +297,14 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
     }
   }
 
+  //Lights rotation
+  if(key=='R'){
+    std::vector<CglLight> *lights = pcv->getLightsList();
+    for(int i = 0 ; i < lights->size() ; i++){
+        (*lights)[i].rotate(0.05f);
+    }
+  }
+
   lastKey = key;
 }
 

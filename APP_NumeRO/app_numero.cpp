@@ -20,7 +20,7 @@ using namespace std;
 int main(int argc, char **argv){
 
   int idw, ids, ido;
-  string configFile = "@CMAKE_SOURCE_DIRECTORY@/numero.config";
+  string configFile = "/home/foulonj/dev/SUscCGLb/APP_NumeRO/numero.config";
   CglCanvas cv(argc, argv, configFile);
 
   try{
@@ -54,6 +54,33 @@ int main(int argc, char **argv){
 
   
   cv.cglMainLoop();
+
+
+  /*
+  //API
+  
+  pCglWindow window_1 = new CglWindow(..,..,..);
+  pCglScene  scene_1  = new CglScene(..,..,..);
+  pCglCam    cam_1    = new CglCam(..,..,..);
+
+  std::vector<pCglLights> lights_1;
+  lights_1.push_back( new CglLight(..,..,..) );
+  lights_1.push_back( new CglLight(..,..,..) );
+  lights_1.push_back( new CglLight(..,..,..) );
+
+  std::vector<pCglMesh> meshes;
+  for(int i = 0 ; i < 10 ; i++){
+    meshes.push_back(new CglMesh(...,...,...));
+  }
+
+  scene_1->setCam(cam_1);
+  scene_1->setObjects(meshes);
+  scene_1->setLights(lights_1);
+
+  window_1->setScene(scene_1);
+  window_1->display();
+
+  */
 
   return 0;
 }

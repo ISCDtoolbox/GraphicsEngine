@@ -25,8 +25,9 @@ class CGL_API CglLight{
     glm::mat4 packed;
 
   public:
-    CglLight(glm::vec3 pos, glm::vec3 col, glm::vec3 a_d_s_ratio, float pow, float lob, bool cam);
-    glm::mat4 getLightMatrix();
+    CglLight(glm::vec3 pos, glm::vec3 col, float pow, bool cam);
+    glm::mat4 getLightMatrix(pCglMaterial material);
+    void      rotate(float angle);
 };
 
 typedef CglLight * pCglLight;
