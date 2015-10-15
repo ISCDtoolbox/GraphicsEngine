@@ -65,4 +65,6 @@ public:
   glm::vec3 getBBMAX(){return center + glm::vec3(glm::inverse(MODEL) * glm::vec4(bbmax, 0));};
 };
 
+typedef CglMesh* pCglMesh;
+
 #endif

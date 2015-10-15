@@ -30,7 +30,7 @@ public:
   CglAxis();
   ~CglAxis(){};
   void display();
-  CglView *view;
+  pCglView view;
 };
 typedef CglAxis* pCglAxis;
 

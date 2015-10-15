@@ -21,8 +21,9 @@ void main(){
   vertex_nor  = vertex_normal;
   gl_Position = MVP * vec4(vertex_pos, 1);
 
-  vec4 ClipPlane = vec4(0,1,0,0.1);
-  gl_ClipDistance[0] = dot(M * vec4(vertex_pos,1), ClipPlane);
+  //Mise en place du clipping plane
+  //vec4 ClipPlane = vec4(0,1,0,0.1);
+  //gl_ClipDistance[0] = dot(M * vec4(vertex_pos,1), ClipPlane);
 }
 
 

@@ -10,10 +10,13 @@
 #define __CGL_SCENE_H_
 
 #include "defs.h"
+
 #include <cgl/object.h>
+#include <cgl/mesh.h>
 #include <cgl/view.h>
 #include <cgl/axis.h>
 #include <cgl/group.h>
+#include <cgl/light.h>
 
 class CGL_API CglScene
 {
@@ -30,6 +33,10 @@ private:
   pCglAxis                axis;
   pCglBackground          background;
   pCglView                view;
+  int                     windowID;
+
+  std::vector<pCglLight>  lights;
+
 
   //View parameters
   glm::vec3               m_look, m_cam, m_up, m_right;
@@ -40,16 +47,20 @@ private:
   //Properties
   bool                    selected;
   float                   globalScale;
-  int                     ids;
 
 /////////////////////////////////////////////////////
 //Methods
 
 public:
 
+    void setWindowID(int ID){windowID = ID;}
+    int addLight(pCglLight li);
+    std::vector<pCglLight> getLights(){return lights;}
+
   //Constructors
   CglScene();
   virtual ~CglScene();
+  void load_meshes_from_file(string fileName);
 
   //Accessors and setters for Canvas objects
   void                     addObject(pCglObject object);
@@ -118,11 +129,9 @@ public:
   void                     onLeftRelease(  int x, int y);
   void                     onMiddleRelease(int x, int y);
   void                     onRightRelease( int x, int y);
-  
+
 
   //ID and selection
-  int                      getID(){return ids;}
-  void                     setID(int newID){ids = newID;}
   bool                     isSelected();
   void                     select();
   void                     unSelect();

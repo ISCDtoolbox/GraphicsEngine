@@ -15,13 +15,13 @@ CglMouse::CglMouse(){
   m_pos          = glm::vec3(0);
 }
 
-void CglMouse::setGUI(){
-  buttons = pcv->getInterface()->getButtonList();
-}
+//void CglMouse::setGUI(){
+//  buttons = pcv->getInterface()->getButtonList();
+//}
 
 glm::vec3 get_arcball_vector(glm::vec2 cursor) {
-  int W = pcv->getWindow()->view.width;
-  int H = pcv->getWindow()->view.height;
+  int W = pcv->getWindow()->pView->width;
+  int H = pcv->getWindow()->pView->height;
   glm::vec3 P = glm::vec3(1.0*cursor.x/W*2 - 1.0,
                           1.0*cursor.y/H*2 - 1.0,
                           0);
@@ -42,7 +42,7 @@ void CglMouse::motion(int x, int y)
   bool mvt                = (currPos != lastPos);
   glm::vec2 d             = currPos - lastPos;
   scene->onDrag(x,y);
-  
+
   if ( mvt && unactive_interface ){
     if(m_button[0])
       scene->onLeftDrag(x,y);//d.x, d.y);
@@ -75,7 +75,7 @@ void CglMouse::passiveMotion(int x, int y){
         scene->getTransform()->setRotation(LOOKROT);
       }
     }
-    
+
 
     //else{
       for (unsigned int i = 0; i < scene->getObjectList()->size(); i++){
@@ -107,7 +107,7 @@ void CglMouse::mouse(int b, int s, int x, int y)
     scene->onRelease(x,y);
   if(isPressed)
     scene->onClick(x,y);
-    
+
   m_button[0] = m_button[1] = m_button[2] = false;
   switch(b){
     case GLUT_LEFT_BUTTON:

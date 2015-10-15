@@ -173,7 +173,7 @@ void CglProfile::update_colors(){
   }
   else if ( colors == CGL_COLORS_WHITES ){
     mixFactor   = 0.98;//0.9;
-    mixColor    = glm::vec3(1, 1, 0.9);
+    mixColor    = glm::vec3(1, 1, 1);
   }
   else if ( colors == CGL_COLORS_COLD ){
     mixFactor   = 0.7;

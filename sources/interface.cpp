@@ -289,7 +289,7 @@ void CglLinearInterface::display(){
 void CglRadialInterface::init(glm::vec2 cen, float rad){
   init_buttons();
   folder            = getIconsFolder();
-  float ratio       = pcv->getScene()->getView()->ratio;
+  float  ratio      = pcv->getWindow()->getScene()->getView()->ratio;
   active            = true;
   isMouseOnPanel    = true;
   center            = cen;

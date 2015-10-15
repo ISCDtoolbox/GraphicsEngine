@@ -26,4 +26,6 @@ private:
   void keyColor(unsigned char key,int x,int y);
 };
 
+typedef CglKeyboard* pCglKeyboard;
+
 #endif

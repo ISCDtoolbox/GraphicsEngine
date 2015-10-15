@@ -29,16 +29,14 @@ public:
   CglProfile profile;
 
 private:
-  std::vector<CglLight>    light;
-  std::vector<pCglScene>   scene;
-  std::vector<CglWindow>   window;
-  std::vector<pCglObject>  object;
-  CglMouse                 mice;
-  CglKeyboard              keyboard;
-  CglShader                simpleShader, smoothShader, flatShader;
+  std::vector<pCglLight>    lights;
+  std::vector<pCglScene>    scenes;
+  std::vector<pCglWindow>   windows;
+  std::vector<pCglObject>   objects;
 
-  CglRadialInterface       radialInterface;
-  CglLinearInterface       linearInterface;
+  CglMouse                  mice;
+  CglKeyboard               keyboard;
+  //CglShader                 simpleShader, smoothShader, flatShader;
 
 
 /////////////////////////////////////////////////////
@@ -48,19 +46,30 @@ public:
 
   //Constructors and destructors
   CglCanvas(){};
-  CglCanvas(int argc, char **argv, std::string config_file);
+  CglCanvas(int argc, char **argv);
   virtual ~CglCanvas(){};
 
-  //Scenes, windows... creation
-  int  cglWindow(int x, int y, int w, int h);
-  int  cglScene();
-  int  cglObject(pCglObject obj);
-  void cglSetLights();
-  void cglSetScene(int ids, int idw);
-  void cglSetObject(int ido, int ids);
+  pCglProfile getProfile(){return &profile;}
 
-  void initWindow(int &idw, int &ids, int width, int height);
-  void load_meshes_from_file(string fileName, int idSce);
+
+  //Rajouts automatiques
+  void addWindow(pCglWindow win){windows.push_back(win);}
+  void addScene( pCglScene  sce){scenes.push_back( sce);}
+  void addObject(pCglObject obj){objects.push_back(obj);}
+  void addLight( pCglLight  lig){lights.push_back( lig);}
+
+  std::vector<pCglWindow> getWindows(){return windows;}
+  std::vector<pCglScene>  getScenes(){ return scenes;}
+  std::vector<pCglObject> getObjects(){return objects;}
+  std::vector<pCglLight>  getLights(){ return lights;}
+
+
+  //Scenes, windows... creation
+  pCglWindow cglWindow(int x, int y, int w, int h);
+  pCglScene  cglScene();
+
+  void initGLEW();
+
 
   //Accessors
   pCglLight     getLight( int lightID);
@@ -69,16 +78,17 @@ public:
   pCglScene     getScene();
   pCglWindow    getWindow();
   pCglInterface getInterface();
-  pCglMouse     getMouse();
+  pCglMouse     getMouse(){    return &mice;}
+  pCglKeyboard  getKeyboard(){ return &keyboard;}
 
-  std::vector<pCglObject>* getObjectList(){return &object;}
-  std::vector<CglLight>* getLightsList(){return &light;}
+  std::vector<pCglObject>* getObjectList(){return &objects;}
+  std::vector<pCglLight>*  getLightsList(){return &lights;}
 
-  int           simpleID();
-  int           smoothID();
-  int           flatID();
+  int           simpleID(){return getWindow()->simpleID();}
+  int           smoothID(){return getWindow()->smoothID();}
+  int           flatID(){  return getWindow()->flatID();}
   void          centerMouse();
-  int           winid();
+  //int           winid();
 
   //Glut wrap functions
   static void reshapeWrap(int w, int h);

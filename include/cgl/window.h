@@ -13,42 +13,70 @@
 #include <cgl/scene.h>
 #include <cgl/view.h>
 
-
 class CGL_API CglWindow{
 
-private:
+public:
+    pCglScene           pScene;
+    pCglView            pView;
+    pCglRadialInterface pRadialInterface;
+    pCglLinearInterface pLinearInterface;
+
     glm::vec2   position, size;
     std::string title;
-    int         id;
-    pCglScene   pScene;
-    int         ids;
+    int         ID;
+
+
+    CglShader     simpleShader, smoothShader, flatShader;
+    int           simpleID(){     return simpleShader.mProgramID;}
+    int           smoothID(){     return smoothShader.mProgramID;}
+    int           flatID(){       return flatShader.mProgramID;}
 
 public:
-    std::vector<pCglLight>  light;
-    CglView                 view;
-
-    public:
     CglWindow();
 	CglWindow(int x, int y, int w, int h);
 	~CglWindow();
-    int cglAddLight(pCglLight li);
 
     void reshape(int w, int h);
-    pCglView getView(){return &view;}
     void display();
-    void resize(int w, int h);
 	void cglMainLoop();
 
-public:
-    int       getID(){   return id;}
     pCglScene getScene(){return pScene;}
 
-private:
-	void displayBuffer(int buffer);
+	void setScene(pCglScene sc){  pScene = sc; sc->setView(pView); sc->setWindowID(ID);}
+	void setView(pCglView vi){    pView  = vi;}
 
+	pCglInterface getLinearInterface(){return pLinearInterface;}
+	pCglInterface getRadialInterface(){return pRadialInterface;}
+
+    void loadShaders();
+
+	//Glut wrap functions
+    static void reshapeWrap(int w, int h);
+    static void displayWrap();
+    static void mouseWrap(int b, int s, int x, int y);
+    static void motionWrap(int x, int y);
+    static void passiveMotionWrap(int x, int y);
+    static void keyWrap(unsigned char key,int x,int y);
+    static void keyUpWrap(unsigned char key,int x,int y);
+    static void specialWrap(int key, int x, int y);
+
+protected:
+	void displayBuffer(int buffer);
 };
 
 typedef CglWindow * pCglWindow;
+
+
+class CglSubWindow : public CglWindow{
+public:
+    CglSubWindow();
+	CglSubWindow(pCglWindow window, int x, int y, int w, int h);
+	~CglSubWindow();
+};
+typedef CglSubWindow* pCglSubWindow;
+
+
+
 
 #endif
 

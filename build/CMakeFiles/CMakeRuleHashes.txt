@@ -1,0 +1,11 @@
+# Hashes of file build rules.
+c0a7818b45254268837a3671fa4043c5 CMakeFiles/HEADERFILES
+203f804003e5948829d0c178da750501 CMakeFiles/glm
+dfd67aa8904b181b4e87def06c6d816e CMakeFiles/glm-complete
+85c38b4dadec3a74e9f6ff9066a82edd library/glm/src/glm-stamp/glm-build
+12c66a739c15dfefaf9a4d2e167b6366 library/glm/src/glm-stamp/glm-configure
+20382515f008a2f7af1d27d797acaa3d library/glm/src/glm-stamp/glm-download
+fc0b641c0441f75ad606d5dd8bee79bc library/glm/src/glm-stamp/glm-install
+d46ea17953cc1a293ddf2641762244e9 library/glm/src/glm-stamp/glm-mkdir
+c3d294c504e13c9b38d034ac1db0b0c7 library/glm/src/glm-stamp/glm-patch
+95485b62b454807309d611ffe7c32567 library/glm/src/glm-stamp/glm-update

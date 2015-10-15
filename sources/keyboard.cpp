@@ -6,10 +6,6 @@
 #include <cgl/canvas.h>
 extern CglCanvas *pcv;
 
-void CglKeyboard::keyColor(unsigned char key,int x,int y) {
-  pcv->winid();
-}
-
 void setTranslation(glm::vec3 tr, int &state){
   pCglScene scene = pcv->getScene();;
   for (unsigned int iObj = 0; iObj < scene->numObjects() ; iObj++){
@@ -299,9 +295,9 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
 
   //Lights rotation
   if(key=='R'){
-    std::vector<CglLight> *lights = pcv->getLightsList();
+    std::vector<pCglLight> *lights = pcv->getLightsList();
     for(int i = 0 ; i < lights->size() ; i++){
-        (*lights)[i].rotate(0.05f);
+        (*lights)[i]->rotate(0.05f);
     }
   }
 

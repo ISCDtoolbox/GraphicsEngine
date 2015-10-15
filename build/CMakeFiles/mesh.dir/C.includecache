@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/foulonj/dev/SUscCGL_V2/library/libmesh/libmesh5.c
+stdio.h
+-
+stdlib.h
+-
+stdarg.h
+-
+string.h
+-
+float.h
+-
+math.h
+-
+ctype.h
+-
+libmesh5.h
+/home/foulonj/dev/SUscCGL_V2/library/libmesh/libmesh5.h
+
+/home/foulonj/dev/SUscCGL_V2/library/libmesh/libmesh5.h
+

@@ -8,7 +8,8 @@ project(${PROJECT_NAME})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "$ENV{HOME}/bin")
 
 configure_file("${CMAKE_SOURCE_DIR}/app_numero.cpp" "${CMAKE_SOURCE_DIR}/app_numero.cpp")
-include_directories("~/include/SUscCGL/" "~/include/"  "${CMAKE_SOURCE_DIR}/../build/library/")
+include_directories("${CMAKE_SOURCE_DIR}/../build/library/glm/src/glm/"
+		    "${CMAKE_SOURCE_DIR}/../include/")
 
 add_executable(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/app_numero.cpp")
 target_link_libraries(${PROJECT_NAME} SUscCGL)

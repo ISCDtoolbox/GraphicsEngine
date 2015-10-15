@@ -1,23 +1,39 @@
 #include <cgl/scene.h>
+
 #include <cgl/canvas.h>
 extern CglCanvas *pcv;
+
+#include <sstream>
+#include <iterator>
+#include <set>
+#include <fstream>
 
 #include <glm/gtx/intersect.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
-// object constructor
-CglScene::CglScene():transform(){
-  selected = true;
-  m_cam = glm::normalize(glm::vec3(1,1,1));
-  m_look = -m_cam;
-  m_up = glm::normalize(glm::vec3(-1, 1., -1));
-  m_right = glm::cross(m_look, m_up);
-  center = glm::vec3(0,0,0);
-  VIEW = glm::lookAt(m_cam, m_look, m_up);
-  globalScale = 100000.0f;//For use of minimums later
-  background = new CglBackground();
+//Used for parsing save file
+template<typename T> std::vector<T> split(const std::string& line) {
+    std::istringstream is(line);
+    return std::vector<T>(std::istream_iterator<T>(is), std::istream_iterator<T>());
 }
-CglScene::~CglScene(){}
+
+// object constructor
+CglScene::CglScene(){
+  pcv->addScene(this);
+  //:transform()
+  selected = true;
+  m_cam    = glm::normalize(glm::vec3(1,1,1));
+  m_look   = -m_cam;
+  m_up     = glm::normalize(glm::vec3(-1, 1., -1));
+  m_right  = glm::cross(m_look, m_up);
+  center   = glm::vec3(0,0,0);
+  VIEW     = glm::lookAt(m_cam, m_look, m_up);
+  globalScale = 100000.0f;//For use of minimums later
+  background  = new CglBackground();
+}
+CglScene::~CglScene(){
+    delete background;
+}
 
 
 void CglScene::addObject(pCglObject object)
@@ -89,8 +105,6 @@ void CglScene::display()
 
   //GUI
   pcv->getInterface()->display();
-
-
 
   glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -509,4 +523,95 @@ glm::vec3 CglScene::getRayVector(int x, int y){
   glm::vec3 ray             = glm::normalize(far_point - near_point);
 
   return ray;
+}
+
+
+
+void CglScene::load_meshes_from_file(string fileName){
+  vector<string>    names;
+  vector<glm::mat4> mats;
+  vector<glm::vec3> centers;
+  vector<int>       groups;
+  vector<glm::vec4> matrices;
+  string line;
+  int lineNumber = -1;
+  int numLines = 7;
+  int numberMeshes = 0;
+
+  //Lecture du fichier de sauvegarde
+  ifstream saveFile(fileName);
+  if (saveFile.is_open()){
+    while ( getline (saveFile,line) ){
+      if (lineNumber==-1)
+        numberMeshes = atoi(line.c_str());
+      if (lineNumber%numLines == 0)
+        names.push_back(line);
+      for(int i = 1 ; i < 5 ; i++){
+        if(lineNumber%numLines == i){
+          glm::vec4 ROW;
+          vector<float> values = split<float>(line);
+          for(int j = 0 ; j < 4 ; j++){
+            ROW[j] = values[j];
+          }
+          matrices.push_back(ROW);
+        }
+      }
+      if(lineNumber%numLines == 5){
+        centers.push_back(glm::vec3(0.0f));
+        vector<double> values = split<double>(line);
+        for(int i = 0 ; i < 3 ; i++){
+          centers[centers.size()-1][i] = values[i];
+        }
+      }
+      if((lineNumber%numLines == 6) && (lineNumber!=-1))
+        groups.push_back(atoi(line.c_str()));
+      lineNumber++;
+    }
+    saveFile.close();
+  }
+  else{
+    cout << "Unable to open file";
+    exit(0);
+  }
+
+  //Réajustement des matrices des matrices
+  for(int i = 0 ; i < matrices.size() ; i++){
+    if(i%4 == 0)
+      mats.push_back(glm::mat4(1.0f));
+    mats[i/4][i%4] = matrices[i];
+  }
+
+  //Upload des propriétés du maillage
+  vector<pCglMesh> mesh;
+  for (int i=0; i < numberMeshes; i++){
+    char *N = (char*)names[i].c_str();
+    mesh.push_back(new CglMesh(N));
+    mesh[i]->meshInfo(0);
+    //int idObj = cglObject(mesh[i]);
+    mesh[i]->setCenter(centers[i]);
+    mesh[i]->setMODEL(mats[i]);
+    addObject(mesh[i]);
+
+    //Création des groupes
+    set<int> indGroups(groups.begin(), groups.end());
+    for (set<int>::iterator i = indGroups.begin(); i != indGroups.end(); i++) {
+      std::vector<pCglObject> objectsToGroup;
+      for(int j = 0 ; j < numObjects() ; j++){
+        if((groups[j]==*i) && (groups[j]!=-1)){
+          objectsToGroup.push_back(getObject(j));
+        }
+      }
+      if(objectsToGroup.size()>1){
+        getGroupList()->push_back(new CglGroup(objectsToGroup));
+      }
+    }
+    mesh[i]->setFileName(names[i]);
+  }
+}
+
+
+
+int CglScene::addLight(pCglLight li){
+  lights.push_back(li);
+  return lights.size() - 1;
 }

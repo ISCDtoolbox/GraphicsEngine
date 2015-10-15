@@ -7,9 +7,10 @@ void CglObject::uniformVec3(int ID, glm::vec3 v){
 }
 
 // object constructor
-CglObject::CglObject():transform()
+CglObject::CglObject()
 {
-  //cout << "  --- [create CglObject]" << endl;
+  pcv->addObject(this);
+
   selected = false;
   box      = false;
   line     = false;
@@ -22,9 +23,9 @@ CglObject::CglObject():transform()
   pVIEW  = NULL;
 
   face_color = pcv->profile.color();
-  material = new CglMaterial(face_color, 0.85, 0.15, 12.0);
+  material   = new CglMaterial(face_color, 0.85, 0.15, 12.0);
   edge_color = 0.8f * face_color;
-  idGroup = -1;
+  idGroup    = -1;
   localScale = 1;
 }
 

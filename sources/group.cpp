@@ -30,7 +30,6 @@ CglGroup::CglGroup(std::vector<pCglObject> groupOfObjects)
 
 CglGroup::~CglGroup(){
   //On envoie le centre aux objets
-  cout << "toto!!" << endl;
   for(int i = 0 ; i < numObjects() ; i++){
     glm::vec3 new_center = glm::vec3(listObject[i]->getMODEL()[3]);
     listObject[i]->setCenter(new_center);
@@ -39,7 +38,6 @@ CglGroup::~CglGroup(){
 
 void CglGroup::unGroup(){
   //On envoie le centre aux objets
-  cout << "toto!!" << endl;
   for(int i = 0 ; i < numObjects() ; i++){
     glm::vec3 new_center = glm::vec3(listObject[i]->getMODEL()[3]);
     listObject[i]->setCenter(new_center);

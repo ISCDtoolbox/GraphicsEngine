@@ -8,11 +8,10 @@ CglView::CglView()
 {
   m_stereo = false;
   m_eyesep = 0.027;
-  m_eye    = TV_LEFT;
-  m_ctyp   = TV_DEF;
   setPersp(70.0, 0.001, 15.0);
   zoom     = 1.0f;
   camOffset= 0.0f;
+  ratio    = 1;
 }
 
 void CglView::setPersp(double fovy, double znear, double zfar)
@@ -32,12 +31,4 @@ void CglView::reshape(int w, int h)
   height = h;
   pCglScene scene = pcv->getScene();
   //scene->cursorOrigin = glm::vec2(width/2, height/2);
-}
-
-
-void CglView::setView()
-{
-  //cout << "   -- setView\n";
-  if ( m_stereo == true ){}
-  else{}
 }

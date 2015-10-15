@@ -19,7 +19,7 @@ public:
   glm::vec2 lastPassivePos;
 
 private:
-  std::vector<pCglButton> *buttons;
+  //std::vector<pCglButton> *buttons;
   glm::vec2 currPos;
   bool arcball;
   //enum   TmouseType {TM_NONE, TM_SHIFT, TM_ALT, TM_CTRL};
@@ -31,7 +31,7 @@ private:
 
 public:
   CglMouse();
-  void setGUI();
+  //void setGUI();
   virtual ~CglMouse(){};
   void motion(int x, int y);
   void passiveMotion(int x, int y);

@@ -14,7 +14,6 @@
 class CGL_API CglView
 {
 public:
-  enum TViewType {TV_DEF, TV_FLY, TV_LEFT, TV_RIGHT};
 	double    m_znear,m_zfar;
 	double    m_fovy;
 	double    ratio;
@@ -25,8 +24,6 @@ public:
 
 private:
   bool      m_stereo;
-
-  TViewType m_ctyp,m_eye;
 
 public:
 	CglView();

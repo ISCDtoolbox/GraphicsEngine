@@ -26,6 +26,7 @@ class CGL_API CglLight{
 
   public:
     CglLight(glm::vec3 pos, glm::vec3 col, float pow, bool cam);
+    CglLight(float x,float y,float z, float r,float g,float b, float pow, bool cam);
     glm::mat4 getLightMatrix(pCglMaterial material);
     void      rotate(float angle);
 };
