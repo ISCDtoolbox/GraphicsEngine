@@ -19,7 +19,7 @@ using namespace std;
 
 int main(int argc, char **argv){
   CglCanvas cv(argc, argv);
-  string configFile = "/home/foulonj/dev/SUscCGL_V2/APP_NumeRO/numero.config";
+  string configFile = "@CMAKE_SOURCE_DIR@/numero.config";
   cv.getProfile()->read_configuration_file(configFile);
 
   if((argc==2) && (string(argv[1])=="cgl.save")){
@@ -27,68 +27,130 @@ int main(int argc, char **argv){
     //cv.load_meshes_from_file("cgl.save", ids);
   }
 
-  else if (argc > 1){  
-    pCglWindow window = new CglWindow(0, 0, 800, 800);   
+  else if (argc > 1){
+
+
+    pCglWindow window = new CglWindow(0, 0, 800, 800);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //PREMIERE SOUS FENETRE, LA PLUS GRANDE
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    pCglSubWindow SW1 = new CglSubWindow(window, CGL_TOP);
     pCglScene  scene  = new CglScene();
-    pCglView   view   = new CglView();
     pCglLight fill    = new CglLight(0,8,15,    1,1,1,  300.0, false);
     pCglLight side    = new CglLight(-10,5,-3,  1,1,1,  70.0,  false);
     pCglLight back    = new CglLight(-10,5,-10, 1,1,1,  50.0,  false);
-    //lights.push_back(CglLight(glm::vec3(0,0,10),  glm::vec3(1), 70.0,  true));   //FILL
-    //lights.push_back(CglLight(glm::vec3(-10,0,2), glm::vec3(1), 40.0,  true));   //SIDE
-    //lights.push_back(CglLight(glm::vec3(3,3,-10), glm::vec3(1), 30.0,  true));   //BACK
-    
-    window->setView( view);
+
     scene->addLight( fill );
     scene->addLight( side );
     scene->addLight( back );
-    window->setScene(scene);
-
+    SW1->setScene(   scene);
     cv.initGLEW();
-    
+
     for (int i=0; i < argc - 1; i++)
       scene->addObject(new CglMesh(argv[i+1]));
     if(cv.profile.initial_arrangement == CGL_ARRANGEMENT_GRID)
       scene->place_objects_on_grid();
 
-    //scene->init();
-    //window->init();
-    window->loadShaders();
+    SW1->loadShaders();
 
-    
-    pCglWindow subWindow1 = new CglSubWindow(window, 0, 0, 300, 300);   
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //PREMIERE SOUS FENETRE, LA PLUS GRANDE
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    pCglSubWindow SW2     = new CglSubWindow(window, CGL_BOTTOM);//400, 0, 400, 800);
     pCglScene  scene2     = new CglScene();
-    pCglView   view2      = new CglView();
     pCglLight fill2       = new CglLight(0,8,15,    1,1,1,  300.0, false);
     pCglLight side2       = new CglLight(-10,5,-3,  1,0,0,  70.0,  false);
     pCglLight back2       = new CglLight(-10,5,-10, 0,0,1,  50.0,  false);
-    //lights.push_back(CglLight(glm::vec3(0,0,10),  glm::vec3(1), 70.0,  true));   //FILL
-    //lights.push_back(CglLight(glm::vec3(-10,0,2), glm::vec3(1), 40.0,  true));   //SIDE
-    //lights.push_back(CglLight(glm::vec3(3,3,-10), glm::vec3(1), 30.0,  true));   //BACK
-    subWindow1->setView( view2);
+
     scene2->addLight( fill2 );
     scene2->addLight( side2 );
     scene2->addLight( back2 );
-    subWindow1->setScene(scene2);
-    
+    SW2->setScene(scene2);
+
     cv.initGLEW();
-    
+
     for (int i=0; i < 2; i++)
       scene2->addObject(new CglMesh(argv[i+1]));
     if(cv.profile.initial_arrangement == CGL_ARRANGEMENT_GRID)
       scene2->place_objects_on_grid();
 
-    subWindow1->loadShaders();
-    
+    SW2->loadShaders();
+
+
+
+
+
+
+
+
+
+    pCglWindow window2 = new CglWindow(800, 0, 800, 800);
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //PREMIERE SOUS FENETRE, LA PLUS GRANDE
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    pCglSubWindow SW3 = new CglSubWindow(window2, CGL_LEFT);
+    pCglScene  scene3  = new CglScene();
+    pCglLight fill3    = new CglLight(0,8,15,    1,1,1,  300.0, false);
+    pCglLight side3    = new CglLight(-10,5,-3,  1,1,1,  70.0,  false);
+    pCglLight back3    = new CglLight(-10,5,-10, 1,1,1,  50.0,  false);
+
+    scene3->addLight( fill3 );
+    scene3->addLight( side3 );
+    scene3->addLight( back3 );
+    SW3->setScene(   scene3);
+    cv.initGLEW();
+
+    for (int i=3; i < 5; i++)
+      scene3->addObject(new CglMesh(argv[i+1]));
+    if(cv.profile.initial_arrangement == CGL_ARRANGEMENT_GRID)
+      scene3->place_objects_on_grid();
+
+    SW3->loadShaders();
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //PREMIERE SOUS FENETRE, LA PLUS GRANDE
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    pCglSubWindow SW4     = new CglSubWindow(window2, CGL_RIGHT);//400, 0, 400, 800);
+    pCglScene  scene4     = new CglScene();
+    pCglLight fill4       = new CglLight(0,8,15,    1,1,1,  300.0, false);
+    pCglLight side4       = new CglLight(-10,5,-3,  1,0,0,  70.0,  false);
+    pCglLight back4       = new CglLight(-10,5,-10, 0,0,1,  50.0,  false);
+
+    scene4->addLight( fill4 );
+    scene4->addLight( side4 );
+    scene4->addLight( back4 );
+    SW4->setScene(scene4);
+
+    cv.initGLEW();
+
+    for (int i=2; i < 4; i++)
+      scene4->addObject(new CglMesh(argv[i+1]));
+    if(cv.profile.initial_arrangement == CGL_ARRANGEMENT_GRID)
+      scene4->place_objects_on_grid();
+
+    SW4->loadShaders();
+
+
+
+
   }
-  
-  else{ 
+
+  else{
     cout << "Invalid arguments" << endl;
     return 1;
   }
-  
 
-  cv.cglMainLoop();
+  cv.loop();
 
   return 0;
 }

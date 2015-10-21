@@ -28,7 +28,6 @@ CglObject::CglObject()
   idGroup    = -1;
   localScale = 1;
 }
-
 CglObject::~CglObject(){}
 
 void CglObject::linkSceneParameters(glm::mat4 *MODEL, glm::mat4 *VIEW, glm::mat4 *PROJ, glm::vec3 *Center, glm::vec3 *Up, glm::vec3 *Cam, int ID){
@@ -65,11 +64,9 @@ void CglObject::pickingDisplay(){
   }
 }
 
-void CglObject::cglInit()
-{}
+void CglObject::cglInit(){}
 
-void CglObject::applyTransformation()
-{
+void CglObject::applyTransformation(){
   glm::mat4 ID = glm::mat4(1.0f);
   if(idGroup==-1)
     rotationCenter = &center;

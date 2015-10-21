@@ -13,7 +13,6 @@ CglCanvas::CglCanvas(int argc, char **argv){
   cout << "Canvas created" << endl;
 }
 
-
 void CglCanvas::initGLEW(){
 #ifndef __APPLE__
     glewExperimental = GL_TRUE;
@@ -27,75 +26,86 @@ void CglCanvas::initGLEW(){
         exit(1);
     }
 #endif
-
-
 }
+
 
 ///////////////////////////////////////////////////////////////////////////
 //Accessors
 
 pCglLight     CglCanvas::getLight( int lightID){  return lights[lightID];}
 pCglScene     CglCanvas::getScene( int sceneID){  return scenes[sceneID]; }
-pCglWindow    CglCanvas::getWindow(int windowID){ return windows[windowID];}
-
-pCglScene     CglCanvas::getScene(){              return getWindow()->getScene();}
-
+pCglScene     CglCanvas::getScene(){
+    return getSubWindow()->getScene();
+}
 
 
 pCglInterface CglCanvas::getInterface(){
   if(profile.interface == CGL_INTERFACE_LINEAR)
-    return getWindow()->getLinearInterface();//linearInterface;
+    return getSubWindow()->getLinearInterface();//linearInterface;
   else if(profile.interface == CGL_INTERFACE_RADIAL)
-    return getWindow()->getRadialInterface();//&radialInterface;
+    return getSubWindow()->getRadialInterface();//&radialInterface;
 }
-
-
-//int           CglCanvas::simpleID(){     return simpleShader.mProgramID;}
-//int           CglCanvas::smoothID(){     return smoothShader.mProgramID;}
-//int           CglCanvas::flatID(){       return flatShader.mProgramID;}
 
 void       CglCanvas::centerMouse(){
   mice.lastPassivePos = mice.lastPos = glm::vec2(pcv->getScene()->getView()->width/2, pcv->getScene()->getView()->height/2);
 }
 
-
-pCglWindow    CglCanvas::getWindow(){
+pCglWindow CglCanvas::getWindow(){
     int idw = glutGetWindow();
+    for (int i=0; i<windows.size(); i++){
+        for(int j = 0 ; j < windows[i]->subWindows.size() ; j++)
+            if ( windows[i]->subWindows[j]->ID == idw )
+                return windows[i];
+    }
     for (int i=0; i<windows.size(); i++)
         if ( windows[i]->ID == idw )
             return windows[i];
-    return NULL;
+    cout << "No active window found for ID = " << glutGetWindow() << endl;// exit(-1);
+    exit(-1);
 }
+
+pCglSubWindow CglCanvas::getSubWindow(){
+    int idw = glutGetWindow();
+    for (int i=0; i<windows.size(); i++)
+        for(int j = 0 ; j < windows[i]->subWindows.size() ; j++)
+            if ( windows[i]->subWindows[j]->ID == idw )
+                return windows[i]->subWindows[j];
+    //cout << "No active sub window found for ID = " << glutGetWindow() << endl;// exit(-1);
+    return NULL;
+    //exit(-2);
+}
+
+//pCglWindow CglCanvas::getWindow(int windowID){ return windows[windowID];}
+
 
 ///////////////////////////////////////////////////////////////////////////
-//Virtual methods
+//Glut wraps
 
+/*
+
+void CglCanvas::reshapeWrap(int w, int h) {
+  pcv->reshape(w, h);
+}
 void CglCanvas::reshape(int w, int h){
-  getWindow()->pView->reshape(w, h);
+    if (getWindow()!=NULL)
+        getWindow()->reshape(w, h);
 }
 
+
+void CglCanvas::displayWrap(){
+  pcv->display();
+}
 void CglCanvas::display(){
-
-  getWindow()->display();
-
+    //cout << "Displaying canvas" << endl;
+    //getWindow()->display();
   //for(int i = 0 ; i < windows.size() ; i++){
     //glutSetWindow(getWindow()->ID);
     //windows[i]->display();
   //}
   //cout << "active win = " << getWindow()->ID << endl;
 }
+*/
 
-
-///////////////////////////////////////////////////////////////////////////
-//Glut wraps
-
-void CglCanvas::reshapeWrap(int w, int h) {
-  pcv->reshape(w, h);
-}
-
-void CglCanvas::displayWrap(){
-  pcv->display();
-}
 
 void CglCanvas::motionWrap(int x, int y){
   pcv->mice.motion(x,y);
@@ -128,12 +138,9 @@ void CglCanvas::specialWrap(int key, int x, int y){
 }
 
 
-void CglCanvas::cglMainLoop(){
-  //simpleShader.load("SIMPLE");
-  //smoothShader.load("SMOOTH");
-  //flatShader.load("FLAT");
 
-  glutMainLoop();
+void CglCanvas::loop(){
+    glutMainLoop();
 }
 
 

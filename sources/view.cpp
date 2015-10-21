@@ -29,6 +29,6 @@ void CglView::reshape(int w, int h)
   ratio = (double)w/h;
   width  = w;
   height = h;
-  pCglScene scene = pcv->getScene();
+  //pCglScene scene = pcv->getScene();
   //scene->cursorOrigin = glm::vec2(width/2, height/2);
 }

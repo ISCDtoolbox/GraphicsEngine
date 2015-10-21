@@ -1,1 +1,0 @@
-/usr/bin/c++   -std=c++0x -g3 -Wno-deprecated -O0 -O3 -DNDEBUG    CMakeFiles/embedfile.dir/sources/embedfile.cpp.o  -o embedfile -rdynamic 

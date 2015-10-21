@@ -1,5 +1,0 @@
-/home/foulonj/dev/SUscCGL_V2/build/CMakeFiles/HEADERFILES.dir
-/home/foulonj/dev/SUscCGL_V2/build/CMakeFiles/SUscCGL.dir
-/home/foulonj/dev/SUscCGL_V2/build/CMakeFiles/embedfile.dir
-/home/foulonj/dev/SUscCGL_V2/build/CMakeFiles/glm.dir
-/home/foulonj/dev/SUscCGL_V2/build/CMakeFiles/mesh.dir

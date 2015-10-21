@@ -253,9 +253,7 @@ glm::mat4 shadowMatrix(glm::vec4 ground, glm::vec4 light){
 
 
 void CglMesh::shadowsDisplay(){
-
   glEnable(GL_CULL_FACE);
-
 
   if(pcv->profile.displayShadows && !hidden){
     //if(hidden)
@@ -517,7 +515,7 @@ void CglMesh::display()
       uniformVec3(FOGCOLID, fog);
 
       //Light info
-      std::vector<pCglLight> lights = pcv->getWindow()->getScene()->getLights();
+      std::vector<pCglLight> lights = pcv->getSubWindow()->getScene()->getLights();
 
 
         /*

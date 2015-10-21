@@ -42,25 +42,24 @@ target_link_libraries(SUscCGL ${CORELIBS} mesh)
 add_dependencies(SUscCGL HEADERFILES)
 
 #Installation lors d'un make install, permet de ne builder que la librairie.
-set(IN /usr)
+#set(IN /usr)
 #set(IN $ENV{HOME})
-#set(IN /home/foulonj)
 
-install(TARGETS mesh
-        ARCHIVE DESTINATION "${IN}/lib/"
-        LIBRARY DESTINATION "${IN}/lib/"
-        RUNTIME DESTINATION "${IN}/bin/")
+#install(TARGETS mesh
+#        ARCHIVE DESTINATION "${IN}/lib/"
+#        LIBRARY DESTINATION "${IN}/lib/"
+#        RUNTIME DESTINATION "${IN}/bin/")
+#
+#install(TARGETS SUscCGL
+#        ARCHIVE DESTINATION "${IN}/lib/"
+#        LIBRARY DESTINATION "${IN}/lib/"
+#        RUNTIME DESTINATION "${IN}/bin/")
 
-install(TARGETS SUscCGL
-        ARCHIVE DESTINATION "${IN}/lib/"
-        LIBRARY DESTINATION "${IN}/lib/"
-        RUNTIME DESTINATION "${IN}/bin/")
+#install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/"
+#        DESTINATION "${IN}/include/SUscCGL")
 
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/"
-        DESTINATION "${IN}/include/SUscCGL")
-
-install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/library/glm/src/glm/glm/"
-	DESTINATION "${IN}/include/glm")
+#install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/library/glm/src/glm/glm/"
+#	DESTINATION "${IN}/include/glm")
 
 
 add_custom_target(

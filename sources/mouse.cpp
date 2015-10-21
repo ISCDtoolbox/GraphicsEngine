@@ -20,8 +20,8 @@ CglMouse::CglMouse(){
 //}
 
 glm::vec3 get_arcball_vector(glm::vec2 cursor) {
-  int W = pcv->getWindow()->pView->width;
-  int H = pcv->getWindow()->pView->height;
+  int W = pcv->getSubWindow()->pView->width;
+  int H = pcv->getSubWindow()->pView->height;
   glm::vec3 P = glm::vec3(1.0*cursor.x/W*2 - 1.0,
                           1.0*cursor.y/H*2 - 1.0,
                           0);
@@ -57,7 +57,13 @@ void CglMouse::motion(int x, int y)
 
 
 void CglMouse::passiveMotion(int x, int y){
+  bool insideWindow = (x<pcv->getWindow()->size.x) &&
+                      (x>0) &&
+                      (y<pcv->getWindow()->size.y) &&
+                      (y>0);
+  if(insideWindow){
   pCglScene scene = pcv->getScene();
+  //cout << "Scene adress = " << scene << endl;
   glm::vec2 currPassivePos(x,y);
 
   if (currPassivePos != lastPassivePos) {
@@ -94,6 +100,7 @@ void CglMouse::passiveMotion(int x, int y){
 
   //Check hovered buttons
   pcv->getInterface()->checkHoveredButtons(x, y);
+  }
 }
 
 

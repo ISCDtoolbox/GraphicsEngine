@@ -1,1 +1,0 @@
-/usr/bin/cc  -fPIC -O3 -DNDEBUG   -shared -Wl,-soname,libmesh.so -o libmesh.so CMakeFiles/mesh.dir/library/libmesh/libmesh5.c.o 

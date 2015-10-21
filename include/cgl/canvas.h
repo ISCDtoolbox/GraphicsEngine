@@ -74,25 +74,28 @@ public:
   //Accessors
   pCglLight     getLight( int lightID);
   pCglScene     getScene( int sceneID);
-  pCglWindow    getWindow(int windowID);
+  //pCglSubWindow getWindow(int windowID);
   pCglScene     getScene();
-  pCglWindow    getWindow();
   pCglInterface getInterface();
   pCglMouse     getMouse(){    return &mice;}
   pCglKeyboard  getKeyboard(){ return &keyboard;}
 
+  pCglWindow    getWindow();
+  pCglSubWindow getSubWindow();
+
   std::vector<pCglObject>* getObjectList(){return &objects;}
   std::vector<pCglLight>*  getLightsList(){return &lights;}
 
-  int           simpleID(){return getWindow()->simpleID();}
-  int           smoothID(){return getWindow()->smoothID();}
-  int           flatID(){  return getWindow()->flatID();}
+  int           simpleID(){return getSubWindow()->simpleID();}
+  int           smoothID(){return getSubWindow()->smoothID();}
+  int           flatID(){  return getSubWindow()->flatID();}
   void          centerMouse();
   //int           winid();
 
   //Glut wrap functions
-  static void reshapeWrap(int w, int h);
-  static void displayWrap();
+
+  //static void reshapeWrap(int w, int h);
+  //static void displayWrap();
   static void mouseWrap(int b, int s, int x, int y);
   static void motionWrap(int x, int y);
   static void passiveMotionWrap(int x, int y);
@@ -100,16 +103,17 @@ public:
   static void keyUpWrap(unsigned char key,int x,int y);
   static void specialWrap(int key, int x, int y);
 
+
   //Main loop
-  void cglMainLoop();
+  void loop();
 
 
 /////////////////////////////////////////////////////
 //Private virtual methods, which need an instance of canvas
 
 private:
-  virtual void reshape(int w, int h);
-  virtual void display();
+  //virtual void reshape(int w, int h);
+  //virtual void display();
 
 };
 

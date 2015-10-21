@@ -1,1 +1,0 @@
-/usr/bin/c++   -O3 -DNDEBUG    CMakeFiles/Numero.dir/app_numero.cpp.o  -o /home/foulonj/bin/Numero -rdynamic -lSUscCGL 

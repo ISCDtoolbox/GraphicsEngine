@@ -30,6 +30,7 @@ CglScene::CglScene(){
   VIEW     = glm::lookAt(m_cam, m_look, m_up);
   globalScale = 100000.0f;//For use of minimums later
   background  = new CglBackground();
+  cout << "Scene created with Adress = " << this << endl;
 }
 CglScene::~CglScene(){
     delete background;
@@ -191,14 +192,11 @@ float CglScene::orientedAngle(glm::vec3 pt1,
 			      glm::vec3 pt2,
 			      glm::vec3 c,
 			      glm::vec3 ax){
-  float a = glm::orientedAngle(glm::normalize(glm::vec3(pt1.x - c.x,
-							c.y,
-							pt1.z - c.z)),
-			       glm::normalize(glm::vec3(pt2.x - c.x,
-							c.y,
-							pt2.z - c.z)),
-			       ax);
-  return 3.0f * a;
+  float a = glm::orientedAngle( glm::normalize(glm::vec3(c.x - pt1.x, c.y, c.z - pt1.z)),
+                                glm::normalize(glm::vec3(c.x - pt2.x, c.y, c.z - pt2.z)),
+                                ax
+                              );
+  return a;
 }
 
 void CglScene::onLeftDrag(int x, int y){
@@ -224,15 +222,15 @@ void CglScene::onLeftDrag(int x, int y){
     pCglObject obj  = listObject[i];
     if ( (obj->isSelected()) /*&& (obj->getGroupID()==-1)*/ ){
       glm::vec3 c     = glm::vec3(obj->getRotationCenter()) + glm::vec3(MODEL[3]);
-      //planeNormal     = -c + m_cam;
+      planeNormal     = -c + m_cam;
       glm::vec3 axis  = glm::vec3(0,1,0);
       ray             = getRayVector(x,y);
       inter           = intersect(ray, c, planeNormal, intersects);
       lastRay         = getRayVector(lastDrag.x, lastDrag.y);
       lastInter       = intersect(lastRay, c, planeNormal, intersectsLast);
       float     angle = orientedAngle(lastInter, inter, c, axis);
-      glm::mat4 ROT   = glm::mat4(glm::angleAxis(angle, axis));
-      listObject[i]->transform.setRotation(ROT);
+      glm::mat4 tot   = glm::mat4(glm::angleAxis(4.0f * angle, axis));
+      listObject[i]->transform.setRotation( tot );
     }
   }
   lastDrag = glm::vec2(x,y);
@@ -263,12 +261,10 @@ void CglScene::onMiddleDrag(int x, int y){
 
   ray       = getRayVector(x,y);
   inter     = intersect(ray, plane, planeNormal, intersects);
+  cout << inter.x << " " << inter.y << " " << inter.z << endl;
 
   lastRay   = getRayVector(lastDrag.x, lastDrag.y);
   lastInter = intersect(lastRay, plane, planeNormal, intersectsLast);
-
-  //cout << "curr: " << inter.x <<     "/" << inter.y <<     "/" << inter.z << endl;
-  //cout << "last: " << lastInter.x << "/" << lastInter.y << "/" << lastInter.z << endl;
 
   if(!isSelected()){
     if(intersects)
@@ -504,8 +500,9 @@ glm::vec3 CglScene::getRayVector(int x, int y){
   //Mouse position to [-1,1]
   int       w = view->width;
   int       h = view->height;
+
   glm::vec2 window_position(x,y);
-  glm::vec2 normalized_window_position( (x/(w*0.5f) - 1)/float(w/h), 1.0f - y/(h*0.5f));
+  glm::vec2 normalized_window_position((x/(w*0.5f) - 1) , 1.0f - y/(h*0.5f));
 
   //Ray end points
   float     fov             = view->m_fovy;
@@ -513,6 +510,8 @@ glm::vec3 CglScene::getRayVector(int x, int y){
   glm::vec2 fov_coordinates = tan * normalized_window_position;
   float     near            = view->m_znear;
   float     far             = view->m_zfar;
+
+
   glm::vec3 near_point(fov_coordinates.x * near, fov_coordinates.y * near, -near);
   glm::vec3 far_point( fov_coordinates.x * far,  fov_coordinates.y * far,  -far);
 
