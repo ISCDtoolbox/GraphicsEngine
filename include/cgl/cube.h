@@ -11,16 +11,54 @@
 
 #include <cgl/object.h>
 
-class CGL_API CglCube : public CglObject
-{
-public:
-  CglCube(double cr=0., double cg=0., double cb=0.,double rr=1);
-  void display();
-  ~CglCube();
+class CglPrimitive: public CglObject{
+protected:
+    GLuint mBuffer;
+    GLuint iBuffer;
+    glm::vec3 color;
+    glm::vec3 pos;
+    float size;
 
-private:
-  double r;
-  int colorTest[4];
+public:
+    glm::vec3 getPos(){return pos;}
+    void display();
 };
+typedef CglPrimitive*   pCglPrimitive;
+
+
+
+
+class CGL_API CglCube : public CglPrimitive{
+public:
+    CglCube(float x, float y, float z);
+    ~CglCube();
+};
+typedef CglCube*        pCglCube;
+
+
+
+
+class CGL_API CglSphere : public CglPrimitive{
+public:
+    CglSphere(float x, float y, float z);
+    ~CglSphere();
+};
+typedef CglSphere*      pCglSphere;
+
+
+
+
+class CGL_API CglCylinder : public CglPrimitive{
+private:
+    //glm::vec3 pt1, pt2;
+public:
+    CglCylinder(float x, float y, float z, float x2, float y2, float z2);
+    CglCylinder(pCglPrimitive obj1, pCglPrimitive obj2);
+    void init(float x,  float y,  float z, float x2, float y2, float z2);
+    ~CglCylinder();
+};
+typedef CglCylinder*    pCglCylinder;
+
+
 
 #endif

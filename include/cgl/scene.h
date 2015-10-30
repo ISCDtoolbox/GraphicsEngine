@@ -77,16 +77,16 @@ public:
   pCglTransform            getTransform(){return &transform;}
 
   //Accessors for matrices
-  glm::mat4                getMODEL(){return MODEL;}
-  glm::mat4                getVIEW(){ return VIEW;}
-  glm::mat4                getPROJ(){ return PROJ;}
-
+  glm::mat4                 getMODEL(){ return MODEL;}
+  glm::mat4                 getVIEW(){  return VIEW;}
+  glm::mat4                 getPROJ(){  return PROJ;}
+  glm::vec3                 getCenter(){return center;}
 
   //Accessors and setters for camera parameters
-  glm::vec3                getRight(){return m_right;}
-  glm::vec3                getLook(){ return m_look;}
-  glm::vec3                getCam(){  return m_cam;}
-  glm::vec3                getUp(){   return m_up;}
+  glm::vec3                getRight(){  return m_right;}
+  glm::vec3                getLook(){   return m_look;}
+  glm::vec3                getCam(){    return m_cam;}
+  glm::vec3                getUp(){     return m_up;}
   void                     setCam(glm::vec3 newCam){m_cam = newCam;}
   void                     setUp( glm::vec3 newUp){ m_up  = newUp;}
   void                     setLook(glm::vec3 newL){ m_look= newL;}
@@ -102,9 +102,9 @@ public:
   void                     save();
 
   //Picking
-  int                      getPickedID(int x, int y);
-  void                     onPick(bool ctrl, int ind);
-  void                     reOrderObjects(int picked);
+  pCglObject               getPicked(int x, int y);
+  void                     onPick(bool ctrl, pCglObject obj);
+  void                     reOrderObjects(pCglObject obj);
   glm::vec3                getRayVector(int x, int y);
 
   //Mouse actions

@@ -283,15 +283,16 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
     pcv->profile.update_objects_colors();
   }
 
-  //Fullscreen
-  if(key=='F'){
-    pcv->profile.fullscreen = !pcv->profile.fullscreen;
-    if (pcv->profile.fullscreen)
-      glutFullScreen();
-    else{
-      glutReshapeWindow(pcv->getScene()->getView()->width, pcv->getScene()->getView()->height);
+    //Fullscreen
+    if(key=='F'){
+        glutSetWindow(pcv->getWindow()->ID);
+        pcv->profile.fullscreen = !pcv->profile.fullscreen;
+        if (pcv->profile.fullscreen)
+            glutFullScreen();
+        else{
+            glutReshapeWindow(pcv->getWindow()->size.x, pcv->getWindow()->size.y);//getScene()->getView()->height
+        }
     }
-  }
 
   //Lights rotation
   if(key=='R'){

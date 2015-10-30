@@ -9,13 +9,11 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
-
-
 #include <cgl/canvas.h>
 extern CglCanvas *pcv;
 
-CglProfile::CglProfile()
-{
+
+CglProfile::CglProfile(){
   path              = EXT_PATH;
   read_configuration_file("");
   update_colors();

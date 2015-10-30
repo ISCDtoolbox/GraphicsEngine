@@ -6,6 +6,19 @@ set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_SOURCE_DIRECTORY ${CMAKE_SOURCE_DIR})
 configure_file("${CMAKE_SOURCE_DIR}/include/ext.h.in" "${CMAKE_SOURCE_DIR}/include/ext.h")
 
+#Include de GLEW
+include(ExternalProject)
+ExternalProject_Add(
+  glew
+  PREFIX "./library/glew"
+  GIT_REPOSITORY https://github.com/nigels-com/glew.git
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  INSTALL_COMMAND "make; make install;"
+  LOG_DOWNLOAD ON
+  LOG_INSTALL ON
+)
+
 #Include de GLM
 include(ExternalProject)
 ExternalProject_Add(

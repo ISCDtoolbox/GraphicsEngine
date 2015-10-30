@@ -6,6 +6,8 @@ extern "C" {
 #include <cgl/canvas.h>
 extern CglCanvas *pcv;
 
+
+
 CglMesh::CglMesh(char *name)
 {
   isMesh   = true;
@@ -15,8 +17,22 @@ CglMesh::CglMesh(char *name)
   float     fp1,fp2,fp3;
   int       k,inm;
   meshFile  = std::string(name);
+  cout << "Reading: " << name << " " << endl;
 
-  cout << "Reading: " << name << endl;
+  //Lecture du .sol
+  std::string solFile   = meshFile.substr(0, meshFile.size()-5) + ".sol";
+  cout << solFile << endl << endl;
+  int ver2, dim2;
+  int inMeshSol = GmfOpenMesh((char*)(solFile.c_str()), GmfRead, &ver2, &dim2);
+  if(!inMeshSol){
+        exit(143);
+  }
+
+  cout << "sol file opened" << endl;
+  int nSol      = GmfStatKwd(inMeshSol, GmfISolAtVertices);
+  cout << "size of solution = " << nSol << endl;
+
+
 
   inm = GmfOpenMesh(name,GmfRead,&ver,&dim);
   if ( !inm ){
@@ -91,17 +107,13 @@ CglMesh::CglMesh(char *name)
     vertices.push_back(inv * point[i].c[1]);
     vertices.push_back(inv * point[i].c[2]);
   }
-  glGenBuffers( 1,               &meshBuffer);
-  glBindBuffer( GL_ARRAY_BUFFER, meshBuffer);
-  glBufferData( GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
 
   //Buffer des indices
   for (int i = 0 ; i < tria.size() ; i++)
     for(int j = 0 ; j < 3 ; j++)
       indices.push_back(tria[i].v[j]-1);
-  glGenBuffers(1, &indicesBuffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+
 
 
   //Lecture des NormalsAtVertices pour faire les normales
@@ -126,14 +138,10 @@ CglMesh::CglMesh(char *name)
     normals[3 * indV + 1] = inv * normal[indN].n[1];
     normals[3 * indV + 2] = inv * normal[indN].n[2];
   }
-  //Buffer des normales
-  glGenBuffers( 1,               &normalBuffer);
-  glBindBuffer( GL_ARRAY_BUFFER, normalBuffer);
-  glBufferData( GL_ARRAY_BUFFER, sizeof(float) * normals.size(), &normals[0], GL_STATIC_DRAW);
 
-
-  //face_color = glm::vec3(0, 0, 1);
-  //edge_color = glm::vec3(0,0,1);
+    createBuffer(&meshBuffer,       &vertices);
+    createBuffer(&indicesBuffer,    &indices);
+    createBuffer(&normalBuffer,     &normals);
 
   //TYPE DE RENDU ET SHADER
   nPicking = 3 * tria.size();
@@ -193,7 +201,7 @@ void CglMesh::getBBOX()
   //ELSE: C'EST LA SCENE QUI SE CHARGE DENVOYER LE PATE
 
   //Bounding box buffer
-  float cube[] = {
+  std::vector<float> cube{
     -0.5, -0.5, -0.5,
      0.5, -0.5, -0.5,
      0.5,  0.5, -0.5,
@@ -201,26 +209,19 @@ void CglMesh::getBBOX()
     -0.5, -0.5,  0.5,
      0.5, -0.5,  0.5,
      0.5,  0.5,  0.5,
-    -0.5,  0.5,  0.5,
+    -0.5,  0.5,  0.5
   };
-  glGenBuffers(1, &bboxBuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, bboxBuffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(cube), cube, GL_STATIC_DRAW);
 
   //Indices buffer
-  GLushort elements[] = {
+  std::vector<short> elements{
     0, 1, 2, 3,
     4, 5, 6, 7,
     0, 4, 1, 5, 2, 6, 3, 7
   };
-  glGenBuffers(1, &bboxIndBuffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bboxIndBuffer);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  //Freeing ressources
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  createBuffer(&bboxBuffer, &cube);
+  createBuffer(&bboxIndBuffer, &elements);
+  freeBuffer();
 }
 
 
@@ -253,198 +254,108 @@ glm::mat4 shadowMatrix(glm::vec4 ground, glm::vec4 light){
 
 
 void CglMesh::shadowsDisplay(){
-  glEnable(GL_CULL_FACE);
-
-  if(pcv->profile.displayShadows && !hidden){
-    //if(hidden)
-    //glEnable(GL_BLEND);
-
-    int shaderID = pcv->simpleID();
-    glUseProgram(shaderID);
-    int MatrixID = glGetUniformLocation(shaderID, "MVP");
-    int colorID  = glGetUniformLocation(shaderID, "COL");
-
-    glEnableVertexAttribArray( 0);
-    glBindBuffer(GL_ARRAY_BUFFER, meshBuffer);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, ( void*)0);
-    glBindAttribLocation(shaderID, 0, "vertex_position");
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
-
-    glm::mat4 shadowMVP =  *pPROJ * *pVIEW * *pMODEL *
-                           shadowMatrix( glm::vec4(glm::vec3(0,1,0), pcv->profile.bottomDistance + (*pMODEL)[3].y - 0.002), glm::vec4(glm::vec3(0,1,0), 0) ) *
-                           glm::scale(MODEL, glm::vec3(scaleFactor));
-
-    glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &shadowMVP[0][0]);
-
-    glm::vec3 shad_color;
-    if(selected){
-      if(idGroup!=-1)
-        shad_color = glm::vec3(0.7, 1, 0.7);
-      else
-        shad_color = pcv->profile.sele_color;
-    }
-    else
-      shad_color = face_color;
-
-    //uniformVec3(colorID, pcv->profile.shadow_factor * shad_color);
-    uniformVec3(colorID, glm::vec3(0.2));
-
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDrawElements(GL_TRIANGLES, 3 * tria.size(), GL_UNSIGNED_INT, (void*)0);
-    glDisable(GL_BLEND);
-  }
-
-  //Réflection
-  if(pcv->profile.displayReflection){
-    //glEnable(GL_BLEND);
-    glEnableVertexAttribArray( 0);
-    glEnableVertexAttribArray( 1);
-    int shaderID = ((pcv->profile.smooth)?pcv->smoothID():pcv->flatID());
-    glUseProgram(shaderID);
-    int MatrixID = glGetUniformLocation(shaderID, "MVP");
-    int colorID  = glGetUniformLocation(shaderID, "COL");
-
-    glm::mat4 MVP = *pPROJ * *pVIEW * *pMODEL * glm::scale(MODEL, glm::vec3(scaleFactor));
-
-    glEnableVertexAttribArray( 0);
-    glBindBuffer(GL_ARRAY_BUFFER, meshBuffer);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, ( void*)0);
-    glBindAttribLocation(shaderID, 0, "vertex_position");
-    //Normal buffer binding
-    glEnableVertexAttribArray( 1);
-    glBindBuffer(              GL_ARRAY_BUFFER, normalBuffer);
-    glVertexAttribPointer(     1, 3, GL_FLOAT, GL_FALSE, 0, ( void*)0);
-    glBindAttribLocation(      shaderID, 1, "vertex_normal");
-    //Indices buffer binding
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
-
-    pCglScene scene = pcv->getScene();
-    glm::vec3 selection_color = ((idGroup==-1)?pcv->profile.sele_color:scene->getGroup(idGroup)->getColor());
-
-    glm::vec2 mix = pcv->profile.reflection_mix;
-    if(hidden)
-        mix = glm::vec2(0,1);
-
-    if(isSelected())
-      uniformVec3( colorID, (glm::vec3(mix.x) + mix.y * selection_color) );
-    else
-      uniformVec3( colorID, (glm::vec3(mix.x) + mix.y * face_color) );
-
-    glm::mat4 ID(1);
-    glm::vec3 cc             =  glm::vec3((*pMODEL)[3]);
-
-    glm::mat4 refMODEL       =  glm::translate(ID, glm::vec3(-cc.x, - pcv->profile.bottomDistance - cc.y, -cc.z)) *
-                                glm::scale(ID, glm::vec3(1,-1,1)) *
-                                glm::translate(ID, glm::vec3(cc.x, + pcv->profile.bottomDistance + cc.y, cc.z)) *
-                                glm::scale(MODEL, glm::vec3(scaleFactor));
-
-    glm::mat4 reflection     =  *pPROJ  *
-                                *pVIEW  *
-                                *pMODEL *
-                                refMODEL;
-
-
-    glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &reflection[0][0]);
-
-
-    glm::mat4 M = glm::translate(refMODEL, glm::vec3((*pMODEL)[3]));
-    int MID     = glGetUniformLocation(shaderID, "M");
-    //glm::mat4 M = glm::translate(MODEL, cc);
-    glUniformMatrix4fv( MID, 1, GL_FALSE, &M[0][0]);
-
-
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
-    glDrawElements(GL_TRIANGLES, 3 * tria.size(), GL_UNSIGNED_INT, (void*)0);
-    glDisableVertexAttribArray( 0);
-    glDisableVertexAttribArray( 1);
-  }
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-  glUseProgram(0);
-  glDisable(GL_BLEND);
-  glDisable(GL_CULL_FACE);
-  glCullFace(GL_BACK);
+    if(pcv->profile.displayShadows && !hidden){
+        int shaderID        = initProgram(pcv->simpleID());
+        int MatrixID        = glGetUniformLocation(shaderID, "MVP");
+        int colorID         = glGetUniformLocation(shaderID, "COL");
+
+        glm::mat4 shadowMVP =  sPROJ() * sVIEW() * sMODEL() *
+                               shadowMatrix( glm::vec4(glm::vec3(0,1,0), pcv->profile.bottomDistance + sMODEL()[3].y - 0.002), glm::vec4(glm::vec3(0,1,0), 0) ) *
+                               glm::scale(MODEL, glm::vec3(scaleFactor));
+
+        uniform(MatrixID,   shadowMVP);
+        uniform(colorID,    glm::vec3(0.2));
+
+        draw(shaderID, 3*tria.size(), meshBuffer, -1, indicesBuffer);
+    }
+
+    //Réflection
+    if(pcv->profile.displayReflection){
+        int shaderID    = initProgram( ((pcv->profile.smooth)?pcv->smoothID():pcv->flatID()) );
+        int MatrixID    = glGetUniformLocation(shaderID, "MVP");
+        int colorID     = glGetUniformLocation(shaderID, "COL");
+        int MID         = glGetUniformLocation(shaderID, "M");
+
+        //Calcul de la couleur
+        glm::vec3 selection_color   = ((idGroup==-1)?pcv->profile.sele_color:pcv->getScene()->getGroup(idGroup)->getColor());
+        glm::vec3 color             = ((isSelected())?selection_color:face_color);
+        glm::vec2 mix               = ((hidden)?glm::vec2(0,1):pcv->profile.reflection_mix);
+
+        //Calcul de MVP
+        glm::mat4 ID(1);
+        glm::vec3 cc            =  glm::vec3(sMODEL()[3]);
+        glm::mat4 refMODEL      =  glm::translate(ID, glm::vec3(-cc.x, - pcv->profile.bottomDistance - cc.y, -cc.z)) *
+                                   glm::scale(ID, glm::vec3(1,-1,1)) *
+                                   glm::translate(ID, glm::vec3(cc.x, + pcv->profile.bottomDistance + cc.y, cc.z)) *
+                                   glm::scale(MODEL, glm::vec3(scaleFactor));
+        glm::mat4 reflection    =  sPROJ() * sVIEW() * sMODEL() * refMODEL;
+        glm::mat4 M             = glm::translate(refMODEL, glm::vec3(sMODEL()[3]));
+
+        //Envoi des uniformes
+        uniform(colorID, (glm::vec3(mix.x) + mix.y * color));
+        uniform( MatrixID, reflection);
+        uniform(MID, M);
+
+        draw(shaderID, 3*tria.size(), meshBuffer, normalBuffer, indicesBuffer);
+    }
+
+    freeBuffer();
+    glDisable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 }
 
 void CglMesh::artifactsDisplay(){
   if(!hidden){
-    //Initialization
-    glm::mat4 MVP = *pPROJ * *pVIEW * *pMODEL * glm::scale(MODEL, glm::vec3(scaleFactor));;
-    int shaderID = pcv->simpleID();
-    glUseProgram(shaderID);
-    int MatrixID = glGetUniformLocation(shaderID, "MVP");
-    int colorID  = glGetUniformLocation(shaderID, "COL");
-    glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &MVP[0][0]);
+    int shaderID                = initProgram(pcv->simpleID());
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    //Mesh buffer binding
-    glEnableVertexAttribArray( 0);
-    glBindBuffer(GL_ARRAY_BUFFER, meshBuffer);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, ( void*)0);
-    glBindAttribLocation(shaderID, 0, "vertex_position");
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
+    int MatrixID                = glGetUniformLocation(shaderID, "MVP");
+    int colorID                 = glGetUniformLocation(shaderID, "COL");
 
-    //Group identification
-    pCglScene scene = pcv->getScene();;
-    if (scene->numGroups() > 0){
-      for(int i = 0 ; i < scene->numGroups() ; i++){
-        for(int j = 0 ; j < scene->getGroup(i)->numObjects() ; j++){
-          if(objectID==scene->getGroup(i)->getObject(j)->getID()){
-            idGroup = i;
-          }
-        }
-      }
-    }
-    else
-      idGroup = -1;
-
-    glm::vec3 selection_color = ((idGroup==-1)?pcv->profile.sele_color:scene->getGroup(idGroup)->getColor());
+    glm::mat4 MVP               = sPROJ() * sVIEW() * sMODEL() * glm::scale(MODEL, glm::vec3(scaleFactor));
+    pCglScene scene             = pcv->getScene();
+    glm::vec3 selection_color   = ((idGroup==-1)?pcv->profile.sele_color:scene->getGroup(idGroup)->getColor());
+    computeGroupID();
 
     //Contour
     if(isSelected()){
-      glLineWidth(10.0);
+        glLineWidth(10.0);
+        glDisable(GL_DEPTH_TEST);
 
-      uniformVec3(colorID, selection_color);
-      glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &MVP[0][0]);
+        uniform(colorID,  selection_color);
+        uniform(MatrixID, MVP);
 
-      glDisable(GL_DEPTH_TEST);
-      glDrawElements(GL_TRIANGLES, 3 * tria.size(), GL_UNSIGNED_INT, (void*)0);
-      glEnable(GL_DEPTH_TEST);
+        draw(shaderID, 3*tria.size(), meshBuffer, -1, indicesBuffer);
 
-      glLineWidth(1.0);
+        glEnable(GL_DEPTH_TEST);
+        glLineWidth(1.0);
     }
 
     //Box
     if(box){
-      glBindBuffer(GL_ARRAY_BUFFER, bboxBuffer);
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, ( void*)0);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bboxIndBuffer);
+        glEnable(GL_POLYGON_OFFSET_LINE);
+        glPolygonOffset(10,0);
 
-      if(isSelected()){
-        glLineWidth(2.0);
-        uniformVec3(colorID, selection_color);}
-      else{
-        glLineWidth(1.0);
-        uniformVec3(colorID, pcv->profile.idle_color);}
-
-      //glm::mat4 SCALE;
-      //if(idGroup==-1)
         glm::mat4 SCALE = glm::scale(MVP, 1.02f * (bbmax - bbmin));
-      //else{
-        //SCALE = //glm::translate(glm::mat4(1),  scene->listGroup[idGroup]->group_center) *
-                //glm::scale(MVP, scene->listGroup[idGroup]->bbmax - scene->listGroup[idGroup]->bbmin);// *
-                //glm::translate(glm::mat4(1),  -scene->listGroup[idGroup]->group_center);
-      //}
-      glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &SCALE[0][0]);
+        glm::vec3 color = ((isSelected())?selection_color:pcv->profile.idle_color);
 
-      glEnable(GL_POLYGON_OFFSET_LINE);
-      glPolygonOffset(10,0);
-      glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0);
-      glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, (GLvoid*)(4*sizeof(GLushort)));
-      glDrawElements(GL_LINES, 8, GL_UNSIGNED_SHORT, (GLvoid*)(8*sizeof(GLushort)));
+        uniform( MatrixID, SCALE);
+        uniform(colorID, color);
 
-      glDisable(GL_POLYGON_OFFSET_LINE);
-      glLineWidth(1.0);
+        glLineWidth(((isSelected())?2.0:1.0));
+
+        bindBuffer(0, GL_ARRAY_BUFFER, bboxBuffer);
+        bindBuffer(-1, GL_ELEMENT_ARRAY_BUFFER, bboxIndBuffer);
+        glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, (GLvoid*)(4*sizeof(GLushort)));
+        glDrawElements(GL_LINES, 8, GL_UNSIGNED_SHORT, (GLvoid*)(8*sizeof(GLushort)));
+
+        glDisable(GL_POLYGON_OFFSET_LINE);
+        glLineWidth(1.0);
     }
 
     //Axes avec contraintes
@@ -458,151 +369,96 @@ void CglMesh::artifactsDisplay(){
         pts.push_back(-10.0f * constrainedTranslationAxis + *rotationCenter);
         pts.push_back( 10.0f * constrainedTranslationAxis + *rotationCenter);
       }
-      glUseProgram(pcv->simpleID());
-      GLuint axeBuffer;
-      glGenBuffers(1, &axeBuffer);
-      glBindBuffer(GL_ARRAY_BUFFER, axeBuffer);
-      glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), &pts[0][0], GL_STATIC_DRAW);
+      std::vector<float> line;
+      for(int i = 0 ; i < pts.size(); i++)
+            for(int j = 0 ; j < 3 ; j++)
+                line.push_back(pts[i][j]);
+
+        GLuint axeBuffer;
+        createBuffer(&axeBuffer, &line);
+
+
+      MVP = sPROJ() * sVIEW() * sMODEL();
+
+      uniform( MatrixID, MVP);
+      if(isConstrainedInRotation())
+        uniform(colorID, constrainedRotationAxis);
+      else if(isConstrainedInTranslation())
+        uniform(colorID, constrainedTranslationAxis);
+
+      glLineWidth(2.0f);
       glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, ( void*)0);
       glBindAttribLocation(shaderID, 0, "vertex_position");
-      MVP = *pPROJ * *pVIEW * *pMODEL;
-      glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &MVP[0][0]);
-      if(isConstrainedInRotation())
-        uniformVec3(colorID, constrainedRotationAxis);
-      else if(isConstrainedInTranslation())
-        uniformVec3(colorID, constrainedTranslationAxis);
-      glLineWidth(2.0f);
       glDrawArrays(GL_LINES, 0, 2);
       glLineWidth(1.0);
     }
 
-    //Closing and freeing ressources
-    glDisable(GL_POLYGON_OFFSET_FILL);
-    glDisableVertexAttribArray( 0);
-    glDisableVertexAttribArray( 1);
-    glUseProgram(0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDisable(GL_CULL_FACE);
+    freeBuffer();
+    //glDisable(GL_CULL_FACE);
   }
 }
 
-void CglMesh::display()
-{
-  if(!hidden){
-    //glEnable(GL_CLIP_DISTANCE0);
-    //if(hidden)
-        //glEnable(GL_BLEND);
-      glEnable(GL_CULL_FACE);
+void CglMesh::display(){
 
-      //Initialization
-      glm::mat4 MVP = *pPROJ * *pVIEW * *pMODEL * glm::scale(MODEL, glm::vec3(scaleFactor));
-      int shaderID = ((pcv->profile.smooth)? pcv->smoothID() : pcv->flatID());
-      glUseProgram(shaderID);
-      int MatrixID = glGetUniformLocation(shaderID, "MVP");
-      glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &MVP[0][0]);
-      int colorID  = glGetUniformLocation(shaderID, "COL");
+    if(!hidden){
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_POLYGON_OFFSET_FILL);
+        glPolygonOffset(1.0,1.0);
 
+        int shaderID                = initProgram(((pcv->profile.smooth)? pcv->smoothID() : pcv->flatID()));
 
-      int FOGID = glGetUniformLocation(shaderID, "FOG");
-      glUniform1f(FOGID, float((pcv->profile.theme==CGL_THEME_BLACK)||(pcv->profile.theme==CGL_THEME_WHITE)));
-      int FOGCOLID = glGetUniformLocation(shaderID, "FOG_COL");
-      glm::vec3 fog;
-      if(pcv->profile.theme == CGL_THEME_BLACK)
-        fog = glm::vec3(0.1);
-      else if (pcv->profile.theme == CGL_THEME_WHITE)
-        fog = glm::vec3(0.9);
-      uniformVec3(FOGCOLID, fog);
+        int MatrixID                = glGetUniformLocation(shaderID, "MVP");
+        int colorID                 = glGetUniformLocation(shaderID, "COL");
+        GLuint MID                  = glGetUniformLocation(shaderID, "M");
+        GLuint VID                  = glGetUniformLocation(shaderID, "V");
+        int fill_light_ID           = glGetUniformLocation(shaderID, "FILL");
+        int side_light_ID           = glGetUniformLocation(shaderID, "SIDE");
+        int back_light_ID           = glGetUniformLocation(shaderID, "BACK");
 
-      //Light info
-      std::vector<pCglLight> lights = pcv->getSubWindow()->getScene()->getLights();
+        glm::mat4 MVP               = sPROJ() * sVIEW() * sMODEL() * glm::scale(MODEL, glm::vec3(scaleFactor));
+        glm::mat4 M                 = glm::translate(MODEL, glm::vec3(sMODEL()[3]));
+        glm::mat4 V                 = sVIEW();
+        glm::vec3 selection_color   = ((idGroup==-1)?pcv->profile.sele_color:pcv->getScene()->getGroup(idGroup)->getColor());
+        glm::vec3 color             = ((isSelected())?1.0f * selection_color:face_color);
+        std::vector<pCglLight> lights = pcv->getSubWindow()->getScene()->getLights();
 
+        uniform( MatrixID, MVP);
+        uniform( MID, M);
+        uniform( VID, V);
+        uniform( colorID, color);
+        uniform( fill_light_ID, *(lights[0]->getLightMatrix(material)));
+        uniform( side_light_ID, *(lights[1]->getLightMatrix(material)));
+        uniform( back_light_ID, *(lights[2]->getLightMatrix(material)));
+        enableFog(shaderID);
 
-        /*
-      glm::mat4 L = (lights[1]->getLightMatrix(material));
-      cout << endl;
-      cout << L[0][0] << " " << L[0][1] << " " << L[0][2] << " " << L[0][3] << endl;
-      cout << L[1][0] << " " << L[1][1] << " " << L[1][2] << " " << L[1][3] << endl;
-      cout << L[2][0] << " " << L[2][1] << " " << L[2][2] << " " << L[2][3] << endl;
-      cout << L[3][0] << " " << L[3][1] << " " << L[3][2] << " " << L[3][3] << endl;
-      cout << endl;
-      */
-
-      int fill_light_ID  = glGetUniformLocation(shaderID, "FILL");
-      glUniformMatrix4fv( fill_light_ID, 1, GL_FALSE, &(lights[0]->getLightMatrix(material))[0][0]);
-      int side_light_ID  = glGetUniformLocation(shaderID, "SIDE");
-      glUniformMatrix4fv( side_light_ID, 1, GL_FALSE, &(lights[1]->getLightMatrix(material))[0][0]);
-      int back_light_ID  = glGetUniformLocation(shaderID, "BACK");
-      glUniformMatrix4fv( back_light_ID, 1, GL_FALSE, &(lights[2]->getLightMatrix(material))[0][0]);
-
-      //Mesh buffer binding
-      glEnableVertexAttribArray( 0);
-      glBindBuffer(              GL_ARRAY_BUFFER, meshBuffer);
-      glVertexAttribPointer(     0, 3, GL_FLOAT, GL_FALSE, 0, ( void*)0);
-      glBindAttribLocation(      shaderID, 0, "vertex_position");
-
-      //Normal buffer binding
-      glEnableVertexAttribArray( 1);
-      glBindBuffer(              GL_ARRAY_BUFFER, normalBuffer);
-      glVertexAttribPointer(     1, 3, GL_FLOAT, GL_FALSE, 0, ( void*)0);
-      glBindAttribLocation(      shaderID, 1, "vertex_normal");
-
-      //Indices buffer binding
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer);
-
-      pCglScene scene = pcv->getScene();
-      glm::vec3 selection_color = ((idGroup==-1)?pcv->profile.sele_color:scene->getGroup(idGroup)->getColor());
-
-      //La partie smooth
-      GLuint MID      = glGetUniformLocation(shaderID, "M");
-      GLuint VID      = glGetUniformLocation(shaderID, "V");
-      glm::mat4 M     = glm::translate(MODEL, glm::vec3((*pMODEL)[3]));
-      glUniformMatrix4fv( MID, 1, GL_FALSE, &M[0][0]);
-      glUniformMatrix4fv( VID, 1, GL_FALSE, &(*pVIEW)[0][0]);
-      if(isSelected())
-        uniformVec3(colorID, 1.0f * selection_color);
-      else
-        uniformVec3(colorID, face_color);
-      glPolygonMode(GL_FRONT, GL_FILL);
-      glEnable(GL_POLYGON_OFFSET_FILL);
-      glPolygonOffset(1.0,1.0);
-      glDrawElements(GL_TRIANGLES, 3 * tria.size(), GL_UNSIGNED_INT, (void*)0);
-
-
-
-      if(line){
-        shaderID = pcv->smoothID();
-        glUseProgram(shaderID);
-        MatrixID = glGetUniformLocation(shaderID, "MVP");
-        glUniformMatrix4fv( MatrixID, 1, GL_FALSE, &MVP[0][0]);
-        colorID  = glGetUniformLocation(shaderID, "COL");
-        glEnableVertexAttribArray( 0);
-        glBindBuffer(              GL_ARRAY_BUFFER, meshBuffer);
-        glVertexAttribPointer(     0, 3, GL_FLOAT, GL_FALSE, 0, ( void*)0);
-        glBindAttribLocation(      shaderID, 0, "vertex_position");
-
-        if(isSelected())
-          uniformVec3(colorID, 0.6f * selection_color);
-        else
-          uniformVec3(colorID, 0.6f * face_color);
-
+        glPolygonMode(GL_FRONT, GL_FILL);
+        draw(shaderID, 3*tria.size(), meshBuffer, normalBuffer, indicesBuffer);
         glDisable(GL_POLYGON_OFFSET_FILL);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glDrawElements(GL_TRIANGLES, 3 * tria.size(), GL_UNSIGNED_INT, (void*)0);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glDisableVertexAttribArray(0);
+
+        //Wireframe
+        if(line){
+
+            shaderID = initProgram(pcv->smoothID());
+            MatrixID = glGetUniformLocation(shaderID, "MVP");
+            colorID  = glGetUniformLocation(shaderID, "COL");
+
+            color = ((isSelected())?0.6f * selection_color:0.6f * face_color);
+
+            uniform( MatrixID, MVP);
+            uniform( colorID, color);
+
+            glDisable(GL_POLYGON_OFFSET_FILL);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            draw(shaderID, 3*tria.size(), meshBuffer, -1, indicesBuffer);
       }
 
       //Closing and freeing ressources
-      glDisable(GL_POLYGON_OFFSET_FILL);
-      glDisableVertexAttribArray( 0);
-      glDisableVertexAttribArray( 1);
-      glUseProgram(0);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
-      glDisable(GL_BLEND);
+
+      freeBuffer();
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
       glDisable(GL_CULL_FACE);
     }
 }
+
 
 

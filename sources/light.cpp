@@ -20,13 +20,13 @@ CglLight::CglLight(float x,float y,float z, float r,float g,float b, float pow, 
   pcv->addLight(this);
 }
 
-glm::mat4 CglLight::getLightMatrix(pCglMaterial material){
+glm::mat4* CglLight::getLightMatrix(pCglMaterial material){
     //Création de la matrice d'envoi
     packed[0]           = glm::vec4(position, 0);
     packed[1]           = glm::vec4(color, 0);
     packed[2]           = glm::vec4(material->getAmbient(), material->getDiffuse(), material->getSpecular(), 0);
     packed[3]           = glm::vec4(power, material->getLobe(), float(follows_camera), 0);
-    return packed;
+    return &packed;
 }
 
 void CglLight::rotate(float angle){

@@ -19,7 +19,7 @@ using namespace std;
 
 int main(int argc, char **argv){
   CglCanvas cv(argc, argv);
-  string configFile = "@CMAKE_SOURCE_DIR@/numero.config";
+  string configFile = "/home/tech/dev/SUscCGL_V2/APP_NumeRO/numero.config";
   cv.getProfile()->read_configuration_file(configFile);
 
   if((argc==2) && (string(argv[1])=="cgl.save")){
@@ -30,11 +30,12 @@ int main(int argc, char **argv){
   else if (argc > 1){
 
 
-    pCglWindow window = new CglWindow(0, 0, 800, 800);
-
+    
+    /*
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //PREMIERE SOUS FENETRE, LA PLUS GRANDE
     ////////////////////////////////////////////////////////////////////////////////////////////////
+    pCglWindow window = new CglWindow(0, 0, 800, 800);
 
     pCglSubWindow SW1 = new CglSubWindow(window, CGL_TOP);
     pCglScene  scene  = new CglScene();
@@ -80,7 +81,7 @@ int main(int argc, char **argv){
       scene2->place_objects_on_grid();
 
     SW2->loadShaders();
-
+    */
 
 
 
@@ -112,8 +113,14 @@ int main(int argc, char **argv){
     if(cv.profile.initial_arrangement == CGL_ARRANGEMENT_GRID)
       scene3->place_objects_on_grid();
 
-    SW3->loadShaders();
+    //scene3->addObject(new CglCube(  0,0.12,0));
+    //scene3->addObject(new CglSphere(0,0,0.12));
+    //scene3->addObject(new CglCylinder(  -0.025,-0.025,-0.025,   -0.025,-0.025,0.025));
 
+    pCglSuperObject OBJ = new CglSuperObject();
+    scene3->addObject(OBJ);
+    
+    SW3->loadShaders();
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

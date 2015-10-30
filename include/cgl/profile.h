@@ -23,7 +23,9 @@ class CglProfile
 
   public:
     std::string path;
-    CglColorGenerator colorGenerator;
+    CglColorGenerator   colorGenerator;
+    CglPalette          palette;
+
 
     bool            displayAxes;
     bool            smooth;

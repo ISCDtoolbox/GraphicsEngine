@@ -40,10 +40,10 @@ class CGL_API CglMesh : public CglObject
 private:
   int np,nt,nn,dim,ver, nNAtV;
   //Pas nécessaire de les conserver en mémoire si uniquement du display, on peut garder le système de buffer
-  vector<Point>    point;
-  vector<Tria>     tria;
-  vector<Normal>   normal;
-  vector<NormalAtVertex> NormalAtVertices;
+  vector<Point>             point;
+  vector<Tria>              tria;
+  vector<Normal>            normal;
+  vector<NormalAtVertex>    NormalAtVertices;
   GLuint bboxBuffer;
   GLuint bboxIndBuffer;
   GLuint normalBuffer;

@@ -13,52 +13,67 @@
 #include <cgl/transform.h>
 #include <cgl/material.h>
 
+class CglScene;
+typedef CglScene* pCglScene;
+class CglObject;
+typedef CglObject* pCglObject;
+
+
 class CGL_API CglObject
 {
   public:
-    CglTransform transform;
-    string meshFile;
+    CglTransform            transform;
+    string                  meshFile;
+    std::vector<pCglObject> listPart;
+    pCglObject              parent;
 
   protected:
-    pCglMaterial material;
-    //Matrices and vectors
-    glm::mat4 MODEL;
-    glm::mat4 *pVIEW;
-    glm::mat4 *pPROJ;
-    glm::vec3 center;//
-    glm::vec3 *rotationCenter;//
-    float     localScale;
-    float     scaleFactor;
-    bool isMesh;//
-    //Scene parameters
-    glm::vec3 *sceneCenter;
-    glm::vec3 *sceneUp;
-    glm::vec3 *sceneCam;
-    glm::mat4 *pMODEL;
-    //Colors
-    glm::vec3 face_color, edge_color;
-    glm::vec3 pickingColor;
-    //Buffers
-    GLuint meshBuffer;
-    GLuint indicesBuffer;
-    //Render parameters & selection
-    int objectID;
-    int nPicking;
-    int idGroup;
-    bool selected;
-    bool box;
-    bool line;
+    pCglMaterial    material;
+    pCglScene       pScene;
 
-    bool hidden;
-    //Constrained movements
-    bool      isRotationConstrained,   isTranslationConstrained;
-    glm::vec3 constrainedRotationAxis, constrainedTranslationAxis;
+    //Matrices and vectors
+    glm::mat4   MODEL;
+    glm::vec3   center;
+    glm::vec3   *rotationCenter;
+
+    float       localScale;
+    float       scaleFactor;
+    bool        isMesh;
+
+    //Colors
+    glm::vec3   face_color;
+    glm::vec3   edge_color;
+    glm::vec3   pickingColor;
+
+    //Buffers
+    GLuint      meshBuffer;
+    GLuint      indicesBuffer;
+
+    //Render parameters & selection
+    int         objectID;
+    int         nPicking;
+    int         idGroup;
+    bool        selected;
+    bool        box;
+    bool        line;
+    bool        hidden;
+    bool        isRotationConstrained;
+    bool        isTranslationConstrained;
+
+    glm::vec3   constrainedRotationAxis;
+    glm::vec3   constrainedTranslationAxis;
 
   //Public methods
   public:
     CglObject();
     virtual ~CglObject();
-    void linkSceneParameters(glm::mat4 *MODEL, glm::mat4 *VIEW, glm::mat4 *PROJ, glm::vec3 *Center, glm::vec3 *Up, glm::vec3 *Cam, int ID);
+
+    void setScene(pCglScene pSc, int ID){
+        pScene          = pSc;
+        objectID        = ID;
+        pickingColor    = glm::vec3(float(ID%255)/255.0f, 1, 1);
+    }
+
     void setRotationCenter(glm::vec3 &center);
     void setScaleFactor(float sf);
 
@@ -72,14 +87,18 @@ class CGL_API CglObject
     virtual void display(){};
     virtual void artifactsDisplay(){};
     virtual void shadowsDisplay(){};
-    //virtual void pickingDisplay(){};
-    void pickingDisplay();
+    virtual bool isSuper(){return false;}
+    virtual void pickingDisplay();
 
-    void applyTransformation();
+    virtual void  toogleSelected();
+    virtual void  select();
+    virtual void  unSelect();
+    virtual void  applyTransformation();
+
     void saveTransformations();
     void undoLast();
     void resetAll();
-    void uniformVec3(int ID, glm::vec3 v);
+
 
   //Public Accessors
   public:
@@ -89,20 +108,19 @@ class CGL_API CglObject
     glm::mat4 getMODEL(){return MODEL;}
     glm::vec3 getRotationCenter(){return *rotationCenter;}
 
+    void  computeGroupID();
     int   getGroupID();
     int   getID();
     float getLocalScale();
     void  resetGroupID();
     glm::vec3* getCenterPtr();
     //Selection & picking
-    bool  isPicked(int ID);
+    virtual bool  isPicked(int ID);
     bool  isHidden();
     void  hide();
     void  unHide();
     bool  isSelected();
-    void  toogleSelected();
-    void  select();
-    void  unSelect();
+
     //render modes
     void  toogleBBox();
     void  toogleMesh();
@@ -115,10 +133,36 @@ class CGL_API CglObject
     void  setConstrainedTranslation(float tr);
     void  unConstrain();
 
+    //Accessors for scene parameters
+    glm::vec3 sCENTER();
+    glm::vec3 sUP();
+    glm::vec3 sCAM();
+    glm::mat4 sMODEL();
+    glm::mat4 sVIEW();
+    glm::mat4 sPROJ();
+
+
+    void enableFog(int ID);
+    void disableFog(int ID);
+    int  initProgram(int ID);
+
+    void createBuffer(GLuint *pBuffer, std::vector<float> *data);
+    void createBuffer(GLuint *pBuffer, std::vector<short> *data);
+    void createBuffer(GLuint *pBuffer, std::vector<int>   *data);
+    void bindBuffer(int attrib, int bufferType, GLuint buffer);
+    void freeBuffer();
+    void draw(int ID,int s, int mBuffer, int nBuffer, int iBuffer);
+
+    void uniform(int ID, float     f);
+    void uniform(int ID, glm::vec3 v);
+    void uniform(int ID, glm::mat4 &m);
+
 protected:
   virtual void cglInit();
+
 };
 
 typedef CglObject* pCglObject;
+
 
 #endif

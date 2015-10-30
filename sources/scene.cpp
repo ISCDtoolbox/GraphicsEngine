@@ -41,12 +41,12 @@ void CglScene::addObject(pCglObject object)
 {
   //Ajout de l'objet à la scène
   listObject.push_back(object);
-  object->linkSceneParameters(&MODEL, &VIEW, &PROJ, &center, &m_up, &m_cam, numObjects()+100);
+  object->setScene(this, numObjects());
 
   //Création des axes
   if(numObjects()==1){
     axis = new CglAxis();
-    axis->linkSceneParameters(&MODEL, &VIEW, &PROJ, &center, &m_up, &m_cam, 0);
+    axis->setScene(this, 0);
     axis->view = view;
   }
 
@@ -97,9 +97,6 @@ void CglScene::display()
   for (int iObj = 0; iObj < numObjects(); iObj++)
     if(!listObject[iObj]->isHidden())
       listObject[iObj]->display();
-  for (int iObj = 0; iObj < numObjects(); iObj++)
-    if(listObject[iObj]->isHidden())
-      listObject[iObj]->display();
 
   axis->applyTransformation();
   axis->display();
@@ -113,28 +110,41 @@ void CglScene::display()
 }
 
 
-int CglScene::getPickedID(int x, int y){
-  unsigned char pixel[3];
-  GLint viewport[4];
-  glGetIntegerv(GL_VIEWPORT,viewport);
-  glFlush();
-  for(int i = 0 ; i < numObjects() ; i++)
-    listObject[i]->pickingDisplay();
-  glFlush();
-  glReadPixels(x,viewport[3]-y,1,1,GL_RGB,GL_UNSIGNED_BYTE,(void *)pixel);
+pCglObject CglScene::getPicked(int x, int y){
+    unsigned char pixel[3];
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT,viewport);
+    glFlush();
 
-  int indPicked = -1;
-  //On récupère l'indice de l'objet pické
-  for(int i = 0 ; i < listObject.size() ; i++)
-    if (listObject[i]->isPicked(pixel[0]))
-      indPicked = i;
-  return indPicked;
+    for(int i = 0 ; i < numObjects() ; i++)
+        listObject[i]->pickingDisplay();
+    glFlush();
+    glReadPixels(x,viewport[3]-y,1,1,GL_RGB,GL_UNSIGNED_BYTE,(void *)pixel);
+    //On récupère l'indice de l'objet pické
+    for(int i = 0 ; i < listObject.size() ; i++){
+        pCglObject obj = listObject[i];
+        if (obj->isPicked(pixel[0])){
+            return obj;
+        }
+    }
+    for(int i = 0 ; i < listObject.size() ; i++){
+        pCglObject obj = listObject[i];
+        if(obj->isSuper()){
+            for(int j = 0 ; j < obj->listPart.size() ; j++){
+                pCglObject part = obj->listPart[j];
+                if (part->isPicked(pixel[0])){
+                    return part;
+                }
+            }
+        }
+    }
+    return NULL;
 }
 
-void CglScene::onPick(bool ctrl, int ind){
+void CglScene::onPick(bool ctrl, pCglObject obj){
   bool match = false;
   int  nObjs = listObject.size();
-  if (ind!=-1)
+  if (obj!=NULL)
     match = true;
 
   //Si on ne picke pas, on déselectionne tout et on sélectionne la scène
@@ -146,28 +156,41 @@ void CglScene::onPick(bool ctrl, int ind){
 
   if(match){
     //On change l'état de sélection de l'objet pické
-    listObject[ind]->toogleSelected();
+    cout << "Object " << obj->getID() << " last selection = " << obj->isSelected() << endl;
+    if(obj->parent)
+        obj->parent->toogleSelected();
+    else
+        obj->toogleSelected();
+    cout << "Object " << obj->getID() << " selection =  " << obj->isSelected() << endl;
 
+    //Unselect other objects
     if(!ctrl){
-      //On déselectionne tous les autres objets
-      for(int i = 0 ; i < nObjs ; i++)
-	if(i!=ind)
-	  listObject[i]->unSelect();
+        for(int i = 0 ; i < nObjs ; i++){
+            pCglObject objI = listObject[i];
+
+            if(obj->parent==NULL){
+                if(objI!=obj)
+                    objI->unSelect();}
+            if(obj->parent!=NULL){
+                if(objI != obj->parent)
+                    objI->unSelect();}
+        }
     }
 
     //Si un selectionné, deselectionne la scène
     bool someSelected = false;
     for(int i = 0 ; i < nObjs ; i++)
-      if(listObject[i]->isSelected())
-	someSelected = true;
+        if(listObject[i]->isSelected()){
+            someSelected = true;
+            cout << "Object " << listObject[i]->getID() << " is selected "<< endl;}
     if(someSelected)
       unSelect();
     else
       select();
 
     //On met le dernier objet pické au dessus de tous les autres si il est sélectionné
-    if(listObject[ind]->isSelected())
-      reOrderObjects(ind);
+    if(obj->isSelected())
+        reOrderObjects(obj);
   }//End match
 }
 
@@ -292,8 +315,10 @@ void CglScene::onMiddleRelease(int x, int y){}
 void CglScene::onRightRelease( int x, int y){
   bool  ctrl = ((glutGetModifiers() && GLUT_ACTIVE_CTRL) ? 1:0);
   if( !pcv->profile.flyingMode ){
-    int IndPicked = getPickedID(x, y);
-    onPick(ctrl, IndPicked);
+    pCglObject pickedObject = getPicked(x, y);
+    if(pickedObject)
+        cout << "ID = " << pickedObject->getID() << endl;
+    onPick(ctrl, pickedObject);
   }
 }
 
@@ -306,9 +331,13 @@ void CglScene::onRightClick( int x, int y){}
 
 
 
-void CglScene::reOrderObjects(int picked){
-  listObject.insert(listObject.begin(), listObject[picked]);
-  listObject.erase(listObject.begin() + picked + 1);
+void CglScene::reOrderObjects(pCglObject obj){
+    for(int i = 0 ; i < listObject.size() ; i++){
+        if(listObject[i] == obj){
+            listObject.insert(listObject.begin(), listObject[i]);
+            listObject.erase(listObject.begin() + i + 1);
+        }
+    }
 }
 
 void CglScene::toogleFlyingMode(){

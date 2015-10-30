@@ -78,6 +78,8 @@ void CglShader::load(string TYPE){
   glDeleteShader(VertexShaderID);
   glDeleteShader(FragmentShaderID);
   mProgramID = ProgramID;
+
+  //Create the matrixID, colorID
 }
 
 
