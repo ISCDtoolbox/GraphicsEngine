@@ -19,7 +19,7 @@ using namespace std;
 
 int main(int argc, char **argv){
   CglCanvas cv(argc, argv);
-  string configFile = "/home/tech/dev/SUscCGL_V2/APP_NumeRO/numero.config";
+  string configFile = "@CMAKE_SOURCE_DIR@/numero.config";
   cv.getProfile()->read_configuration_file(configFile);
 
   if((argc==2) && (string(argv[1])=="cgl.save")){
@@ -96,7 +96,7 @@ int main(int argc, char **argv){
     //PREMIERE SOUS FENETRE, LA PLUS GRANDE
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    pCglSubWindow SW3 = new CglSubWindow(window2, CGL_LEFT);
+    pCglSubWindow SW3 = new CglSubWindow(window2, CGL_FULL);//CGL_LEFT);
     pCglScene  scene3  = new CglScene();
     pCglLight fill3    = new CglLight(0,8,15,    1,1,1,  300.0, false);
     pCglLight side3    = new CglLight(-10,5,-3,  1,1,1,  70.0,  false);
@@ -108,7 +108,7 @@ int main(int argc, char **argv){
     SW3->setScene(   scene3);
     cv.initGLEW();
 
-    for (int i=3; i < 5; i++)
+    for (int i=0; i < argc-1; i++)
       scene3->addObject(new CglMesh(argv[i+1]));
     if(cv.profile.initial_arrangement == CGL_ARRANGEMENT_GRID)
       scene3->place_objects_on_grid();
@@ -117,8 +117,8 @@ int main(int argc, char **argv){
     //scene3->addObject(new CglSphere(0,0,0.12));
     //scene3->addObject(new CglCylinder(  -0.025,-0.025,-0.025,   -0.025,-0.025,0.025));
 
-    pCglSuperObject OBJ = new CglSuperObject();
-    scene3->addObject(OBJ);
+    //pCglSuperObject OBJ = new CglSuperObject();
+    //scene3->addObject(OBJ);
     
     SW3->loadShaders();
 
@@ -126,7 +126,7 @@ int main(int argc, char **argv){
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //PREMIERE SOUS FENETRE, LA PLUS GRANDE
     ////////////////////////////////////////////////////////////////////////////////////////////////
-
+	/*
     pCglSubWindow SW4     = new CglSubWindow(window2, CGL_RIGHT);//400, 0, 400, 800);
     pCglScene  scene4     = new CglScene();
     pCglLight fill4       = new CglLight(0,8,15,    1,1,1,  300.0, false);
@@ -146,7 +146,7 @@ int main(int argc, char **argv){
       scene4->place_objects_on_grid();
 
     SW4->loadShaders();
-
+*/
 
 
 

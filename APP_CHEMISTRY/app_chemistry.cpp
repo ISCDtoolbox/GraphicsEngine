@@ -19,7 +19,7 @@ using namespace std;
 
 int main(int argc, char **argv){
   CglCanvas cv(argc, argv);
-  string configFile = "/home/tech/dev/SUscCGL_V2/APP_CHEMISTRY/chemistry.config"; // Remplacer avec "at"CMAKE_SOURCE_DIR"at"
+  string configFile = "@CMAKE_SOURCE@/chemistry.config"; // Remplacer avec "at"CMAKE_SOURCE_DIR"at"
   cv.getProfile()->read_configuration_file(configFile);
 
     pCglWindow window2 = new CglWindow(800, 0, 800, 800);
