@@ -19,19 +19,20 @@ CglMesh::CglMesh(char *name)
   meshFile  = std::string(name);
   cout << "Reading: " << name << " " << endl;
 
+  /*
   //Lecture du .sol
-  std::string solFile   = meshFile.substr(0, meshFile.size()-5) + ".sol";
-  cout << solFile << endl << endl;
-  int ver2, dim2;
-  int inMeshSol = GmfOpenMesh((char*)(solFile.c_str()), GmfRead, &ver2, &dim2);
-  if(!inMeshSol){
-        exit(143);
-  }
+  //std::string solFile   = meshFile.substr(0, meshFile.size()-5) + ".sol";
+  //cout << solFile << endl << endl;
+  //int ver2, dim2;
+  //int inMeshSol = GmfOpenMesh((char*)(solFile.c_str()), GmfRead, &ver2, &dim2);
+  //if(!inMeshSol){
+  //      exit(143);
+  //}
 
   cout << "sol file opened" << endl;
   int nSol      = GmfStatKwd(inMeshSol, GmfISolAtVertices);
   cout << "size of solution = " << nSol << endl;
-
+  */
 
 
   inm = GmfOpenMesh(name,GmfRead,&ver,&dim);

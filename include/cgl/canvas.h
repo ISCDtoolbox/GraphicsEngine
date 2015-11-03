@@ -19,14 +19,28 @@
 #include <cgl/shader.h>
 #include <cgl/interface.h>
 
+enum OBJECT_TYPE{SUPER, SIMPLE, MESH};
+struct ClipBoard{
+  OBJECT_TYPE object_type;
+  glm::vec3 center;
+  glm::mat4 MODEL;
+  char* fileName;
+  ClipBoard(OBJECT_TYPE& T, char* F, glm::vec3 C, glm::mat4 M){
+    object_type = T;
+    fileName = F;
+    center = C;
+    MODEL = M;
+  }
+};
+
 class CGL_API CglCanvas
 {
-
 /////////////////////////////////////////////////////
 //Attributes
 
 public:
   CglProfile profile;
+  std::vector<ClipBoard> clipboard;
 
 private:
   std::vector<pCglLight>    lights;

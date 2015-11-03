@@ -64,6 +64,7 @@ public:
 
   //Accessors and setters for Canvas objects
   void                     addObject(pCglObject object);
+  void                     removeObject(pCglObject object);
   std::vector<pCglObject>* getObjectList(){return &listObject;}
   std::vector<pCglGroup>*  getGroupList(){ return &listGroup;}
   int                      numObjects(){return listObject.size();}

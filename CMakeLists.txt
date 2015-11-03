@@ -41,7 +41,7 @@ find_package(X11)
 find_package(GLEW)
 
 
-set(CORELIBS ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES} {GLEW_LIBRARY})
+set(CORELIBS ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES} ${GLEW_LIBRARY})
 
 #Include files
 include_directories("include/" "library/libmesh/" ${PNG_INCLUDE_DIR} "${CMAKE_CURRENT_BINARY_DIR}/library/glm/src/glm/")
