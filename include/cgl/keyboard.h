@@ -11,6 +11,11 @@
 
 #include "defs.h"
 
+class CglScene;
+typedef CglScene* pCglScene;
+
+typedef void (*pAction)(pCglScene);
+
 class CGL_API CglKeyboard
 {
 public:
@@ -20,9 +25,16 @@ public:
   void keyboardUp(unsigned char key, int x, int y);
   void special(unsigned char key, int x, int y);
 
+  void addAction(unsigned char key, pAction func){
+    customActions.push_back(func);
+    customKeys.push_back(key);
+  }
+
 private:
-  unsigned char lastKey;
-  int selection;
+    std::vector<pAction>        customActions;
+    std::vector<unsigned char>  customKeys;
+    unsigned char               lastKey;
+    int                         selection;
   void keyColor(unsigned char key,int x,int y);
 };
 

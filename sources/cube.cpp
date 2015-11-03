@@ -87,10 +87,11 @@ struct sphereGeom
 
 
 
-CglCube::CglCube(float x, float y, float z){
+CglCube::CglCube(float x, float y, float z,
+                 float R, float G, float B){
 
     size = 0.01f;
-    color = glm::vec3(1,0,0);
+    color = glm::vec3(R, G, B);
     pos = glm::vec3(x,y,z);
 
     std::vector<float> cube{
@@ -126,6 +127,7 @@ CglCube::CglCube(float x, float y, float z){
     center = glm::vec3(x,y,z);
     MODEL[3] = glm::vec4(center,1);
 
+    nBuffer = -1;
     createBuffer(&meshBuffer, &cube);
     createBuffer(&indicesBuffer, &elements);
     freeBuffer();
@@ -133,9 +135,10 @@ CglCube::CglCube(float x, float y, float z){
 CglCube::~CglCube(){}
 
 
-CglSphere::CglSphere(float x, float y, float z){
+CglSphere::CglSphere(float x, float y, float z,
+                     float R, float G, float B){
     size = 0.01f;
-    color = glm::vec3(0.5,0.5,1);
+    color = glm::vec3(R, G, B);
     pos = glm::vec3(x,y,z);
 
     sphereGeom sphere(10);
@@ -152,6 +155,8 @@ CglSphere::CglSphere(float x, float y, float z){
     center = glm::vec3(x,y,z);
     MODEL[3] = glm::vec4(center,1);
 
+    nBuffer = -1;
+    createBuffer(&nBuffer, &cube);
     createBuffer(&meshBuffer, &cube);
     createBuffer(&indicesBuffer, &elements);
     freeBuffer();
@@ -160,17 +165,24 @@ CglSphere::~CglSphere(){}
 
 
 CglCylinder::CglCylinder(float x,  float y,  float z,
-                         float x2, float y2, float z2){
+                         float x2, float y2, float z2,
+                         float R, float G, float B){
     init(x,y,z, x2,y2,z2);
 }
 
-CglCylinder::CglCylinder(pCglPrimitive obj1, pCglPrimitive obj2){
+CglCylinder::CglCylinder(pCglPrimitive obj1, pCglPrimitive obj2,
+                         float R, float G, float B){
     glm::vec3 c1 = obj1->getPos();
     glm::vec3 c2 = obj2->getPos();
-    init(c1.x, c1.y, c1.z, c2.x, c2.y, c2.z);
+    init(c1.x, c1.y, c1.z, c2.x, c2.y, c2.z, R, G, B);
 }
 
-void CglCylinder::init(float x,  float y,  float z, float x2, float y2, float z2){
+void CglCylinder::init(float x,  float y,  float z,
+                       float x2, float y2, float z2,
+                       float R, float G, float B){
+
+    size = 0.003f;
+    color = glm::vec3(R, G, B);
     glm::vec3 pt1(x,y,z);
     glm::vec3 pt2(x2,y2,z2);
     glm::vec3 direction = pt2-pt1;
@@ -183,8 +195,7 @@ void CglCylinder::init(float x,  float y,  float z, float x2, float y2, float z2
     float angleInc = 2*3.14159f / nb;
     float angle = 0;
 
-    size = 0.003f;
-    color = glm::vec3(1,1,0.9);
+
 
     for(int i = 0 ; i < nb ; i++){
         circle1.push_back( pt1 +  size * (cos(angle)*ortho1 + sin(angle)*ortho2) );
@@ -195,25 +206,20 @@ void CglCylinder::init(float x,  float y,  float z, float x2, float y2, float z2
     std::vector<int> indices;
     //Partie haute des faces
     for(int i = 0 ; i < nb ; i++){
-
         indices.push_back(i);
-
         if(i==nb-1)
             indices.push_back(0);
         else
             indices.push_back(i+1);
-
         indices.push_back(nb + i);
     }
     //Partie basse des faces
     for(int i = 0 ; i < nb ; i++){
         indices.push_back(nb + i);
-
         if(i==circle1.size()-1)
             indices.push_back(0);
         else
             indices.push_back(i+1);
-
         if(i==circle1.size()-1)
             indices.push_back(nb);
         else
@@ -221,21 +227,27 @@ void CglCylinder::init(float x,  float y,  float z, float x2, float y2, float z2
     }
 
     std::vector<float> cube;
-    for(int i = 0 ; i < nb ; i++)
-        for(int j = 0 ; j < 3 ; j ++)
+    std::vector<float> normals;
+    for(int i = 0 ; i < nb ; i++){
+        for(int j = 0 ; j < 3 ; j ++){
             cube.push_back(circle1[i][j]);
-    for(int i = 0 ; i < nb ; i++)
-        for(int j = 0 ; j < 3 ; j ++)
+            normals.push_back(circle1[i][j] - pt1[j]);
+        }
+    }
+    for(int i = 0 ; i < nb ; i++){
+        for(int j = 0 ; j < 3 ; j ++){
             cube.push_back(circle2[i][j]);
+            normals.push_back(circle2[i][j] - pt2[j]);
+        }
+    }
+
 
     std::vector<int> elements = indices;
-
-
     nPicking = 3*elements.size();
-
     //center = 0.5f * (pt1 + pt2);
     MODEL[3] = glm::vec4(center,1);
-
+    //nBuffer = -1;
+    createBuffer(&nBuffer, &normals);
     createBuffer(&meshBuffer, &cube);
     createBuffer(&indicesBuffer, &elements);
     freeBuffer();
@@ -256,7 +268,8 @@ CglCylinder::~CglCylinder(){}
 
 
 void CglPrimitive::display(){
-    int shaderID                = initProgram(pcv->flatID());
+    int sh                      = (((nBuffer!=-1)&&(pcv->profile.smooth))?pcv->smoothID():pcv->flatID());
+    int shaderID                = initProgram(sh);
 
     int MatrixID                = glGetUniformLocation(shaderID, "MVP");
     int colorID                 = glGetUniformLocation(shaderID, "COL");
@@ -300,7 +313,7 @@ void CglPrimitive::display(){
     glLineWidth(((isSelected())?2.0:1.0));
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    draw(shaderID, nPicking, meshBuffer, -1, indicesBuffer);
+    draw(shaderID, nPicking, meshBuffer, nBuffer, indicesBuffer);
 
     freeBuffer();
     disableFog(shaderID);

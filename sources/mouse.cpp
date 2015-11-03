@@ -71,15 +71,11 @@ void CglMouse::passiveMotion(int x, int y){
     lastPassivePos = currPassivePos;
 
     if(pcv->profile.flyingMode){
-      glutWarpPointer(scene->getView()->width/2, scene->getView()->height/2);
-      glm::mat4 LOOKROT = glm::mat4(glm::angleAxis(0.002f * d.x, glm::vec3(0,1,0))
-				    *
-				    glm::angleAxis(0.002f * d.y, scene->getRight())
-				    );
-      if (scene->isSelected()){
-	//scene->setLook(glm::vec3(LOOKROT * glm::vec4(scene->getLook(), 0) ));
+      glm::mat4 LOOKROT = glm::mat4(    glm::angleAxis(0.002f * d.x, glm::vec3(0,1,0)) *
+                                        glm::angleAxis(0.002f * d.y, scene->getRight()));
+      if (scene->isSelected())
         scene->getTransform()->setRotation(LOOKROT);
-      }
+    glutWarpPointer(scene->getView()->width/2, scene->getView()->height/2);
     }
 
 
@@ -99,6 +95,7 @@ void CglMouse::passiveMotion(int x, int y){
   currPos = glm::vec2(x,y);
 
   //Check hovered buttons
+
   pcv->getInterface()->checkHoveredButtons(x, y);
   }
 }

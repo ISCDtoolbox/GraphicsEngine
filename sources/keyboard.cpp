@@ -86,9 +86,22 @@ void CglKeyboard::special(unsigned char key, int x, int y)
   lastKey = key;
 }
 
+
+void quit(pCglScene scene){
+    exit(0);
+}
+
 void CglKeyboard::keyboard(unsigned char key, int x, int y)
 {
-  pCglScene scene = pcv->getScene();;
+    pCglScene scene = pcv->getScene();
+
+    //Custom actions
+    for(int i = 0 ; i < customActions.size() ; i++){
+        if(key == customKeys[i]){
+            (*customActions[i])(scene);
+        }
+    }
+
 
   // QUIT
   if ( key == 'q' || key == 27 ){
@@ -276,9 +289,9 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
     pcv->getInterface()->updateTextures();
   }
   //Colors
-  if(key=='C'){
-    pcv->profile.switch_colors();
-  }
+  //if(key=='C'){
+  //  pcv->profile.switch_colors();
+  //}
   if(key=='c'){
     pcv->profile.update_objects_colors();
   }
@@ -301,6 +314,80 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
         (*lights)[i]->rotate(0.05f);
     }
   }
+
+
+    //Copy
+    if(key=='C'){
+        pcv->clipboard.erase(pcv->clipboard.begin(), pcv->clipboard.end());
+        for(int i = 0 ; i < scene->numObjects() ; i++){
+            pCglObject obj = scene->getObject(i);
+            if(obj->isSelected()){
+                OBJECT_TYPE typ;
+                if(obj->isSuper()){typ = SUPER;}
+                else if(obj->isMeshObject()){typ = MESH;}
+                else{typ = SIMPLE;}
+                ClipBoard clip(typ,
+                               (char*)(obj->meshFile).c_str(),
+                               obj->getCenter(),
+                               obj->getMODEL());
+                pcv->clipboard.push_back(clip);
+                obj->unSelect();
+            }
+        }
+    }
+
+    //Cut
+    if(key=='X'){
+        pcv->clipboard.erase(pcv->clipboard.begin(), pcv->clipboard.end());
+        std::vector<pCglObject> objectsToRemove;
+        for(int i = 0 ; i < scene->numObjects() ; i++){
+            pCglObject obj = scene->getObject(i);
+            if(obj->isSelected()){
+                OBJECT_TYPE typ;
+                if(obj->isSuper()){typ = SUPER;}
+                else if(obj->isMeshObject()){typ = MESH;}
+                else{typ = SIMPLE;}
+                ClipBoard clip(typ,
+                               (char*)(obj->meshFile).c_str(),
+                               obj->getCenter(),
+                               obj->getMODEL());
+                pcv->clipboard.push_back(clip);
+                objectsToRemove.push_back(obj);
+            }
+        }
+        for(int i = 0 ; i < objectsToRemove.size() ; i++)
+            scene->removeObject(objectsToRemove[i]);
+    }
+
+    //Paste
+    if(key == 'V'){
+        for(int i = 0 ; i < pcv->clipboard.size() ; i++){
+            OBJECT_TYPE object_type = pcv->clipboard[i].object_type;
+
+            scene->unSelect();
+            pCglObject obj = NULL;
+            if(object_type == MESH)
+                obj = new CglMesh( pcv->clipboard[i].fileName );
+            //else if(object_type == SUPER)
+            //    obj =
+            else{
+                glm::vec3 c = pcv->clipboard[i].center;
+                obj = new CglSphere(c.x, c.y, c.z);
+            }
+            scene->addObject(obj);
+            obj->setMODEL(pcv->clipboard[i].MODEL);
+            obj->setCenter(pcv->clipboard[i].center);
+            obj->select();
+        }
+        pcv->clipboard.erase(pcv->clipboard.begin(), pcv->clipboard.end());
+    }
+    //Suppr
+    if(key == 'D'){
+        for(int i = 0 ; i < scene->numObjects() ; i++)
+            if(scene->getObject(i)->isSelected())
+                scene->removeObject(scene->getObject(i));
+    }
+
 
   lastKey = key;
 }

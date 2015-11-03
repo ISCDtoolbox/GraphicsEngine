@@ -13,8 +13,7 @@
 
 class CglPrimitive: public CglObject{
 protected:
-    GLuint mBuffer;
-    GLuint iBuffer;
+    GLuint nBuffer;
     glm::vec3 color;
     glm::vec3 pos;
     float size;
@@ -30,7 +29,7 @@ typedef CglPrimitive*   pCglPrimitive;
 
 class CGL_API CglCube : public CglPrimitive{
 public:
-    CglCube(float x, float y, float z);
+    CglCube(float x, float y, float z, float R = 1., float G = 0., float B = 0.);
     ~CglCube();
 };
 typedef CglCube*        pCglCube;
@@ -40,7 +39,7 @@ typedef CglCube*        pCglCube;
 
 class CGL_API CglSphere : public CglPrimitive{
 public:
-    CglSphere(float x, float y, float z);
+    CglSphere(float x, float y, float z, float R = 0., float G = 0., float B = 1.);
     ~CglSphere();
 };
 typedef CglSphere*      pCglSphere;
@@ -52,9 +51,9 @@ class CGL_API CglCylinder : public CglPrimitive{
 private:
     //glm::vec3 pt1, pt2;
 public:
-    CglCylinder(float x, float y, float z, float x2, float y2, float z2);
-    CglCylinder(pCglPrimitive obj1, pCglPrimitive obj2);
-    void init(float x,  float y,  float z, float x2, float y2, float z2);
+    CglCylinder(float x, float y, float z, float x2, float y2, float z2, float R = 1., float G = 1., float B = 0.);
+    CglCylinder(pCglPrimitive obj1, pCglPrimitive obj2, float R = 1., float G = 1., float B = 0.);
+    void init(float x,  float y,  float z, float x2, float y2, float z2, float R = 1., float G = 1., float B = 0.);
     ~CglCylinder();
 };
 typedef CglCylinder*    pCglCylinder;

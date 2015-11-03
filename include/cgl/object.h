@@ -107,6 +107,7 @@ class CGL_API CglObject
     bool  isMeshObject(){return isMesh;}
     glm::mat4 getMODEL(){return MODEL;}
     glm::vec3 getRotationCenter(){return *rotationCenter;}
+    glm::vec3 getCenter(){return center;}
 
     void  computeGroupID();
     int   getGroupID();

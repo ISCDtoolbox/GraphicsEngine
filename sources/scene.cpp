@@ -52,13 +52,19 @@ void CglScene::addObject(pCglObject object)
 
   globalScale = min(globalScale, object->getLocalScale());
 }
+void CglScene::removeObject(pCglObject object)
+{
+  for(int i = 0 ; i < numObjects() ; i++)
+    if(object == listObject[i])
+        listObject.erase(listObject.begin() + i);
+}
 
 
 void CglScene::display()
 {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_CULL_FACE);
-  glEnable( GL_MULTISAMPLE );
+  //glEnable( GL_MULTISAMPLE );
 
   if(pcv->profile.globalScale){
     for(int i = 0 ; i < numObjects() ; i++){

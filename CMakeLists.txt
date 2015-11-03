@@ -7,17 +7,17 @@ set(CMAKE_SOURCE_DIRECTORY ${CMAKE_SOURCE_DIR})
 configure_file("${CMAKE_SOURCE_DIR}/include/ext.h.in" "${CMAKE_SOURCE_DIR}/include/ext.h")
 
 #Include de GLEW
-include(ExternalProject)
-ExternalProject_Add(
-  glew
-  PREFIX "./library/glew"
-  GIT_REPOSITORY https://github.com/nigels-com/glew.git
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ""
-  INSTALL_COMMAND "make; make install;"
-  LOG_DOWNLOAD ON
-  LOG_INSTALL ON
-)
+#include(ExternalProject)
+#ExternalProject_Add(
+#  glew
+#  PREFIX "./library/glew"
+#  GIT_REPOSITORY https://github.com/nigels-com/glew.git
+#  CONFIGURE_COMMAND ""
+#  BUILD_COMMAND make extensions
+#  INSTALL_COMMAND COMMAND make install
+#  LOG_DOWNLOAD ON
+#  LOG_INSTALL ON
+#)
 
 #Include de GLM
 include(ExternalProject)
@@ -34,14 +34,14 @@ ExternalProject_Add(
 
 
 #Flags and libraries
-set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -Wno-deprecated -O0")
+set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -Wno-deprecated -O2 -pg")
 find_package(GLUT)
 find_package(OpenGL)
 find_package(X11)
 find_package(GLEW)
 
 
-set(CORELIBS ${GLEW_LIBRARY} ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES} )
+set(CORELIBS ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES} {GLEW_LIBRARY})
 
 #Include files
 include_directories("include/" "library/libmesh/" ${PNG_INCLUDE_DIR} "${CMAKE_CURRENT_BINARY_DIR}/library/glm/src/glm/")
@@ -49,7 +49,7 @@ file(GLOB_RECURSE source_files sources/* include/cgl/* include/*)
 
 #Link
 add_library(SUscCGL SHARED ${source_files})
-add_dependencies(SUscCGL glm)
+add_dependencies(SUscCGL glm)# glew)
 add_library(mesh SHARED library/libmesh/libmesh5.h library/libmesh/libmesh5.c)
 target_link_libraries(SUscCGL ${CORELIBS} mesh)
 add_dependencies(SUscCGL HEADERFILES)
@@ -90,10 +90,4 @@ add_custom_target(
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 add_executable(embedfile sources/embedfile.cpp)
-
-
-
-
-
-
 

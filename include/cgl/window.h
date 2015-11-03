@@ -16,19 +16,10 @@
 
 class   CglWindow;
 class   CglSubWindow;
-
 typedef CglWindow*     pCglWindow;
 typedef CglSubWindow*  pCglSubWindow;
-
 enum    CGL_SUBWINDOW{ CGL_FULL, CGL_LEFT, CGL_RIGHT, CGL_TOP, CGL_BOTTOM, CGL_CUSTOM };
 
-
-
-////////////////////////////////////////////////////////////////////////:
-//Classe CGLSUBWINDOW
-// Needs a parent window to work...
-// Allows for screen partitionning
-//..
 
 class CglSubWindow{
 public:
@@ -42,10 +33,10 @@ public:
     int                         ID;
     glm::vec2                   position;
     glm::vec2                   size;
+    float                       ratio;
 
 public:
-    CglSubWindow(pCglWindow window, CGL_SUBWINDOW loc);                   //FULL
-	CglSubWindow(pCglWindow window, int x, int y, int w, int h);          //CUSTOM
+    CglSubWindow(pCglWindow window, CGL_SUBWINDOW loc, float R = 0.5);
 	~CglSubWindow();
 
     //pCglSubWindow getSubWindow();
@@ -68,25 +59,9 @@ public:
     void          setCallbacks();
     static void   displayWrap();
     static void   reshapeWrap(       int w, int h);
-
-    static void mouseWrap(         int b, int s, int x, int y);
-    static void motionWrap(        int x, int y);
-    static void passiveMotionWrap( int x, int y);
-    static void keyWrap(           unsigned char key,int x,int y);
-    static void keyUpWrap(         unsigned char key,int x,int y);
-    static void specialWrap(       int key, int x, int y);
-
-    static void idle();
-    void        idleCallback();
 };
 
 
-
-////////////////////////////////////////////////////////////////////////:
-//Classe CGLWINDOW
-// "Physical window"
-// Contains subwindows, which are displayed when needed
-//..
 
 class CGL_API CglWindow{
 public:
@@ -100,14 +75,11 @@ public:
     CglWindow();
 	CglWindow(    int x, int y, int w, int h);
 	~CglWindow();
-
     pCglSubWindow getSubWindow();
     void          reshape(     int w, int h);
     static void   reshapeWrap( int w, int h);
-	void          display();
-    static void   displayWrap();
-};
 
+};
 
 
 #endif

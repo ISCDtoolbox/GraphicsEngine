@@ -30,7 +30,7 @@ int main(int argc, char **argv){
   else if (argc > 1){
 
 
-    
+
     /*
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //PREMIERE SOUS FENETRE, LA PLUS GRANDE
@@ -96,7 +96,7 @@ int main(int argc, char **argv){
     //PREMIERE SOUS FENETRE, LA PLUS GRANDE
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    pCglSubWindow SW3 = new CglSubWindow(window2, CGL_FULL);//CGL_LEFT);
+    pCglSubWindow SW3 = new CglSubWindow(window2, CGL_BOTTOM, 0.3);
     pCglScene  scene3  = new CglScene();
     pCglLight fill3    = new CglLight(0,8,15,    1,1,1,  300.0, false);
     pCglLight side3    = new CglLight(-10,5,-3,  1,1,1,  70.0,  false);
@@ -113,21 +113,14 @@ int main(int argc, char **argv){
     if(cv.profile.initial_arrangement == CGL_ARRANGEMENT_GRID)
       scene3->place_objects_on_grid();
 
-    //scene3->addObject(new CglCube(  0,0.12,0));
-    //scene3->addObject(new CglSphere(0,0,0.12));
-    //scene3->addObject(new CglCylinder(  -0.025,-0.025,-0.025,   -0.025,-0.025,0.025));
-
-    //pCglSuperObject OBJ = new CglSuperObject();
-    //scene3->addObject(OBJ);
-    
     SW3->loadShaders();
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //PREMIERE SOUS FENETRE, LA PLUS GRANDE
     ////////////////////////////////////////////////////////////////////////////////////////////////
-	/*
-    pCglSubWindow SW4     = new CglSubWindow(window2, CGL_RIGHT);//400, 0, 400, 800);
+
+    pCglSubWindow SW4     = new CglSubWindow(window2, CGL_TOP, 0.7);//400, 0, 400, 800);
     pCglScene  scene4     = new CglScene();
     pCglLight fill4       = new CglLight(0,8,15,    1,1,1,  300.0, false);
     pCglLight side4       = new CglLight(-10,5,-3,  1,0,0,  70.0,  false);
@@ -140,16 +133,12 @@ int main(int argc, char **argv){
 
     cv.initGLEW();
 
-    for (int i=2; i < 4; i++)
+    for (int i=3; i < 5; i++)
       scene4->addObject(new CglMesh(argv[i+1]));
     if(cv.profile.initial_arrangement == CGL_ARRANGEMENT_GRID)
       scene4->place_objects_on_grid();
 
     SW4->loadShaders();
-*/
-
-
-
   }
 
   else{
