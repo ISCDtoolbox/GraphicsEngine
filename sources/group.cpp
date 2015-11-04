@@ -26,6 +26,8 @@ CglGroup::CglGroup(std::vector<pCglObject> groupOfObjects)
     bbmax.y = max(bbmax.y, maxi.y);
     bbmax.z = max(bbmax.z, maxi.z);
   }
+
+  compute();
 }
 
 CglGroup::~CglGroup(){

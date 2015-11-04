@@ -66,21 +66,33 @@ void CglScene::display()
   glEnable(GL_CULL_FACE);
   //glEnable( GL_MULTISAMPLE );
 
+    int t = glutGet(GLUT_ELAPSED_TIME);
   if(pcv->profile.globalScale){
     for(int i = 0 ; i < numObjects() ; i++){
       listObject[i]->setScaleFactor(globalScale);
     }
   }
+  pcv->PROF.setScale += glutGet(GLUT_ELAPSED_TIME)-t;
+  t = glutGet(GLUT_ELAPSED_TIME);
 
   update_matrices();
   applyTransformation();
+
+  pcv->PROF.applyTransformation += glutGet(GLUT_ELAPSED_TIME)-t;
+  t = glutGet(GLUT_ELAPSED_TIME);
 
 
   for (int i = 0; i < listGroup.size(); i++)
     listGroup[i]->compute();
 
+  pcv->PROF.computeGroup += glutGet(GLUT_ELAPSED_TIME)-t;
+  t = glutGet(GLUT_ELAPSED_TIME);
+
   for (int iObj = 0; iObj < numObjects(); iObj++)
     listObject[iObj]->applyTransformation();
+
+  pcv->PROF.objApplyTransformation += glutGet(GLUT_ELAPSED_TIME)-t;
+  t = glutGet(GLUT_ELAPSED_TIME);
 
 
   background->display();
@@ -95,22 +107,40 @@ void CglScene::display()
     if(listObject[iObj]->isHidden())
       listObject[iObj]->shadowsDisplay();
 
+  pcv->PROF.shadows += glutGet(GLUT_ELAPSED_TIME)-t;
+  t = glutGet(GLUT_ELAPSED_TIME);
+
   //Display de l'ensemble des artefacts
   for (int iObj = 0; iObj < numObjects(); iObj++)
     listObject[iObj]->artifactsDisplay();
+
+  pcv->PROF.artifacts += glutGet(GLUT_ELAPSED_TIME)-t;
+  t = glutGet(GLUT_ELAPSED_TIME);
 
   //Display des meshes
   for (int iObj = 0; iObj < numObjects(); iObj++)
     if(!listObject[iObj]->isHidden())
       listObject[iObj]->display();
 
+
+  pcv->PROF.display += glutGet(GLUT_ELAPSED_TIME)-t;
+  t = glutGet(GLUT_ELAPSED_TIME);
+
   axis->applyTransformation();
   axis->display();
 
-  //GUI
-  pcv->getInterface()->display();
+  pcv->PROF.axis += glutGet(GLUT_ELAPSED_TIME)-t;
+  t = glutGet(GLUT_ELAPSED_TIME);
+
+  //pcv->getInterface()->display();
+
+  pcv->PROF.interface += glutGet(GLUT_ELAPSED_TIME)-t;
+  t = glutGet(GLUT_ELAPSED_TIME);
 
   glClear(GL_DEPTH_BUFFER_BIT);
+
+  pcv->PROF.clear += glutGet(GLUT_ELAPSED_TIME)-t;
+  t = glutGet(GLUT_ELAPSED_TIME);
 
   //debug();
 }
@@ -290,7 +320,7 @@ void CglScene::onMiddleDrag(int x, int y){
 
   ray       = getRayVector(x,y);
   inter     = intersect(ray, plane, planeNormal, intersects);
-  cout << inter.x << " " << inter.y << " " << inter.z << endl;
+  //cout << inter.x << " " << inter.y << " " << inter.z << endl;
 
   lastRay   = getRayVector(lastDrag.x, lastDrag.y);
   lastInter = intersect(lastRay, plane, planeNormal, intersectsLast);

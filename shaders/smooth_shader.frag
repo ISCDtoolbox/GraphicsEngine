@@ -36,9 +36,10 @@ void main(){
   //gl_FragColor = vec4(col, 0.3);
 
   //Second try for noise
-  float N       = fbm(vertex_pos, 0.07f, 0.75, 8, 1.9f);//snoise(10 * vertex_pos);
-  float F       = 0.8*(N-0.5) + 0.5;
-  vec3 finalCol = fog( F*col + (1-F)*0.9*col );
+  //float N       = fbm(vertex_pos, 0.07f, 0.75, 8, 1.9f);//snoise(10 * vertex_pos);
+  //float F       = 0.8*(N-0.5) + 0.5;
+  //vec3 finalCol = fog( F*col + (1-F)*0.9*col );
+  vec3 finalCol = fog(col);
   gl_FragColor  = vec4(finalCol, 0.0);// * vec4(col,0.3);//vec4(noise3D, 0.3);
 }
 

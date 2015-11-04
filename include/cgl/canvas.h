@@ -33,14 +33,23 @@ struct ClipBoard{
   }
 };
 
+struct Profiler{
+    int bind, free, bindDraw, draw, uni;
+    int setScale, applyTransformation, computeGroup, objApplyTransformation, clear;
+    int shadows, display, artifacts, axis, interface;
+    Profiler();
+    void print();
+};
+
 class CGL_API CglCanvas
 {
 /////////////////////////////////////////////////////
 //Attributes
 
 public:
-  CglProfile profile;
+  CglProfile    profile;
   std::vector<ClipBoard> clipboard;
+  Profiler      PROF;
 
 private:
   std::vector<pCglLight>    lights;
@@ -116,7 +125,6 @@ public:
   static void keyWrap(unsigned char key,int x,int y);
   static void keyUpWrap(unsigned char key,int x,int y);
   static void specialWrap(int key, int x, int y);
-
 
   //Main loop
   void loop();

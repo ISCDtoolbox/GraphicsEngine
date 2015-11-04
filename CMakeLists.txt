@@ -11,16 +11,18 @@ configure_file("${CMAKE_SOURCE_DIR}/include/ext.h.in" "${CMAKE_SOURCE_DIR}/inclu
 #ExternalProject_Add(
 #  glew
 #  PREFIX "./library/glew"
+#  BINARY_DIR "./library/glew/src/glew/"
 #  GIT_REPOSITORY https://github.com/nigels-com/glew.git
-#  CONFIGURE_COMMAND ""
-#  BUILD_COMMAND make extensions
-#  INSTALL_COMMAND COMMAND make install
+#  CONFIGURE_COMMAND make extensions COMMAND make
+#  BUILD_COMMAND
+#  INSTALL_COMMAND make install
 #  LOG_DOWNLOAD ON
 #  LOG_INSTALL ON
 #)
 
 #Include de GLM
 include(ExternalProject)
+set_property(DIRECTORY PROPERTY EP_STEP_TARGETS configure build test)
 ExternalProject_Add(
   glm
   PREFIX "./library/glm"

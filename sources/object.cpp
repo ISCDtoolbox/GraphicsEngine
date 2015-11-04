@@ -4,6 +4,8 @@ extern CglCanvas *pcv;
 
 #include <cgl/scene.h>
 
+
+
 //BUFFER OPERATIONS
 void CglObject::createBuffer(GLuint *pBuffer, std::vector<float> *data){
     glGenBuffers( 1,               pBuffer);
@@ -21,18 +23,24 @@ void CglObject::createBuffer(GLuint *pBuffer, std::vector<short> *data){
     glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * data->size(), &(*data)[0], GL_STATIC_DRAW);
 }
 void CglObject::bindBuffer(int attrib, int bufferType, GLuint buffer){
+    int t0 = glutGet(GLUT_ELAPSED_TIME);
     if(attrib!=-1)
         glEnableVertexAttribArray( attrib);
     glBindBuffer( bufferType, buffer);
     if(attrib!=-1)
         glVertexAttribPointer( attrib, 3, GL_FLOAT, GL_FALSE, 0, ( void*)0);
+    int t1 = glutGet(GLUT_ELAPSED_TIME);
+    pcv->PROF.bind += t1 - t0;
 }
 void CglObject::freeBuffer(){
+    int t0 = glutGet(GLUT_ELAPSED_TIME);
     for(int i = 0 ; i < 5 ; i++)
         glDisableVertexAttribArray(i);
     glUseProgram(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    int t1 = glutGet(GLUT_ELAPSED_TIME);
+    pcv->PROF.free += t1 - t0;
 }
 int CglObject::initProgram(int ID){
     glUseProgram(ID);
@@ -46,6 +54,7 @@ void CglObject::draw(   int ID,       //Shader ID
                         int nBuffer,  //Normals Buffer
                         int iBuffer   //Indices Buffer
                     ){
+
     //Vertex Buffer
     bindBuffer(0, GL_ARRAY_BUFFER, mBuffer);
     glBindAttribLocation(ID, 0, "vertex_position");
@@ -58,19 +67,31 @@ void CglObject::draw(   int ID,       //Shader ID
     if(iBuffer!=-1){
         bindBuffer(-1, GL_ELEMENT_ARRAY_BUFFER, iBuffer);
     }
+    int t0 = glutGet(GLUT_ELAPSED_TIME);
     //Drawing
     glDrawElements(GL_TRIANGLES, s, GL_UNSIGNED_INT, (void*)0);
+    int t2 = glutGet(GLUT_ELAPSED_TIME);
+    pcv->PROF.draw += t2 - t0;
 }
 
 
 void CglObject::uniform(int ID, glm::vec3 v){
+    int t0 = glutGet(GLUT_ELAPSED_TIME);
   glUniform3f(ID, v.x, v.y, v.z);
+  int t1 = glutGet(GLUT_ELAPSED_TIME);
+    pcv->PROF.uni += t1 - t0;
 }
 void CglObject::uniform(int ID, glm::mat4 &m){
+    int t0 = glutGet(GLUT_ELAPSED_TIME);
   glUniformMatrix4fv( ID, 1, GL_FALSE, &m[0][0]);
+  int t1 = glutGet(GLUT_ELAPSED_TIME);
+    pcv->PROF.uni += t1 - t0;
 }
 void CglObject::uniform(int ID, float f){
+    int t0 = glutGet(GLUT_ELAPSED_TIME);
   glUniform1f( ID, f);
+  int t1 = glutGet(GLUT_ELAPSED_TIME);
+    pcv->PROF.uni += t1 - t0;
 }
 
 
@@ -145,11 +166,16 @@ void CglObject::cglInit(){}
 void CglObject::applyTransformation(){
     glm::mat4 ID = glm::mat4(1.0f);
 
-    if(parent==NULL)
+    if(parent==NULL){
         if(idGroup==-1)
             rotationCenter = &center;
-    else
-        rotationCenter = parent->getCenterPtr();// &parent->getRotationCenter();
+        //else
+        //    rotationCenter =
+    }
+    else{
+        if(idGroup==-1)
+            rotationCenter = parent->getCenterPtr();// &parent->getRotationCenter();
+    }
 
     if(!isSuper())
         MODEL =  glm::translate(ID, *rotationCenter) * transform.rot * glm::translate(ID, -*rotationCenter) * MODEL;

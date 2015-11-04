@@ -21,14 +21,44 @@ typedef CglSubWindow*  pCglSubWindow;
 enum    CGL_SUBWINDOW{ CGL_FULL, CGL_LEFT, CGL_RIGHT, CGL_TOP, CGL_BOTTOM, CGL_CUSTOM };
 
 
+struct FrameCounter{
+    int frame;
+    int time;
+    int lastTime;
+    FrameCounter(){lastTime = 0; frame = 0;}
+};
+
+
+class CGL_API CglWindow{
+public:
+    std::vector<pCglSubWindow>  subWindows;
+    glm::vec2                   position;
+    glm::vec2                   size;
+    std::string                 title;
+    int                         ID;
+    FrameCounter                FPS;
+
+public:
+    CglWindow();
+	CglWindow(    int x, int y, int w, int h);
+	~CglWindow();
+    pCglSubWindow getSubWindow();
+    void          reshape(     int w, int h);
+    static void   reshapeWrap( int w, int h);
+    void          display();
+    static void   displayWrap();
+    static void   idleWrap();
+};
+
+
 class CglSubWindow{
 public:
     CGL_SUBWINDOW               location;
     pCglWindow                  parent;
     pCglScene                   pScene;
     pCglView                    pView;
-    pCglRadialInterface         pRadialInterface;
     pCglLinearInterface         pLinearInterface;
+    pCglRadialInterface         pRadialInterface;
     CglShader                   simpleShader, smoothShader, flatShader;
     int                         ID;
     glm::vec2                   position;
@@ -46,6 +76,7 @@ public:
 	pCglInterface getLinearInterface(){   return pLinearInterface;}
 	pCglInterface getRadialInterface(){   return pRadialInterface;}
 
+
     void          display();
     void          displayBuffer(int buffer);
     void          compute_window(int w, int h);
@@ -62,14 +93,16 @@ public:
 };
 
 
-
+/*
 class CGL_API CglWindow{
 public:
     std::vector<pCglSubWindow>  subWindows;
+    pCglLinearInterface         pLinearInterface;
     glm::vec2                   position;
     glm::vec2                   size;
     std::string                 title;
     int                         ID;
+    FrameCounter                FPS;
 
 public:
     CglWindow();
@@ -78,8 +111,9 @@ public:
     pCglSubWindow getSubWindow();
     void          reshape(     int w, int h);
     static void   reshapeWrap( int w, int h);
+    static void   idleWrap();
 
-};
+};*/
 
 
 #endif

@@ -143,7 +143,16 @@ void CglCanvas::loop(){
     glutMainLoop();
 }
 
-
+Profiler::Profiler(){
+    bind = free = bindDraw = draw = uni = 0;
+    setScale = applyTransformation = computeGroup = objApplyTransformation = clear = 0;
+    shadows = display = artifacts = axis = interface = 0;
+}
+void Profiler::print(){
+    cout << "OPENGL calls:   " << bind << "\t" << free << "\t" << bindDraw << "\t" << draw << "\t" << uni << endl;
+    cout << "SCENE DISPLAY:  " << shadows << "\t" << display << "\t" << artifacts << "\t" << axis << "\t" << interface << endl;
+    cout << "SCENE METHODS:  " << setScale << "\t" << applyTransformation << "\t" << computeGroup << "\t" << objApplyTransformation << "\t" << clear << endl;
+}
 
 
 

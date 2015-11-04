@@ -188,7 +188,7 @@ void CglInterface::checkHoveredButtons(int x, int y){
 //Check clicked buttons
 void CglInterface::checkClickedButtons(int b, int s, int x, int y){
   int w = pcv->getScene()->getView()->width;
-  int h = pcv->getScene()->getView()->height;
+    int h = pcv->getScene()->getView()->height;
   CGL_INTERFACE interface = pcv->profile.interface;
   bool  ctrl = ((glutGetModifiers() && GLUT_ACTIVE_CTRL) ? 1:0);
 
@@ -263,14 +263,16 @@ void CglLinearInterface::display(){
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     for(int i = 0 ; i < nbButtons ; i++){
-      glBegin(GL_POLYGON);
-      glm::vec4 col = ((hovered[i])?glm::vec4(pcv->profile.sele_color,0.8):glm::vec4(1,1,1,0.5));
-      glColor4f(col[0], col[1], col[2], col[3]);
-      glVertex2f(1-(2-2*offset), 1 - 1.0f/(nbButtons+1) - i*2.0f/(nbButtons+1) );
-      glVertex2f(1             , 1 - 1.0f/(nbButtons+1) - i*2.0f/(nbButtons+1));
-      glVertex2f(1             , 1 - 1.0f/(nbButtons+1) - (i+1)*2.0f/(nbButtons+1));
-      glVertex2f(1-(2-2*offset), 1 - 1.0f/(nbButtons+1) - (i+1)*2.0f/(nbButtons+1) );
-      glEnd();
+        if(hovered[i]){
+            glBegin(GL_POLYGON);
+            glm::vec4 col = ((hovered[i])?glm::vec4(pcv->profile.sele_color,0.8):glm::vec4(1,1,1,0.5));
+            glColor4f(col[0], col[1], col[2], col[3]);
+            glVertex2f(1-(2-2*offset), 1 - 1.0f/(nbButtons+1) - i*2.0f/(nbButtons+1) );
+            glVertex2f(1             , 1 - 1.0f/(nbButtons+1) - i*2.0f/(nbButtons+1));
+            glVertex2f(1             , 1 - 1.0f/(nbButtons+1) - (i+1)*2.0f/(nbButtons+1));
+            glVertex2f(1-(2-2*offset), 1 - 1.0f/(nbButtons+1) - (i+1)*2.0f/(nbButtons+1) );
+            glEnd();
+        }
     }
 
     glEnable(GL_DEPTH_TEST);
@@ -278,6 +280,7 @@ void CglLinearInterface::display(){
 
     for(int i = 0 ; i < nbButtons ; i++){
       buttons[i]->display();
+        //cout << i << " / " << buttons[i]->center.x << " " << buttons[i]->center.y << endl;
     }
   }
 }
@@ -289,7 +292,7 @@ void CglLinearInterface::display(){
 void CglRadialInterface::init(glm::vec2 cen, float rad){
   init_buttons();
   folder            = getIconsFolder();
-  float  ratio      = pcv->getSubWindow()->getScene()->getView()->ratio;
+float ratio = pcv->getScene()->getView()->ratio;
   active            = true;
   isMouseOnPanel    = true;
   center            = cen;
@@ -313,8 +316,8 @@ void CglRadialInterface::init(glm::vec2 cen, float rad){
 
 void CglRadialInterface::display(){
   glm::vec2 mousePos = pcv->getMouse()->getCursorPosition();
-  float w            = pcv->getScene()->getView()->width;
-  float h            = pcv->getScene()->getView()->height;
+  int w = pcv->getScene()->getView()->width;
+int h = pcv->getScene()->getView()->height;
   glm::vec2 pos      = glm::vec2( (mousePos.x - w/2)/(w/2), (mousePos.y - h/2)/(h/2) );
   float distance     = glm::length(center - pos);
   isMouseOnPanel     = ((distance < radius + 0.15) ? true:false);
@@ -329,7 +332,7 @@ void CglRadialInterface::display(){
 
 void CglRadialInterface::displayWheel(int step){
   int nb            = nbButtons * step;
-  float ratio       = pcv->getScene()->getView()->ratio;
+float ratio = pcv->getScene()->getView()->ratio;
 
   glEnable(GL_BLEND);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

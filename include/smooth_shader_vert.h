@@ -12,7 +12,7 @@ const char smooth_vert_code [] =
 "\n"
 "varying vec3 vertex_pos;\n"
 "varying vec3 vertex_nor;\n"
-"varying float gl_ClipDistance[1];\n"
+"//varying float gl_ClipDistance[1];\n"
 "\n"
 "uniform mat4 MVP;\n"
 "uniform mat4 M;\n"

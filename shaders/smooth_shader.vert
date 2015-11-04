@@ -6,7 +6,7 @@ attribute vec3 vertex_normal;
 
 varying vec3 vertex_pos;
 varying vec3 vertex_nor;
-varying float gl_ClipDistance[1];
+//varying float gl_ClipDistance[1];
 
 uniform mat4 MVP;
 uniform mat4 M;

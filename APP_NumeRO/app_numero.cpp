@@ -96,7 +96,7 @@ int main(int argc, char **argv){
     //PREMIERE SOUS FENETRE, LA PLUS GRANDE
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    pCglSubWindow SW3 = new CglSubWindow(window2, CGL_BOTTOM, 0.3);
+    pCglSubWindow SW3 = new CglSubWindow(window2, CGL_LEFT, 0.3);
     pCglScene  scene3  = new CglScene();
     pCglLight fill3    = new CglLight(0,8,15,    1,1,1,  300.0, false);
     pCglLight side3    = new CglLight(-10,5,-3,  1,1,1,  70.0,  false);
@@ -120,11 +120,11 @@ int main(int argc, char **argv){
     //PREMIERE SOUS FENETRE, LA PLUS GRANDE
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    pCglSubWindow SW4     = new CglSubWindow(window2, CGL_TOP, 0.7);//400, 0, 400, 800);
+    pCglSubWindow SW4     = new CglSubWindow(window2, CGL_RIGHT, 0.7);//400, 0, 400, 800);
     pCglScene  scene4     = new CglScene();
     pCglLight fill4       = new CglLight(0,8,15,    1,1,1,  300.0, false);
-    pCglLight side4       = new CglLight(-10,5,-3,  1,0,0,  70.0,  false);
-    pCglLight back4       = new CglLight(-10,5,-10, 0,0,1,  50.0,  false);
+    pCglLight side4       = new CglLight(-10,5,-3,  1,0.9,0.8,  70.0,  false);
+    pCglLight back4       = new CglLight(-10,5,-10, 0.3,0.3,1,  50.0,  false);
 
     scene4->addLight( fill4 );
     scene4->addLight( side4 );
