@@ -115,8 +115,8 @@ CglObject::CglObject()
   //center = glm::vec3(0.0f);
 
   //pScene = NULL;
+  pGroup = NULL;
   material   = new CglMaterial(pcv->profile.color(), 0.85, 0.15, 12.0);
-  idGroup    = -1;
   localScale = 1;
 }
 CglObject::~CglObject(){}
@@ -162,11 +162,11 @@ void CglObject::cglInit(){}
 
 void CglObject::applyTransformation(){
     if(parent==NULL){
-        if(idGroup==-1)
+        if(!pGroup)
             rotationCenter = &center;
     }
     else{
-        if(idGroup==-1)
+        if(!pGroup)
             rotationCenter = parent->getCenterPtr();
     }
 
@@ -212,18 +212,18 @@ void CglObject::resetAll(){
     undoLast();
 }
 
-void CglObject::computeGroupID(){
+void CglObject::computeGroup(){
     pCglScene scene = pcv->getScene();
     if (scene->numGroups() > 0){
       for(int i = 0 ; i < scene->numGroups() ; i++)
         for(int j = 0 ; j < scene->getGroup(i)->numObjects() ; j++){
             pCglObject pOBJ = scene->getGroup(i)->getObject(j);
             if( (this==pOBJ) || (this->parent == pOBJ))
-                idGroup = i;
+                pGroup = scene->getGroup(i);
         }
     }
     else
-      idGroup = -1;
+      pGroup = NULL;
 }
 
 void CglObject::setRotationCenter(glm::vec3 &center){rotationCenter = &center;}
@@ -231,12 +231,12 @@ void CglObject::setScaleFactor(float sf){scaleFactor = sf;}
 
 void CglObject::setMODEL(glm::mat4 M){MODEL = M;}
 void CglObject::setCenter(glm::vec3 C){center = C;}
-void CglObject::setGroupID(int id){idGroup = id;}
+void CglObject::setGroup(pCglGroup G){pGroup = G;}
 void CglObject::setFileName(std::string n){meshFile = n;}
 void CglObject::setColor(glm::vec3 col){material->setColor(col);}
 
-int        CglObject::getGroupID(){return idGroup;}
-void       CglObject::resetGroupID(){idGroup = -1;}
+pCglGroup  CglObject::getGroup(){return pGroup;}
+void       CglObject::resetGroup(){pGroup = NULL;}
 float      CglObject::getLocalScale(){return localScale;}
 int        CglObject::getID(){return objectID;}
 glm::vec3* CglObject::getCenterPtr(){return &center;}

@@ -290,7 +290,7 @@ void CglMesh::shadowsDisplay(){
         int MID         = glGetUniformLocation(shaderID, "M");
 
         //Calcul de la couleur
-        glm::vec3 selection_color   = ((idGroup==-1)?pcv->profile.sele_color:pcv->getScene()->getGroup(idGroup)->getColor());
+        glm::vec3 selection_color   = ((!pGroup)?pcv->profile.sele_color:pGroup->getColor());
         glm::vec3 color             = ((isSelected())?selection_color:material->getColor());
         glm::vec2 mix               = ((hidden)?glm::vec2(0,1):pcv->profile.reflection_mix);
 
@@ -333,8 +333,8 @@ void CglMesh::artifactsDisplay(){
 
     glm::mat4 MVP               = sPROJ() * sVIEW() * sMODEL() * glm::scale(MODEL, glm::vec3(scaleFactor));
     pCglScene scene             = pcv->getScene();
-    glm::vec3 selection_color   = ((idGroup==-1)?pcv->profile.sele_color:scene->getGroup(idGroup)->getColor());
-    computeGroupID();
+    glm::vec3 selection_color   = ((!pGroup)?pcv->profile.sele_color:pGroup->getColor());
+    computeGroup();
 
     //Contour
     if(isSelected()){
@@ -434,7 +434,7 @@ void CglMesh::display(){
         glm::mat4 MVP               = sPROJ() * sVIEW() * sMODEL() * glm::scale(MODEL, glm::vec3(scaleFactor));
         glm::mat4 M                 = glm::translate(MODEL, glm::vec3(sMODEL()[3]));
         glm::mat4 V                 = sVIEW();
-        glm::vec3 selection_color   = ((idGroup==-1)?pcv->profile.sele_color:pcv->getScene()->getGroup(idGroup)->getColor());
+        glm::vec3 selection_color   = ((pGroup)?pcv->profile.sele_color:pGroup->getColor());
         glm::vec3 color             = ((isSelected())?1.0f * selection_color:material->getColor());
         std::vector<pCglLight> lights = pcv->getSubWindow()->getScene()->getLights();
 

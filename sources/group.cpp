@@ -137,7 +137,7 @@ void CglSuperObject::compute(){
 
 void CglSuperObject::applyTransformation(){
     glm::mat4 ID = glm::mat4(1.0f);
-    if(idGroup==-1)
+    if(!pGroup)
         rotationCenter = &center;
     MODEL =  glm::translate(ID, *rotationCenter) * transform.rot * glm::translate(ID, -*rotationCenter) * MODEL;
     for(int i = 0 ; i < listPart.size() ; i++){

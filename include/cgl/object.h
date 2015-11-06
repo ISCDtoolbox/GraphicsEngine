@@ -31,6 +31,7 @@ class CGL_API CglObject
 
   protected:
     pCglScene   pScene;
+    pCglGroup   pGroup;
     bool        isMesh;
     int         objectID;
     int         nPicking;
@@ -39,8 +40,10 @@ class CGL_API CglObject
     glm::mat4   MODEL;
     glm::vec3   center;
     glm::vec3   *rotationCenter;
+
     float       localScale;
     float       scaleFactor;
+
     bool        isRotationConstrained;
     bool        isTranslationConstrained;
     glm::vec3   constrainedRotationAxis;
@@ -55,7 +58,6 @@ class CGL_API CglObject
     GLuint      indicesBuffer;
 
     //RENDER PARAMETERS
-    int         idGroup;
     bool        selected;
     bool        box;
     bool        line;
@@ -86,7 +88,7 @@ class CGL_API CglObject
 
     void setMODEL(glm::mat4 M);
     void setCenter(glm::vec3 C);
-    void setGroupID(int id);
+    void setGroup(pCglGroup G);
     void setFileName(std::string n);
 
     virtual void display(){};
@@ -114,12 +116,12 @@ class CGL_API CglObject
     glm::vec3 getRotationCenter(){return *rotationCenter;}
     glm::vec3 getCenter(){return center;}
 
-    void  computeGroupID();
-    int   getGroupID();
-    int   getID();
-    float getLocalScale();
-    void  resetGroupID();
-    glm::vec3* getCenterPtr();
+    void        computeGroup();
+    pCglGroup   getGroup();
+    int         getID();
+    float       getLocalScale();
+    void        resetGroup();
+    glm::vec3*  getCenterPtr();
     //Selection & picking
     virtual bool  isPicked(int ID);
     bool  isHidden();

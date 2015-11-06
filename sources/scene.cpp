@@ -292,7 +292,7 @@ void CglScene::onLeftDrag(int x, int y){
   //POUR LES OBJETS
   for (unsigned int i = 0; i < listObject.size() ; i++){
     pCglObject obj  = listObject[i];
-    if ( (obj->isSelected()) /*&& (obj->getGroupID()==-1)*/ ){
+    if ( (obj->isSelected()) /*&& (obj->getGroup()==NULL)*/ ){
       glm::vec3 c     = glm::vec3(obj->getRotationCenter()) + glm::vec3(MODEL[3]);
       planeNormal     = -c + m_cam;
       glm::vec3 axis  = glm::vec3(0,1,0);

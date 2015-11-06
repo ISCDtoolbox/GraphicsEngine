@@ -206,13 +206,14 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
   //Ungroup
   if (key == 'G'){
     for(int iG = 0 ; iG < scene->numGroups() ; iG++){
-      if(scene->getGroup(iG)->isSelected()){
-        for(int iO = 0 ; iO < scene->getGroup(iG)->numObjects() ; iO++){
-          scene->getGroup(iG)->getObject(iO)->unSelect();
-          scene->getGroup(iG)->getObject(iO)->resetGroupID();
+        pCglGroup G = scene->getGroup(iG);
+      if(G->isSelected()){
+        for(int iO = 0 ; iO < G->numObjects() ; iO++){
+          G->getObject(iO)->unSelect();
+          G->getObject(iO)->resetGroup();
         }
         scene->getGroupList()->erase(scene->getGroupList()->begin() + iG);
-        scene->getGroup(iG)->unGroup();
+        G->unGroup();
       }
     }
   }
@@ -270,7 +271,7 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
           saveFile << float(M[i][0]) << " " << float(M[i][1]) << " " << float(M[i][2]) << " " << float(M[i][3]) << endl;
         glm::vec3 c = *(obj->getCenterPtr());
         saveFile << c.x << " " << c.y << " " << c.z << endl;
-        saveFile << obj->getGroupID() << endl;
+        saveFile << obj->getGroup()-> << endl;
       }
     }
     saveFile.close();

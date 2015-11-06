@@ -292,9 +292,9 @@ void CglPrimitive::display(){
                                                  glm::vec3(sMODEL()[3]));
     glm::mat4 V                 = sVIEW();
 
-    glm::vec3 selection_color   = ((idGroup==-1)?pcv->profile.sele_color:pcv->getScene()->getGroup(idGroup)->getColor());
+    glm::vec3 selection_color   = ((pGroup)?:pGroup->getColor():pcv->profile.sele_color);
     glm::vec3 col               = ((isSelected())?selection_color:color);
-    computeGroupID();
+    computeGroup();
 
     glEnable(GL_POLYGON_OFFSET_LINE);
     glPolygonOffset(10,0);
