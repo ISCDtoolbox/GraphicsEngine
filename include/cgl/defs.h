@@ -53,6 +53,4 @@ using namespace std;
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-
-
 #endif

@@ -259,19 +259,27 @@ void CglMesh::shadowsDisplay(){
     glCullFace(GL_FRONT);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+
+
     if(pcv->profile.displayShadows && !hidden){
         int shaderID        = initProgram(pcv->simpleID());
         int MatrixID        = glGetUniformLocation(shaderID, "MVP");
         int colorID         = glGetUniformLocation(shaderID, "COL");
 
         glm::mat4 shadowMVP =  sPROJ() * sVIEW() * sMODEL() *
-                               shadowMatrix( glm::vec4(glm::vec3(0,1,0), pcv->profile.bottomDistance + sMODEL()[3].y - 0.002), glm::vec4(glm::vec3(0,1,0), 0) ) *
+                               shadowMatrix( glm::vec4(glm::vec3(0,1,0), pcv->profile.bottomDistance + sMODEL()[3].y + 0.002), glm::vec4(glm::vec3(0,1,0), 0) ) *
                                glm::scale(MODEL, glm::vec3(scaleFactor));
 
         uniform(MatrixID,   shadowMVP);
         uniform(colorID,    glm::vec3(0.2));
 
+
+        if(pcv->profile.displayBottomGrid)
+            glEnable(GL_STENCIL_TEST);
         draw(shaderID, 3*tria.size(), meshBuffer, -1, indicesBuffer);
+        if(pcv->profile.displayBottomGrid)
+            glDisable(GL_STENCIL_TEST);
+
     }
 
     //Réflection
@@ -283,7 +291,7 @@ void CglMesh::shadowsDisplay(){
 
         //Calcul de la couleur
         glm::vec3 selection_color   = ((idGroup==-1)?pcv->profile.sele_color:pcv->getScene()->getGroup(idGroup)->getColor());
-        glm::vec3 color             = ((isSelected())?selection_color:face_color);
+        glm::vec3 color             = ((isSelected())?selection_color:material->getColor());
         glm::vec2 mix               = ((hidden)?glm::vec2(0,1):pcv->profile.reflection_mix);
 
         //Calcul de MVP
@@ -301,8 +309,14 @@ void CglMesh::shadowsDisplay(){
         uniform( MatrixID, reflection);
         uniform(MID, M);
 
+        if(pcv->profile.displayBottomGrid)
+            glEnable(GL_STENCIL_TEST);
         draw(shaderID, 3*tria.size(), meshBuffer, normalBuffer, indicesBuffer);
+        if(pcv->profile.displayBottomGrid)
+            glDisable(GL_STENCIL_TEST);
     }
+
+
 
     freeBuffer();
     glDisable(GL_CULL_FACE);
@@ -407,6 +421,7 @@ void CglMesh::display(){
         glPolygonOffset(1.0,1.0);
 
         int shaderID                = initProgram(((pcv->profile.smooth)? pcv->smoothID() : pcv->flatID()));
+        //int shaderID                = initProgram(pcv->fresnelID());
 
         int MatrixID                = glGetUniformLocation(shaderID, "MVP");
         int colorID                 = glGetUniformLocation(shaderID, "COL");
@@ -420,7 +435,7 @@ void CglMesh::display(){
         glm::mat4 M                 = glm::translate(MODEL, glm::vec3(sMODEL()[3]));
         glm::mat4 V                 = sVIEW();
         glm::vec3 selection_color   = ((idGroup==-1)?pcv->profile.sele_color:pcv->getScene()->getGroup(idGroup)->getColor());
-        glm::vec3 color             = ((isSelected())?1.0f * selection_color:face_color);
+        glm::vec3 color             = ((isSelected())?1.0f * selection_color:material->getColor());
         std::vector<pCglLight> lights = pcv->getSubWindow()->getScene()->getLights();
 
         uniform( MatrixID, MVP);
@@ -443,7 +458,7 @@ void CglMesh::display(){
             MatrixID = glGetUniformLocation(shaderID, "MVP");
             colorID  = glGetUniformLocation(shaderID, "COL");
 
-            color = ((isSelected())?0.6f * selection_color:0.6f * face_color);
+            color = ((isSelected())?0.6f * selection_color:0.6f * material->getColor());
 
             uniform( MatrixID, MVP);
             uniform( colorID, color);

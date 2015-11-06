@@ -7,6 +7,15 @@ void CglTransform::setTranslation(glm::vec3 translation){
 void CglTransform::setRotation(glm::mat4 M){
   rot = M;
 }
+
+
+CglTransform::CglTransform(){
+    xBounds = glm::vec2(-1,1);
+    yBounds = glm::vec2(-10,10);
+    zBounds = glm::vec2(-0.5, 0.5);
+};
+
+
 /*
 void CglTransform::setQuaternion(glm::quat Q){
   quat = Q;

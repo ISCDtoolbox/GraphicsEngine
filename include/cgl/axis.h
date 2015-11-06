@@ -13,6 +13,7 @@
 #include <cgl/object.h>
 #include <cgl/shader.h>
 #include <cgl/view.h>
+#include <cgl/texture.h>
 
 class CGL_API CglAxis : public CglObject
 {
@@ -25,6 +26,8 @@ private:
   GLuint mainGridBuffer;
   GLuint secondaryGridBuffer;
   GLuint axesBuffer;
+  GLuint normalBuffer;
+  pCglMaterial    material;
 
 public:
   CglAxis();
@@ -37,9 +40,11 @@ typedef CglAxis* pCglAxis;
 
 class CGL_API CglBackground : public CglObject{
   private:
+    //CglTexture texture;
     void gradient(std::vector<float> hei, std::vector<glm::vec3> col);
     void gradient(std::vector<glm::vec2> hei, std::vector<glm::vec3> col);
   public:
+    CglBackground();
     void display();
 };
 typedef CglBackground* pCglBackground;

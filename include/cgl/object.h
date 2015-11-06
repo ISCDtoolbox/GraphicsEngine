@@ -24,44 +24,49 @@ class CGL_API CglObject
   public:
     CglTransform            transform;
     string                  meshFile;
+
+    //Links with other objects
     std::vector<pCglObject> listPart;
     pCglObject              parent;
 
   protected:
-    pCglMaterial    material;
-    pCglScene       pScene;
+    pCglScene   pScene;
+    bool        isMesh;
+    int         objectID;
+    int         nPicking;
 
-    //Matrices and vectors
+    //POSTIONS, TRANSFORMATIONS
     glm::mat4   MODEL;
     glm::vec3   center;
     glm::vec3   *rotationCenter;
-
     float       localScale;
     float       scaleFactor;
-    bool        isMesh;
+    bool        isRotationConstrained;
+    bool        isTranslationConstrained;
+    glm::vec3   constrainedRotationAxis;
+    glm::vec3   constrainedTranslationAxis;
 
-    //Colors
-    glm::vec3   face_color;
-    glm::vec3   edge_color;
-    glm::vec3   pickingColor;
+    //MATERIAL
+    pCglMaterial    material;
+    glm::vec3       pickingColor;
 
-    //Buffers
+    //GEOMETRY
     GLuint      meshBuffer;
     GLuint      indicesBuffer;
 
-    //Render parameters & selection
-    int         objectID;
-    int         nPicking;
+    //RENDER PARAMETERS
     int         idGroup;
     bool        selected;
     bool        box;
     bool        line;
     bool        hidden;
-    bool        isRotationConstrained;
-    bool        isTranslationConstrained;
 
-    glm::vec3   constrainedRotationAxis;
-    glm::vec3   constrainedTranslationAxis;
+
+
+
+
+
+
 
   //Public methods
   public:
@@ -93,8 +98,8 @@ class CGL_API CglObject
     virtual void  toogleSelected();
     virtual void  select();
     virtual void  unSelect();
-    virtual void  applyTransformation();
 
+    virtual void  applyTransformation();
     void saveTransformations();
     void undoLast();
     void resetAll();
@@ -125,6 +130,7 @@ class CGL_API CglObject
     //render modes
     void  toogleBBox();
     void  toogleMesh();
+
     //Constrained movements
     bool  isConstrainedInRotation();
     bool  isConstrainedInTranslation();
@@ -143,17 +149,16 @@ class CGL_API CglObject
     glm::mat4 sPROJ();
 
 
+    //OPNEGL "Facilitators"
     void enableFog(int ID);
     void disableFog(int ID);
     int  initProgram(int ID);
-
     void createBuffer(GLuint *pBuffer, std::vector<float> *data);
     void createBuffer(GLuint *pBuffer, std::vector<short> *data);
     void createBuffer(GLuint *pBuffer, std::vector<int>   *data);
     void bindBuffer(int attrib, int bufferType, GLuint buffer);
     void freeBuffer();
     void draw(int ID,int s, int mBuffer, int nBuffer, int iBuffer);
-
     void uniform(int ID, float     f);
     void uniform(int ID, glm::vec3 v);
     void uniform(int ID, glm::mat4 &m);

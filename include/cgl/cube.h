@@ -39,7 +39,7 @@ typedef CglCube*        pCglCube;
 
 class CGL_API CglSphere : public CglPrimitive{
 public:
-    CglSphere(float x, float y, float z, float R = 0., float G = 0., float B = 1.);
+    CglSphere(float x, float y, float z, float R = 0., float G = 0., float B = 1., float S = 0.01);
     ~CglSphere();
 };
 typedef CglSphere*      pCglSphere;

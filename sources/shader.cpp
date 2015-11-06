@@ -7,6 +7,8 @@
 #include "smooth_shader_frag.h"
 #include "flat_shader_vert.h"
 #include "flat_shader_frag.h"
+#include "fresnel_shader_vert.h"
+#include "fresnel_shader_frag.h"
 
 using namespace std;
 
@@ -29,6 +31,10 @@ void CglShader::load(string TYPE){
   else if(TYPE=="FLAT"){
     VertexShaderCode = std::string(flat_vert_code);
     FragmentShaderCode = std::string(flat_frag_code);
+  }
+  else if(TYPE=="FRESNEL"){
+    VertexShaderCode = std::string(fresnel_vert_code);
+    FragmentShaderCode = std::string(fresnel_frag_code);
   }
 
   // Crée les shaders

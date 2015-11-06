@@ -136,8 +136,9 @@ CglCube::~CglCube(){}
 
 
 CglSphere::CglSphere(float x, float y, float z,
-                     float R, float G, float B){
-    size = 0.01f;
+                     float R, float G, float B,
+                     float S){
+    size = S;
     color = glm::vec3(R, G, B);
     pos = glm::vec3(x,y,z);
 

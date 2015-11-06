@@ -112,13 +112,10 @@ CglObject::CglObject()
   isMesh   = false;
 
   MODEL  = glm::mat4(1.0f);
-  center = glm::vec3(0.0f);
+  //center = glm::vec3(0.0f);
 
   //pScene = NULL;
-
-  face_color = pcv->profile.color();
-  material   = new CglMaterial(face_color, 0.85, 0.15, 12.0);
-  edge_color = 0.8f * material->getColor();
+  material   = new CglMaterial(pcv->profile.color(), 0.85, 0.15, 12.0);
   idGroup    = -1;
   localScale = 1;
 }
@@ -164,26 +161,41 @@ void CglObject::disableFog(int ID){
 void CglObject::cglInit(){}
 
 void CglObject::applyTransformation(){
-    glm::mat4 ID = glm::mat4(1.0f);
-
     if(parent==NULL){
         if(idGroup==-1)
             rotationCenter = &center;
-        //else
-        //    rotationCenter =
     }
     else{
         if(idGroup==-1)
-            rotationCenter = parent->getCenterPtr();// &parent->getRotationCenter();
+            rotationCenter = parent->getCenterPtr();
     }
 
-    if(!isSuper())
-        MODEL =  glm::translate(ID, *rotationCenter) * transform.rot * glm::translate(ID, -*rotationCenter) * MODEL;
+    if ((transform.tr != glm::vec3(0.0f)) || (transform.rot != glm::mat4(1.0f))){
+        glm::mat4 rot  = glm::mat4(1.0f);
+        glm::mat4 ID = glm::mat4(1.0f);
 
-    //if(isMesh)
-    MODEL = glm::translate(ID, transform.tr) * MODEL;
-    center += transform.tr;// glm::vec3(MODEL[3]);
-    transform.reset();
+
+
+        if(!isSuper())
+            MODEL =  glm::translate(ID, *rotationCenter) * transform.rot * glm::translate(ID, -*rotationCenter) * MODEL;
+
+        //if(isMesh)
+        glm::vec3 bbC = 0.5f * (getBBMAX() + getBBMIN());
+        glm::vec3 newMinPos = glm::vec3(pScene->getMODEL()[3]) + glm::vec3(MODEL[3]) + transform.tr + scaleFactor*(getBBMIN()-bbC);
+        glm::vec3 newMaxPos = glm::vec3(pScene->getMODEL()[3]) + glm::vec3(MODEL[3]) + transform.tr + scaleFactor*(getBBMAX()-bbC);
+        //if(isSelected()){cout << scaleFactor << endl;}
+        glm::vec3 trans(0,0,0);
+        if( (newMaxPos.x < transform.xBounds[1] ) && (newMinPos.x > transform.xBounds[0]) )
+            trans.x += transform.tr.x;
+        if( (newMaxPos.y < transform.yBounds[1] ) && (newMinPos.y > transform.yBounds[0]) )
+            trans.y += transform.tr.y;
+        if( (newMaxPos.z < transform.zBounds[1] ) && (newMinPos.z > transform.zBounds[0]) )
+            trans.z += transform.tr.z;
+
+        MODEL = glm::translate(ID, trans) * MODEL;
+        center += trans;// glm::vec3(MODEL[3]);
+        transform.reset();
+    }
 }
 void CglObject::saveTransformations(){
   transform.lastMatrices.push_back(MODEL);
@@ -221,7 +233,7 @@ void CglObject::setMODEL(glm::mat4 M){MODEL = M;}
 void CglObject::setCenter(glm::vec3 C){center = C;}
 void CglObject::setGroupID(int id){idGroup = id;}
 void CglObject::setFileName(std::string n){meshFile = n;}
-void CglObject::setColor(glm::vec3 col){face_color = col; edge_color = 0.5f * col;}
+void CglObject::setColor(glm::vec3 col){material->setColor(col);}
 
 int        CglObject::getGroupID(){return idGroup;}
 void       CglObject::resetGroupID(){idGroup = -1;}

@@ -85,6 +85,8 @@ add_custom_target(
   COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" smooth_vert_code "../shaders/smooth_shader.vert" smooth_shader_vert.h
   COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" flat_frag_code   "../shaders/flat_shader.frag"   flat_shader_frag.h
   COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" flat_vert_code   "../shaders/flat_shader.vert"   flat_shader_vert.h
+  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" fresnel_frag_code   "../shaders/fresnel_shader.frag"   fresnel_shader_frag.h
+  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" fresnel_vert_code   "../shaders/fresnel_shader.vert"   fresnel_shader_vert.h
   DEPENDS embedfile
   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/include"
   COMMENT "Creates header files"

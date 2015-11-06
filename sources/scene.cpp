@@ -98,6 +98,8 @@ void CglScene::display()
   background->display();
 
 
+
+
 //applyTransformation();
 
   for (int iObj = 0; iObj < numObjects(); iObj++)
@@ -117,17 +119,27 @@ void CglScene::display()
   pcv->PROF.artifacts += glutGet(GLUT_ELAPSED_TIME)-t;
   t = glutGet(GLUT_ELAPSED_TIME);
 
+
+
+
   //Display des meshes
   for (int iObj = 0; iObj < numObjects(); iObj++)
     if(!listObject[iObj]->isHidden())
       listObject[iObj]->display();
 
+    axis->applyTransformation();
+    axis->display();
 
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+/*
   pcv->PROF.display += glutGet(GLUT_ELAPSED_TIME)-t;
   t = glutGet(GLUT_ELAPSED_TIME);
 
-  axis->applyTransformation();
-  axis->display();
+
+  //axis->applyTransformation();
+  //axis->display();
+
 
   pcv->PROF.axis += glutGet(GLUT_ELAPSED_TIME)-t;
   t = glutGet(GLUT_ELAPSED_TIME);
@@ -137,10 +149,11 @@ void CglScene::display()
   pcv->PROF.interface += glutGet(GLUT_ELAPSED_TIME)-t;
   t = glutGet(GLUT_ELAPSED_TIME);
 
-  glClear(GL_DEPTH_BUFFER_BIT);
+
 
   pcv->PROF.clear += glutGet(GLUT_ELAPSED_TIME)-t;
   t = glutGet(GLUT_ELAPSED_TIME);
+  */
 
   //debug();
 }
@@ -404,7 +417,7 @@ void CglScene::applyTransformation()
 {
   //FLYING MODE
   if(pcv->profile.flyingMode){
-    m_cam   +=   transform.tr;
+    m_cam   +=  transform.tr;
     m_look  =   glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_look,0)));
     m_up    =   glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_up,1)));
 
@@ -425,7 +438,7 @@ void CglScene::applyTransformation()
     else{
       m_up    = glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_up,1)));
     }
-    m_look  = -m_cam;
+    m_look = -m_cam;
     VIEW = glm::lookAt(m_cam + view->camOffset * m_right, m_look, m_up);
     m_right = glm::cross(m_look,m_up);
   }
@@ -436,14 +449,11 @@ void CglScene::applyTransformation()
     m_cam   =  view->zoom * glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_cam,1)));
     m_right = glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_right,1)));
     m_look  = -m_cam;//glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_look,1)));//-m_cam;
-    m_up = glm::cross(m_right, m_look);
+    m_up    = glm::cross(m_right, m_look);
     //m_up    = glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_up,1)));
-    VIEW = glm::lookAt(m_cam + view->camOffset * m_right, m_look, m_up);
+    VIEW    = glm::lookAt(m_cam + view->camOffset * m_right, m_look, m_up);
     //m_right = glm::cross(m_look,m_up);
-
   }
-
-
 
   transform.reset();
 }
@@ -496,11 +506,13 @@ void CglScene::resetAll(){
 void CglScene::debug(){
   //Vectors
 
-  cout << "cam   = " << m_cam.x   << " " << m_cam.y   << " " << m_cam.z   << endl;
-  cout << "look  = " << m_look.x  << " " << m_look.y  << " " << m_look.z  << endl;
-  cout << "up    = " << m_up.x    << " " << m_up.y    << " " << m_up.z    << endl;
-  cout << "right = " << m_right.x << " " << m_right.y << " " << m_right.z << endl;
-  cout << "center = " << center.x << " " << center.y << " " << center.z << endl;
+    cout << 1./globalScale * 0.2;
+
+  //cout << "cam   = " << m_cam.x   << " " << m_cam.y   << " " << m_cam.z   << endl;
+  //cout << "look  = " << m_look.x  << " " << m_look.y  << " " << m_look.z  << endl;
+  //cout << "up    = " << m_up.x    << " " << m_up.y    << " " << m_up.z    << endl;
+  //cout << "right = " << m_right.x << " " << m_right.y << " " << m_right.z << endl;
+  //cout << "center = " << center.x << " " << center.y << " " << center.z << endl;
 
   /*
   //Matrices

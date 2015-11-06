@@ -16,6 +16,7 @@ CglGroup::CglGroup(std::vector<pCglObject> groupOfObjects)
   }
 
   //BBOX
+  /*
   for(int i = 0 ; i < numObjects() ; i++){
     glm::vec3 mini = listObject[i]->getBBMIN();
     glm::vec3 maxi = listObject[i]->getBBMAX();
@@ -26,6 +27,7 @@ CglGroup::CglGroup(std::vector<pCglObject> groupOfObjects)
     bbmax.y = max(bbmax.y, maxi.y);
     bbmax.z = max(bbmax.z, maxi.z);
   }
+  */
 
   compute();
 }

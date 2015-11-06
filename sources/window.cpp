@@ -44,7 +44,7 @@ CglWindow::CglWindow(int x, int y, int w, int h){
     // Function callbacks with wrapper functions
     glutIdleFunc(   WIN->idleWrap);
     glutReshapeFunc(this->reshapeWrap);
-    glutDisplayFunc(this->displayWrap);
+    //glutDisplayFunc(this->displayWrap);
     cout << "Main Window ID = " << ID << endl;
 }
 CglWindow::~CglWindow(){}
@@ -57,17 +57,17 @@ void CglWindow::reshape(int w, int h){
 void CglWindow::reshapeWrap(int w, int h){
     updateWINPointer();
     WIN->reshape(w, h);
-    glutPostWindowRedisplay(WIN->ID);
+    //glutPostWindowRedisplay(WIN->ID);
     glutPostRedisplay();
 }
 void CglWindow::displayWrap(){
-    updateWINPointer();
+    //updateWINPointer();
     //glutSetWindow(WIN);
     //WIN->reshape(w, h);
     //WIN->getLinearInterface()->display();
     //pcv->getInterface()->display();
     //glutPushWindow();
-    glutPostRedisplay();
+    //glutPostRedisplay();
 }
 void CglWindow::display(){
     //updateWINPointer();
@@ -83,7 +83,9 @@ void CglWindow::idleWrap(){
 		float fps = WIN->FPS.frame * 1000.0 / (WIN->FPS.time - WIN->FPS.lastTime);
 	 	WIN->FPS.lastTime = WIN->FPS.time;
 		WIN->FPS.frame = 0;
-		cout << "FPS: " << fps << endl;
+		cout << "FPS: " << fps << ",   \tUnit = ";
+		pcv->getSubWindow()->pScene->debug();
+		cout << " m." << endl;
 		//pcv->PROF.print();
 	}
 }
@@ -105,6 +107,7 @@ void CglSubWindow::loadShaders(){
     simpleShader.load("SIMPLE");
     smoothShader.load("SMOOTH");
     flatShader.load("FLAT");
+    fresnelShader.load("FRESNEL");
 }
 
 void CglSubWindow::display(){
@@ -131,11 +134,13 @@ void CglSubWindow::displayBuffer(int buffer){
   float offset    = ( (pcv->profile.stereo) ? pView->m_eyesep / 2 : 0.0f );
   int stereo      = ( (buffer == GL_BACK_LEFT) ? -1 : 1 );
 
+
     glDrawBuffer(buffer);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   pView->camOffset = stereo * offset;
   pScene->display();
+
   pcv->getInterface()->display();
 }
 
@@ -189,7 +194,7 @@ void CglSubWindow::reshape(int w, int h){
 void CglSubWindow::displayWrap(){
     updateSUBWINPointer();
     SUBWIN->display();
-    glutPostWindowRedisplay(SUBWIN->ID);
+    //glutPostWindowRedisplay(SUBWIN->ID);
 }
 
 void CglSubWindow::setCallbacks(){
@@ -222,9 +227,9 @@ CglSubWindow::CglSubWindow(pCglWindow window, CGL_SUBWINDOW loc, float R){
     //pRadialInterface->init(glm::vec2(0.0, 0.0), 0.17);
 
     if(pcv->profile.stereo)
-        glutInitDisplayMode(GLUT_RGB/*A*/ | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STEREO | GLUT_MULTISAMPLE);
+        glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STEREO | GLUT_MULTISAMPLE  | GLUT_STENCIL);
       else
-        glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+        glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE | GLUT_STENCIL);
 
     glutInitWindowPosition(position.x, position.y);
     glutInitWindowSize(size.x, size.y);

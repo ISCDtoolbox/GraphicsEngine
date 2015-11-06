@@ -37,8 +37,8 @@ CglAxis::CglAxis(){
     for(int i = 0 ; i < tsGrid.size() ; i++){
         tsGrid[i] = glm::rotate( glm::angleAxis(pcv->profile.bottomAngle, glm::vec3(0, 1, 0)), glm::vec3(tsGrid[i]));
         tsGrid[i] = glm::vec3(glm::translate(glm::mat4(1),glm::vec3(0,-pcv->profile.bottomDistance,0)) * glm::vec4(tsGrid[i], 1));
-        for(int j = 0 ; j < 3 ; j++)
-        secondaryGrid.push_back(tsGrid[i][j]);
+        //for(int j = 0 ; j < 3 ; j++)
+        //secondaryGrid.push_back(tsGrid[i][j]);
     }
 
     //Axes
@@ -53,20 +53,45 @@ CglAxis::CglAxis(){
         axes.push_back(0.4*tAxes[i][j]);
 
     //Buffers creation
-    createBuffer(&mainGridBuffer,       &mainGrid);
+    //createBuffer(&mainGridBuffer,       &mainGrid);
     createBuffer(&secondaryGridBuffer,  &secondaryGrid);
     createBuffer(&axesBuffer,           &axes);
+
+
+    float W = 2., H = 1.;
+    std::vector<glm::vec3> plane;
+    plane.push_back(glm::vec3(-W/2, 0., H/2));
+    plane.push_back(glm::vec3(W/2,  0., H/2));
+    plane.push_back(glm::vec3(W/2,  0., -H/2));
+    plane.push_back(glm::vec3(-W/2, 0., -H/2));
+
+    mainGrid.erase(mainGrid.begin(), mainGrid.end());
+     for(int i = 0 ; i < plane.size() ; i++){
+        //plane[i] = glm::rotate( glm::angleAxis(pcv->profile.bottomAngle, glm::vec3(0, 1, 0)), glm::vec3(plane[i]));
+        plane[i] = glm::vec3(glm::translate(glm::mat4(1),glm::vec3(0,-pcv->profile.bottomDistance,0)) * glm::vec4(plane[i], 1));
+        for(int j = 0 ; j < 3 ; j++)
+        mainGrid.push_back(plane[i][j]);
+    }
+    createBuffer(&mainGridBuffer, &mainGrid);
+
+    std::vector<float> normal{0,1,0,0,1,0,0,1,0,0,1,0};
+    createBuffer(&normalBuffer, &normal);
+
+    material   = new CglMaterial(glm::vec3(0.,0.,1.0), 0.2, 0.1, 1.1);
+
 }
 
 
 void CglAxis::display(){
-    int shaderID = initProgram(pcv->simpleID());
-    glPolygonMode(GL_FRONT, GL_LINE);
 
+    int shaderID = initProgram(pcv->fresnelID());
     GLuint MatrixID = glGetUniformLocation(shaderID, "MVP");
     GLuint colorID  = glGetUniformLocation(shaderID, "COL");
     GLuint MID      = glGetUniformLocation(shaderID, "M");
     GLuint VID      = glGetUniformLocation(shaderID, "V");
+    int fill_light_ID           = glGetUniformLocation(shaderID, "FILL");
+    int side_light_ID           = glGetUniformLocation(shaderID, "SIDE");
+    int back_light_ID           = glGetUniformLocation(shaderID, "BACK");
 
     //GRID
     if(pcv->profile.displayBottomGrid){
@@ -78,20 +103,53 @@ void CglAxis::display(){
         uniform(MatrixID,   MVP);
         uniform(MID,        MODEL);
         uniform(VID,        VIEW);
-        uniform(colorID,    pcv->profile.grid_color);
+        uniform(colorID,    material->getColor());
+        std::vector<pCglLight> lights = pcv->getSubWindow()->getScene()->getLights();
+        uniform( fill_light_ID, *(lights[0]->getLightMatrix(material)));
+        uniform( side_light_ID, *(lights[1]->getLightMatrix(material)));
+        uniform( back_light_ID, *(lights[2]->getLightMatrix(material)));
 
-        glLineWidth(1.0);
-        bindBuffer(0, GL_ARRAY_BUFFER, secondaryGridBuffer);
-        glBindAttribLocation( shaderID, 0, "vertex_position");
-        glDrawArrays(GL_LINES, 0, secondaryGrid.size()/3);
+        //glLineWidth(1.0);
+        //bindBuffer(0, GL_ARRAY_BUFFER, secondaryGridBuffer);
+        //glBindAttribLocation( shaderID, 0, "vertex_position");
+        //glDrawArrays(GL_LINES, 0, secondaryGrid.size()/3);
 
-        glLineWidth(2.0);
+        glEnable(GL_BLEND);
+        //glLineWidth(2.0);
         bindBuffer(0, GL_ARRAY_BUFFER, mainGridBuffer);
         glBindAttribLocation( shaderID, 0, "vertex_position");
-        glDrawArrays(GL_LINES, 0, mainGrid.size()/3);
+        bindBuffer(1, GL_ARRAY_BUFFER, normalBuffer);
+        glBindAttribLocation( shaderID, 1, "vertex_normal");
+        //glDrawArrays(GL_QUADS, 0, mainGrid.size()/3);
 
+        //STENCIL WRITING
+
+        glEnable(GL_STENCIL_TEST);
+        glStencilFunc(GL_ALWAYS, 1, 0xFF); // Set any stencil to 1
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+        glStencilMask(0xFF); // Write to stencil buffer
+        glDepthMask(GL_FALSE); // Don't write to depth buffer
+        glClear(GL_STENCIL_BUFFER_BIT);
+
+        glDrawArrays(GL_QUADS, 0, mainGrid.size()/3);
+
+        glStencilFunc(GL_EQUAL, 1, 0xFF); // Pass test if stencil value is 1
+        glStencilMask(0x00); // Don't write anything to stencil buffer
+        glDepthMask(GL_TRUE); // Write to depth buffer
+
+        glDisable(GL_STENCIL_TEST);
+        glDisable(GL_BLEND);
         disableFog(shaderID);
+        glPolygonMode(GL_FRONT, GL_FILL);
+
     }
+
+    shaderID = initProgram(pcv->simpleID());
+    glPolygonMode(GL_FRONT, GL_LINE);
+    MatrixID = glGetUniformLocation(shaderID, "MVP");
+    colorID  = glGetUniformLocation(shaderID, "COL");
+    MID      = glGetUniformLocation(shaderID, "M");
+    VID      = glGetUniformLocation(shaderID, "V");
 
     //Axes
     if(pcv->profile.displayAxes){
@@ -123,7 +181,9 @@ void CglAxis::display(){
 }
 
 
-
+CglBackground::CglBackground(){
+    //texture.loadPNG("/home/tech/back.png");
+}
 void CglBackground::display(){
   //Background gradient
   std::vector<float>     gradient_heights;
@@ -152,6 +212,26 @@ void CglBackground::display(){
   glShadeModel(GL_SMOOTH);
   gradient(gradient_heights, gradient_colors);
   glEnable(GL_DEPTH_TEST);
+
+
+/*
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, texture.getID());
+
+  float z = 1;//pcv->getScene()->getView()->m_znear;
+  float ratio = pcv->getScene()->getView()->ratio;
+    float size = 2.;
+  glBegin(GL_QUAD_STRIP);
+    //glColor3f(color.x, color.y, color.z);
+    glTexCoord2f(0.0, 1.0);   glVertex3f(- (size/2)/ratio, - size/2, z);
+    glTexCoord2f(1.0, 1.0);   glVertex3f(+ (size/2)/ratio, - size/2, z);
+    glTexCoord2f(0.0, 0.0);   glVertex3f(- (size/2)/ratio, + size/2, z);
+    glTexCoord2f(1.0, 0.0);   glVertex3f(+ (size/2)/ratio, + size/2, z);
+  glEnd();
+
+  glDisable(GL_TEXTURE_2D);
+  glEnable(GL_DEPTH_TEST);
+  */
 }
 
 void CglBackground::gradient(std::vector<float> hei, std::vector<glm::vec3> col){

@@ -59,7 +59,7 @@ public:
     pCglView                    pView;
     pCglLinearInterface         pLinearInterface;
     pCglRadialInterface         pRadialInterface;
-    CglShader                   simpleShader, smoothShader, flatShader;
+    CglShader                   simpleShader, smoothShader, flatShader, fresnelShader;
     int                         ID;
     glm::vec2                   position;
     glm::vec2                   size;
@@ -86,6 +86,7 @@ public:
     int           simpleID(){             return simpleShader.mProgramID;}
     int           smoothID(){             return smoothShader.mProgramID;}
     int           flatID(){               return flatShader.mProgramID;}
+    int           fresnelID(){            return fresnelShader.mProgramID;}
 
     void          setCallbacks();
     static void   displayWrap();

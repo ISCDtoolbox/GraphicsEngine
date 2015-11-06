@@ -109,9 +109,10 @@ public:
   std::vector<pCglObject>* getObjectList(){return &objects;}
   std::vector<pCglLight>*  getLightsList(){return &lights;}
 
-  int           simpleID(){return getSubWindow()->simpleID();}
-  int           smoothID(){return getSubWindow()->smoothID();}
-  int           flatID(){  return getSubWindow()->flatID();}
+  int           simpleID(){ return getSubWindow()->simpleID();}
+  int           smoothID(){ return getSubWindow()->smoothID();}
+  int           flatID(){   return getSubWindow()->flatID();}
+  int           fresnelID(){return getSubWindow()->fresnelID();}
   void          centerMouse();
   //int           winid();
 

@@ -16,13 +16,16 @@ class CGL_API CglTransform
 public:
   glm::vec3 tr;
   glm::mat4 rot;
+  glm::vec2 xBounds;
+  glm::vec2 yBounds;
+  glm::vec2 zBounds;
 
   //Retour en arrière
   std::vector<glm::mat4> lastMatrices;
   std::vector<glm::vec3> lastUps;
   std::vector<glm::vec3> lastCams;
 
-  CglTransform(){};
+  CglTransform();
   ~CglTransform(){};
   void setRotation(glm::mat4 M);
   void setTranslation(glm::vec3 translation);

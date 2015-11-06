@@ -19,7 +19,7 @@ using namespace std;
 
 int main(int argc, char **argv){
   CglCanvas cv(argc, argv);
-  string configFile = "@CMAKE_SOURCE_DIR@/numero.config";
+  string configFile = "/home/tech/dev/SUSCCGL/APP_NumeRO/numero.config";
   cv.getProfile()->read_configuration_file(configFile);
 
   if((argc==2) && (string(argv[1])=="cgl.save")){
@@ -113,6 +113,8 @@ int main(int argc, char **argv){
     if(cv.profile.initial_arrangement == CGL_ARRANGEMENT_GRID)
       scene3->place_objects_on_grid();
 
+    
+
     SW3->loadShaders();
 
 
@@ -137,6 +139,8 @@ int main(int argc, char **argv){
       scene4->addObject(new CglMesh(argv[i+1]));
     if(cv.profile.initial_arrangement == CGL_ARRANGEMENT_GRID)
       scene4->place_objects_on_grid();
+
+    //scene4->addObject( new CglSphere(0,0,0, 1,1,1, 5) );
 
     SW4->loadShaders();
   }
