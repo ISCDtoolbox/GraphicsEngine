@@ -60,102 +60,53 @@ void CglScene::removeObject(pCglObject object)
 }
 
 
-void CglScene::display()
-{
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable(GL_CULL_FACE);
-  //glEnable( GL_MULTISAMPLE );
+void CglScene::display(){
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_CULL_FACE);
+    glEnable( GL_MULTISAMPLE );
 
-    int t = glutGet(GLUT_ELAPSED_TIME);
-  if(pcv->profile.globalScale){
-    for(int i = 0 ; i < numObjects() ; i++){
-      listObject[i]->setScaleFactor(globalScale);
+    if(pcv->profile.globalScale){
+        for(int i = 0 ; i < numObjects() ; i++){
+            listObject[i]->setScaleFactor(globalScale);
+        }
     }
-  }
-  pcv->PROF.setScale += glutGet(GLUT_ELAPSED_TIME)-t;
-  t = glutGet(GLUT_ELAPSED_TIME);
 
-  update_matrices();
-  applyTransformation();
+    update_matrices();
+    applyTransformation();
 
-  pcv->PROF.applyTransformation += glutGet(GLUT_ELAPSED_TIME)-t;
-  t = glutGet(GLUT_ELAPSED_TIME);
+    for (int i = 0; i < listGroup.size(); i++)
+        listGroup[i]->compute();
 
+    for (int iObj = 0; iObj < numObjects(); iObj++)
+        listObject[iObj]->applyTransformation();
 
-  for (int i = 0; i < listGroup.size(); i++)
-    listGroup[i]->compute();
+    background->display();
 
-  pcv->PROF.computeGroup += glutGet(GLUT_ELAPSED_TIME)-t;
-  t = glutGet(GLUT_ELAPSED_TIME);
+    //applyTransformation();
 
-  for (int iObj = 0; iObj < numObjects(); iObj++)
-    listObject[iObj]->applyTransformation();
+    for (int iObj = 0; iObj < numObjects(); iObj++)
+        if(!listObject[iObj]->isHidden())
+            listObject[iObj]->shadowsDisplay();
+    for (int iObj = 0; iObj < numObjects(); iObj++)
+        if(listObject[iObj]->isHidden())
+            listObject[iObj]->shadowsDisplay();
 
-  pcv->PROF.objApplyTransformation += glutGet(GLUT_ELAPSED_TIME)-t;
-  t = glutGet(GLUT_ELAPSED_TIME);
+    //Display de l'ensemble des artefacts
+    for (int iObj = 0; iObj < numObjects(); iObj++)
+        listObject[iObj]->artifactsDisplay();
 
-
-  background->display();
-
-
-
-
-//applyTransformation();
-
-  for (int iObj = 0; iObj < numObjects(); iObj++)
-    if(!listObject[iObj]->isHidden())
-      listObject[iObj]->shadowsDisplay();
-  for (int iObj = 0; iObj < numObjects(); iObj++)
-    if(listObject[iObj]->isHidden())
-      listObject[iObj]->shadowsDisplay();
-
-  pcv->PROF.shadows += glutGet(GLUT_ELAPSED_TIME)-t;
-  t = glutGet(GLUT_ELAPSED_TIME);
-
-  //Display de l'ensemble des artefacts
-  for (int iObj = 0; iObj < numObjects(); iObj++)
-    listObject[iObj]->artifactsDisplay();
-
-  pcv->PROF.artifacts += glutGet(GLUT_ELAPSED_TIME)-t;
-  t = glutGet(GLUT_ELAPSED_TIME);
-
-
-
-
-  //Display des meshes
-  for (int iObj = 0; iObj < numObjects(); iObj++)
-    if(!listObject[iObj]->isHidden())
-      listObject[iObj]->display();
+    //Display des meshes
+    for (int iObj = 0; iObj < numObjects(); iObj++)
+        if(!listObject[iObj]->isHidden())
+            listObject[iObj]->display();
 
     axis->applyTransformation();
     axis->display();
 
     glClear(GL_DEPTH_BUFFER_BIT);
 
-/*
-  pcv->PROF.display += glutGet(GLUT_ELAPSED_TIME)-t;
-  t = glutGet(GLUT_ELAPSED_TIME);
-
-
-  //axis->applyTransformation();
-  //axis->display();
-
-
-  pcv->PROF.axis += glutGet(GLUT_ELAPSED_TIME)-t;
-  t = glutGet(GLUT_ELAPSED_TIME);
-
-  //pcv->getInterface()->display();
-
-  pcv->PROF.interface += glutGet(GLUT_ELAPSED_TIME)-t;
-  t = glutGet(GLUT_ELAPSED_TIME);
-
-
-
-  pcv->PROF.clear += glutGet(GLUT_ELAPSED_TIME)-t;
-  t = glutGet(GLUT_ELAPSED_TIME);
-  */
-
-  //debug();
+    //pcv->getInterface()->display();
+    //debug();
 }
 
 
@@ -164,7 +115,6 @@ pCglObject CglScene::getPicked(int x, int y){
     GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT,viewport);
     glFlush();
-
     for(int i = 0 ; i < numObjects() ; i++)
         listObject[i]->pickingDisplay();
     glFlush();
@@ -662,7 +612,7 @@ void CglScene::load_meshes_from_file(string fileName){
   for (int i=0; i < numberMeshes; i++){
     char *N = (char*)names[i].c_str();
     mesh.push_back(new CglMesh(N));
-    mesh[i]->meshInfo(0);
+    //mesh[i]->meshInfo(0);
     //int idObj = cglObject(mesh[i]);
     mesh[i]->setCenter(centers[i]);
     mesh[i]->setMODEL(mats[i]);

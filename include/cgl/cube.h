@@ -9,18 +9,17 @@
 #ifndef __CGL_CUBE_H_
 #define __CGL_CUBE_H_
 
-#include <cgl/object.h>
+#include <cgl/mesh.h>
 
-class CglPrimitive: public CglObject{
+class CglPrimitive: public CglMesh{
 protected:
-    GLuint nBuffer;
     glm::vec3 color;
     glm::vec3 pos;
     float size;
 
 public:
     glm::vec3 getPos(){return pos;}
-    void display();
+    //void display();
 };
 typedef CglPrimitive*   pCglPrimitive;
 

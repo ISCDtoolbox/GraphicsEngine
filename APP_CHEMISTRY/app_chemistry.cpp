@@ -32,7 +32,7 @@ void selectAll(pCglScene sc){
 
 int main(int argc, char **argv){
   CglCanvas cv(argc, argv);
-  string configFile = "@CMAKE_SOURCE_DIR@/chemistry.config"; // Remplacer avec "at"CMAKE_SOURCE_DIR"at"
+  string configFile = "/home/tech/dev/SUSCCGL/APP_CHEMISTRY/chemistry.config"; // Remplacer avec "at"CMAKE_SOURCE_DIR"at"
   cv.getProfile()->read_configuration_file(configFile);
 
   cv.getKeyboard()->addAction('K', functionA);

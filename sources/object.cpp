@@ -116,7 +116,7 @@ CglObject::CglObject()
 
   //pScene = NULL;
   pGroup = NULL;
-  material   = new CglMaterial(pcv->profile.color(), 0.85, 0.15, 12.0);
+  pMaterial   = new CglMaterial(pcv->profile.color(), 0.85, 0.15, 12.0);
   localScale = 1;
 }
 CglObject::~CglObject(){}
@@ -134,8 +134,7 @@ void CglObject::pickingDisplay(){
     uniform(colorID, pickingColor);
 
     glPolygonMode(GL_FRONT, GL_FILL);
-    draw(shaderID, nPicking, meshBuffer, -1, indicesBuffer);
-
+    draw(shaderID, nTriangles, meshBuffer, -1, indicesBuffer);
   }
 }
 
@@ -173,8 +172,6 @@ void CglObject::applyTransformation(){
     if ((transform.tr != glm::vec3(0.0f)) || (transform.rot != glm::mat4(1.0f))){
         glm::mat4 rot  = glm::mat4(1.0f);
         glm::mat4 ID = glm::mat4(1.0f);
-
-
 
         if(!isSuper())
             MODEL =  glm::translate(ID, *rotationCenter) * transform.rot * glm::translate(ID, -*rotationCenter) * MODEL;
@@ -233,7 +230,7 @@ void CglObject::setMODEL(glm::mat4 M){MODEL = M;}
 void CglObject::setCenter(glm::vec3 C){center = C;}
 void CglObject::setGroup(pCglGroup G){pGroup = G;}
 void CglObject::setFileName(std::string n){meshFile = n;}
-void CglObject::setColor(glm::vec3 col){material->setColor(col);}
+void CglObject::setColor(glm::vec3 col){pMaterial->setColor(col);}
 
 pCglGroup  CglObject::getGroup(){return pGroup;}
 void       CglObject::resetGroup(){pGroup = NULL;}
@@ -242,7 +239,13 @@ int        CglObject::getID(){return objectID;}
 glm::vec3* CglObject::getCenterPtr(){return &center;}
 
 //Toogle render modes
-void CglObject::toogleBBox()   {box        = !box;}
+void CglObject::toogleBBox()   {box = !box;
+                                    if(isSuper()){
+                                        for(int i = 0 ; i < listPart.size() ; i++){
+                                            listPart[i]->toogleBBox();
+                                        }
+                                    }
+                                }
 void CglObject::toogleMesh()   {line       = !line;}
 
 //Selection accessors

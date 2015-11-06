@@ -93,6 +93,10 @@ void CglSuperObject::addPart(pCglObject obj){
     pCenters.push_back(obj->getCenterPtr());
 }
 
+
+
+
+
 void CglSuperObject::display(){
     compute();
     for(int i = 0 ; i < listPart.size() ; i++){
@@ -100,12 +104,24 @@ void CglSuperObject::display(){
         listPart[i]->display();
     }
 }
-void CglSuperObject::pickingDisplay(){
-    for(int i = 0 ; i < listPart.size() ; i++){
-        listPart[i]->pickingDisplay();
-    }
-    cout << endl;
+void CglSuperObject::shadowsDisplay(){
+    for(int i = 0 ; i < listPart.size() ; i++)
+        listPart[i]->shadowsDisplay();
 }
+void CglSuperObject::artifactsDisplay(){
+    for(int i = 0 ; i < listPart.size() ; i++)
+        listPart[i]->artifactsDisplay();
+}
+void CglSuperObject::pickingDisplay(){
+    for(int i = 0 ; i < listPart.size() ; i++)
+        listPart[i]->pickingDisplay();
+}
+
+
+
+
+
+
 
 void CglSuperObject::compute(){
     //On vérifie si un membre du groupe est sélectionné

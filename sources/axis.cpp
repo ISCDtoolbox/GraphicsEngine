@@ -77,7 +77,7 @@ CglAxis::CglAxis(){
     std::vector<float> normal{0,1,0,0,1,0,0,1,0,0,1,0};
     createBuffer(&normalBuffer, &normal);
 
-    material   = new CglMaterial(glm::vec3(0.,0.,1.0), 0.2, 0.1, 1.1);
+    pMaterial = new CglMaterial(glm::vec3(0.,0.,1.0), 0.2, 0.1, 1.1);
 
 }
 
@@ -103,11 +103,11 @@ void CglAxis::display(){
         uniform(MatrixID,   MVP);
         uniform(MID,        MODEL);
         uniform(VID,        VIEW);
-        uniform(colorID,    material->getColor());
+        uniform(colorID,    pMaterial->getColor());
         std::vector<pCglLight> lights = pcv->getSubWindow()->getScene()->getLights();
-        uniform( fill_light_ID, *(lights[0]->getLightMatrix(material)));
-        uniform( side_light_ID, *(lights[1]->getLightMatrix(material)));
-        uniform( back_light_ID, *(lights[2]->getLightMatrix(material)));
+        uniform( fill_light_ID, *(lights[0]->getLightMatrix(pMaterial)));
+        uniform( side_light_ID, *(lights[1]->getLightMatrix(pMaterial)));
+        uniform( back_light_ID, *(lights[2]->getLightMatrix(pMaterial)));
 
         //glLineWidth(1.0);
         //bindBuffer(0, GL_ARRAY_BUFFER, secondaryGridBuffer);

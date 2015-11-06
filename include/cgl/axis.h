@@ -26,8 +26,7 @@ private:
   GLuint mainGridBuffer;
   GLuint secondaryGridBuffer;
   GLuint axesBuffer;
-  GLuint normalBuffer;
-  pCglMaterial    material;
+  //pCglMaterial    material;
 
 public:
   CglAxis();

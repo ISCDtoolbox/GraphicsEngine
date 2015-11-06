@@ -13,10 +13,12 @@
 #include <cgl/transform.h>
 #include <cgl/material.h>
 
-class CglScene;
-typedef CglScene* pCglScene;
-class CglObject;
-typedef CglObject* pCglObject;
+class               CglScene;
+class               CglObject;
+class               CglGroup;
+typedef CglScene*   pCglScene;
+typedef CglObject*  pCglObject;
+typedef CglGroup*   pCglGroup;
 
 
 class CGL_API CglObject
@@ -30,43 +32,38 @@ class CGL_API CglObject
     pCglObject              parent;
 
   protected:
-    pCglScene   pScene;
-    pCglGroup   pGroup;
+    pCglScene       pScene;
+    pCglGroup       pGroup;
+    pCglMaterial    pMaterial;
+
+    //GEOMETRY
     bool        isMesh;
+    float       localScale;
+    float       scaleFactor;
+
+    GLuint      meshBuffer;
+    GLuint      normalBuffer;
+    GLuint      indicesBuffer;
+
     int         objectID;
-    int         nPicking;
+    glm::vec3   pickingColor;
+    int         nTriangles;
 
     //POSTIONS, TRANSFORMATIONS
     glm::mat4   MODEL;
     glm::vec3   center;
     glm::vec3   *rotationCenter;
 
-    float       localScale;
-    float       scaleFactor;
-
     bool        isRotationConstrained;
     bool        isTranslationConstrained;
     glm::vec3   constrainedRotationAxis;
     glm::vec3   constrainedTranslationAxis;
-
-    //MATERIAL
-    pCglMaterial    material;
-    glm::vec3       pickingColor;
-
-    //GEOMETRY
-    GLuint      meshBuffer;
-    GLuint      indicesBuffer;
 
     //RENDER PARAMETERS
     bool        selected;
     bool        box;
     bool        line;
     bool        hidden;
-
-
-
-
-
 
 
 

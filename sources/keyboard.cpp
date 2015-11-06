@@ -271,7 +271,7 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
           saveFile << float(M[i][0]) << " " << float(M[i][1]) << " " << float(M[i][2]) << " " << float(M[i][3]) << endl;
         glm::vec3 c = *(obj->getCenterPtr());
         saveFile << c.x << " " << c.y << " " << c.z << endl;
-        saveFile << obj->getGroup()-> << endl;
+        saveFile << obj->getGroup() << endl;
       }
     }
     saveFile.close();

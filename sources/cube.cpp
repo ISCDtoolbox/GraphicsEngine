@@ -5,6 +5,17 @@ extern CglCanvas *pcv;
 
 #include <algorithm>
 
+std::vector<Point> tovecs3(std::vector<float> V0){
+    std::vector<Point> V1;
+    for(int i = 0 ; i < V0.size() ; i+=3){
+        Point P;
+        for(int j = 0 ; j < 3 ; j++)
+            P.c[j] = V0[i+j];
+        V1.push_back(P);
+    }
+    return V1;
+}
+
 struct sphereGeom
 {
      struct vertex { float pos[3];};// float uv[2]; };
@@ -91,7 +102,7 @@ CglCube::CglCube(float x, float y, float z,
                  float R, float G, float B){
 
     size = 0.01f;
-    color = glm::vec3(R, G, B);
+    pMaterial->setColor(glm::vec3(R, G, B));
     pos = glm::vec3(x,y,z);
 
     std::vector<float> cube{
@@ -106,6 +117,9 @@ CglCube::CglCube(float x, float y, float z,
     };
     for(int i = 0 ; i < cube.size() ; i++)
         cube[i] = size * cube[i];
+
+    vector<Point> V = tovecs3(cube);
+    getBBOX(V);
 
     std::vector<int> elements{
         0, 1, 2,
@@ -122,12 +136,12 @@ CglCube::CglCube(float x, float y, float z,
         6, 2, 1
     };
 
-    nPicking = 3*elements.size();
+    nTriangles = 3*elements.size();
 
     center = glm::vec3(x,y,z);
     MODEL[3] = glm::vec4(center,1);
 
-    nBuffer = -1;
+    normalBuffer = -1;
     createBuffer(&meshBuffer, &cube);
     createBuffer(&indicesBuffer, &elements);
     freeBuffer();
@@ -139,7 +153,7 @@ CglSphere::CglSphere(float x, float y, float z,
                      float R, float G, float B,
                      float S){
     size = S;
-    color = glm::vec3(R, G, B);
+    pMaterial->setColor(glm::vec3(R, G, B));
     pos = glm::vec3(x,y,z);
 
     sphereGeom sphere(10);
@@ -151,13 +165,16 @@ CglSphere::CglSphere(float x, float y, float z,
         cube.push_back(size * sphere.vertices[i].pos[2]);
     }
 
-    nPicking = 3*elements.size();
+    nTriangles = 3*elements.size();
+
+    vector<Point> V = tovecs3(cube);
+    getBBOX(V);
 
     center = glm::vec3(x,y,z);
     MODEL[3] = glm::vec4(center,1);
 
-    nBuffer = -1;
-    createBuffer(&nBuffer, &cube);
+    normalBuffer = -1;
+    createBuffer(&normalBuffer, &cube);
     createBuffer(&meshBuffer, &cube);
     createBuffer(&indicesBuffer, &elements);
     freeBuffer();
@@ -183,7 +200,7 @@ void CglCylinder::init(float x,  float y,  float z,
                        float R, float G, float B){
 
     size = 0.003f;
-    color = glm::vec3(R, G, B);
+    pMaterial->setColor(glm::vec3(R, G, B));
     glm::vec3 pt1(x,y,z);
     glm::vec3 pt2(x2,y2,z2);
     glm::vec3 direction = pt2-pt1;
@@ -242,13 +259,15 @@ void CglCylinder::init(float x,  float y,  float z,
         }
     }
 
+    vector<Point> V = tovecs3(cube);
+    getBBOX(V);
 
     std::vector<int> elements = indices;
-    nPicking = 3*elements.size();
+    nTriangles = 3*elements.size();
     //center = 0.5f * (pt1 + pt2);
     MODEL[3] = glm::vec4(center,1);
-    //nBuffer = -1;
-    createBuffer(&nBuffer, &normals);
+    normalBuffer = -1;
+    createBuffer(&normalBuffer, &normals);
     createBuffer(&meshBuffer, &cube);
     createBuffer(&indicesBuffer, &elements);
     freeBuffer();
@@ -257,17 +276,7 @@ CglCylinder::~CglCylinder(){}
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+/*
 void CglPrimitive::display(){
     int sh                      = (((nBuffer!=-1)&&(pcv->profile.smooth))?pcv->smoothID():pcv->flatID());
     int shaderID                = initProgram(sh);
@@ -292,7 +301,7 @@ void CglPrimitive::display(){
                                                  glm::vec3(sMODEL()[3]));
     glm::mat4 V                 = sVIEW();
 
-    glm::vec3 selection_color   = ((pGroup)?:pGroup->getColor():pcv->profile.sele_color);
+    glm::vec3 selection_color   = ((pGroup)?pGroup->getColor():pcv->profile.sele_color);
     glm::vec3 col               = ((isSelected())?selection_color:color);
     computeGroup();
 
@@ -305,16 +314,16 @@ void CglPrimitive::display(){
     uniform( colorID, col);
     uniform( MID, M);
     uniform( VID, V);
-    uniform( fill_light_ID, *(lights[0]->getLightMatrix(material)));
-    uniform( side_light_ID, *(lights[1]->getLightMatrix(material)));
-    uniform( back_light_ID, *(lights[2]->getLightMatrix(material)));
+    uniform( fill_light_ID, *(lights[0]->getLightMatrix(pMaterial)));
+    uniform( side_light_ID, *(lights[1]->getLightMatrix(pMaterial)));
+    uniform( back_light_ID, *(lights[2]->getLightMatrix(pMaterial)));
 
     enableFog(shaderID);
 
     glLineWidth(((isSelected())?2.0:1.0));
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    draw(shaderID, nPicking, meshBuffer, nBuffer, indicesBuffer);
+    draw(shaderID, nTriangles, meshBuffer, nBuffer, indicesBuffer);
 
     freeBuffer();
     disableFog(shaderID);
@@ -322,3 +331,4 @@ void CglPrimitive::display(){
     glLineWidth(1.0);
     glDisable(GL_POLYGON_OFFSET_FILL);
 }
+*/

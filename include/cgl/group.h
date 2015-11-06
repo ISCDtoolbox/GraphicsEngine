@@ -38,6 +38,8 @@ public:
     void addPart(pCglObject obj);
     void display();
     void pickingDisplay();
+    void shadowsDisplay();
+    void artifactsDisplay();
     void applyTransformation();
     void compute();
     bool isSuper(){return true;}
