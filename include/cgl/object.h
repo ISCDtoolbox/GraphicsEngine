@@ -157,7 +157,7 @@ class CGL_API CglObject
     void createBuffer(GLuint *pBuffer, std::vector<int>   *data);
     void bindBuffer(int attrib, int bufferType, GLuint buffer);
     void freeBuffer();
-    void draw(int ID,int s, int mBuffer, int nBuffer, int iBuffer);
+    void draw(int ID, int s, int mBuffer, int nBuffer, int iBuffer);
     void uniform(int ID, float     f);
     void uniform(int ID, glm::vec3 v);
     void uniform(int ID, glm::mat4 &m);

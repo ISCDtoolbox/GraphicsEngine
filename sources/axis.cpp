@@ -3,6 +3,8 @@
 extern CglCanvas *pcv;
 
 CglAxis::CglAxis(){
+
+    /*
     float size       = 10;
 
     //Main grid
@@ -40,6 +42,7 @@ CglAxis::CglAxis(){
         //for(int j = 0 ; j < 3 ; j++)
         //secondaryGrid.push_back(tsGrid[i][j]);
     }
+    */
 
     //Axes
     std::vector<glm::vec3> tAxes = {glm::vec3(0,0,0),
@@ -54,18 +57,27 @@ CglAxis::CglAxis(){
 
     //Buffers creation
     //createBuffer(&mainGridBuffer,       &mainGrid);
-    createBuffer(&secondaryGridBuffer,  &secondaryGrid);
+    //createBuffer(&secondaryGridBuffer,  &secondaryGrid);
     createBuffer(&axesBuffer,           &axes);
 
 
     float W = 2., H = 1.;
     std::vector<glm::vec3> plane;
+    //Ground
     plane.push_back(glm::vec3(-W/2, 0., H/2));
     plane.push_back(glm::vec3(W/2,  0., H/2));
     plane.push_back(glm::vec3(W/2,  0., -H/2));
     plane.push_back(glm::vec3(-W/2, 0., -H/2));
 
-    mainGrid.erase(mainGrid.begin(), mainGrid.end());
+    //Panels
+    float offset = 0.1;
+
+    std::vector<float> normal{  0,1,0,
+                                0,1,0,
+                                0,1,0,
+                                0,1,0};
+
+    //mainGrid.erase(mainGrid.begin(), mainGrid.end());
      for(int i = 0 ; i < plane.size() ; i++){
         //plane[i] = glm::rotate( glm::angleAxis(pcv->profile.bottomAngle, glm::vec3(0, 1, 0)), glm::vec3(plane[i]));
         plane[i] = glm::vec3(glm::translate(glm::mat4(1),glm::vec3(0,-pcv->profile.bottomDistance,0)) * glm::vec4(plane[i], 1));
@@ -74,16 +86,16 @@ CglAxis::CglAxis(){
     }
     createBuffer(&mainGridBuffer, &mainGrid);
 
-    std::vector<float> normal{0,1,0,0,1,0,0,1,0,0,1,0};
+
     createBuffer(&normalBuffer, &normal);
 
-    pMaterial = new CglMaterial(glm::vec3(0.,0.,1.0), 0.2, 0.1, 1.1);
-
+    pMaterial   = new CglMaterial(glm::vec3(0.,0.,1.0), 0.2, 0.1, 1.1);
+    pCube       = new CglCube(0,0,0, 1,1,1);
+    pcv->getScene()->addObject(pCube);
 }
 
 
 void CglAxis::display(){
-
     int shaderID = initProgram(pcv->fresnelID());
     GLuint MatrixID = glGetUniformLocation(shaderID, "MVP");
     GLuint colorID  = glGetUniformLocation(shaderID, "COL");
@@ -92,6 +104,8 @@ void CglAxis::display(){
     int fill_light_ID           = glGetUniformLocation(shaderID, "FILL");
     int side_light_ID           = glGetUniformLocation(shaderID, "SIDE");
     int back_light_ID           = glGetUniformLocation(shaderID, "BACK");
+    int gridID                  = glGetUniformLocation(shaderID, "GRID");
+
 
     //GRID
     if(pcv->profile.displayBottomGrid){
@@ -108,6 +122,7 @@ void CglAxis::display(){
         uniform( fill_light_ID, *(lights[0]->getLightMatrix(pMaterial)));
         uniform( side_light_ID, *(lights[1]->getLightMatrix(pMaterial)));
         uniform( back_light_ID, *(lights[2]->getLightMatrix(pMaterial)));
+        uniform(gridID, 1.0f);
 
         //glLineWidth(1.0);
         //bindBuffer(0, GL_ARRAY_BUFFER, secondaryGridBuffer);
@@ -121,6 +136,7 @@ void CglAxis::display(){
         bindBuffer(1, GL_ARRAY_BUFFER, normalBuffer);
         glBindAttribLocation( shaderID, 1, "vertex_normal");
         //glDrawArrays(GL_QUADS, 0, mainGrid.size()/3);
+
 
         //STENCIL WRITING
 
@@ -138,9 +154,27 @@ void CglAxis::display(){
         glDepthMask(GL_TRUE); // Write to depth buffer
 
         glDisable(GL_STENCIL_TEST);
+
+
+        //Draw d'un contour
+        /*
+        glLineWidth(10.0f);
+        uniform(gridID, 0.0f);
+        //glEnable(GL_POLYGON_OFFSET_LINE);
+        //glPolygonOffset(1.0,1.0);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glDrawArrays(GL_QUADS, 0, mainGrid.size()/3);
+        //glDisable(GL_POLYGON_OFFSET_LINE);
+        glLineWidth(1.0f);
+        */
+
+
+
         glDisable(GL_BLEND);
         disableFog(shaderID);
         glPolygonMode(GL_FRONT, GL_FILL);
+
+        //pCube->display();
 
     }
 

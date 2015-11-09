@@ -14,6 +14,7 @@
 #include <cgl/shader.h>
 #include <cgl/view.h>
 #include <cgl/texture.h>
+#include <cgl/cube.h>
 
 class CGL_API CglAxis : public CglObject
 {
@@ -33,6 +34,9 @@ public:
   ~CglAxis(){};
   void display();
   pCglView view;
+
+  pCglCube pCube;
+
 };
 typedef CglAxis* pCglAxis;
 
@@ -40,7 +44,7 @@ typedef CglAxis* pCglAxis;
 class CGL_API CglBackground : public CglObject{
   private:
     //CglTexture texture;
-    void gradient(std::vector<float> hei, std::vector<glm::vec3> col);
+    void gradient(std::vector<float> hei,       std::vector<glm::vec3> col);
     void gradient(std::vector<glm::vec2> hei, std::vector<glm::vec3> col);
   public:
     CglBackground();
