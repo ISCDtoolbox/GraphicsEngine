@@ -1,24 +1,28 @@
 cmake_minimum_required(VERSION 2.8)
 project(SUscCGL )
 set(CMAKE_BUILD_TYPE "Release")
-
-
 set(CMAKE_SOURCE_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+
 configure_file("${CMAKE_SOURCE_DIR}/include/ext.h.in" "${CMAKE_SOURCE_DIR}/include/ext.h")
 
+
+set(GLEW_LIBRARY_DIR ${CMAKE_SOURCE_DIR}/build/library/glew)
 #Include de GLEW
-#include(ExternalProject)
-#ExternalProject_Add(
-#  glew
-#  PREFIX "./library/glew"
-#  BINARY_DIR "./library/glew/src/glew/"
-#  GIT_REPOSITORY https://github.com/nigels-com/glew.git
-#  CONFIGURE_COMMAND make extensions COMMAND make
-#  BUILD_COMMAND
-#  INSTALL_COMMAND make install
-#  LOG_DOWNLOAD ON
-#  LOG_INSTALL ON
-#)
+include(ExternalProject)
+ExternalProject_Add(
+  glew
+  PREFIX            "./library/glew"
+  BINARY_DIR        "./library/glew/src/glew/"
+  GIT_REPOSITORY    https://github.com/nigels-com/glew.git
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND     make extensions COMMAND make
+  INSTALL_COMMAND   make install GLEW_DEST=${GLEW_LIBRARY_DIR}
+  LOG_DOWNLOAD ON
+  LOG_INSTALL ON
+)
+set_target_properties(glew PROPERTIES SUFFIX .so)
+
 
 #Include de GLM
 include(ExternalProject)
@@ -34,25 +38,35 @@ ExternalProject_Add(
   LOG_INSTALL ON
 )
 
+#Libmesh creation
+add_library(mesh SHARED library/libmesh/libmesh5.h library/libmesh/libmesh5.c)
 
 #Flags and libraries
 set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -Wno-deprecated -O2 -pg")
 find_package(GLUT)
 find_package(OpenGL)
 find_package(X11)
-find_package(GLEW)
+#find_package(GLEW)
 
 
-set(CORELIBS ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES} ${GLEW_LIBRARY})
+set(CORELIBS ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES} "${GLEW_LIBRARY_DIR}/lib64/libGLEW.so")
 
 #Include files
-include_directories("include/" "library/libmesh/" ${PNG_INCLUDE_DIR} "${CMAKE_CURRENT_BINARY_DIR}/library/glm/src/glm/")
-file(GLOB_RECURSE source_files sources/* include/cgl/* include/*)
+include_directories("include/"
+                    "library/libmesh/"
+                    ${PNG_INCLUDE_DIR}
+                    "${CMAKE_CURRENT_BINARY_DIR}/library/glm/src/glm/"
+                    "${CMAKE_CURRENT_BINARY_DIR}/library/glew/src/glew/include/")
 
-#Link
+#Project files
+file(GLOB_RECURSE source_files sources/* include/cgl/* include/*)
 add_library(SUscCGL SHARED ${source_files})
-add_dependencies(SUscCGL glm)# glew)
-add_library(mesh SHARED library/libmesh/libmesh5.h library/libmesh/libmesh5.c)
+
+set_target_properties(SUscCGL PROPERTIES SUFFIX .so)
+add_dependencies(SUscCGL glew glm)
+
+
+
 target_link_libraries(SUscCGL ${CORELIBS} mesh)
 add_dependencies(SUscCGL HEADERFILES)
 
@@ -94,4 +108,3 @@ add_custom_target(
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 add_executable(embedfile sources/embedfile.cpp)
-
