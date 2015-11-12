@@ -52,14 +52,23 @@ further instructions about the use of SUscCGL.
 
 ##Examples
 
+![Example](screenshot_1.png?raw=true "NumeRO example")
+
 In order to execute sample applications based on SUscCGL, navigate to SUscCGL
 installation directory and type the following commands in a new prompt:
+
 > cd APP_[Chosen Example]
+
 > mkdir build
+
 > cd build
+
 > cmake ..
+
 > make [Chosen Example]
+
 > [Chosen Example]
+
 
 Replace [Chosen Example] with the name of one of the applications.
 
