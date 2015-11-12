@@ -121,6 +121,60 @@ rgb CglColorGenerator::hsv2rgb(hsv in){
 }
 
 
+CglPalette::CglPalette(float m, float M, CGL_PALETTE p){
+        mini    = m;
+        maxi    = M;
+        palette = p;
+
+        switch(palette){
+        case(CGL_PALETTE_JET):
+            colors.push_back(glm::vec4(0,   1,   0,   0));
+            colors.push_back(glm::vec4(0.35, 0.75,   0.75, 0.));
+            colors.push_back(glm::vec4(0.5, 0, 1, 0));
+            colors.push_back(glm::vec4(0.65, 0., 0.75, 0.75));
+            colors.push_back(glm::vec4(1,   0., 0.0, 1));
+            break;
+        case(CGL_PALETTE_GRAY):
+            colors.push_back(glm::vec4(0,0,0,0));
+            colors.push_back(glm::vec4(1,1,1,1));
+            break;
+        case(CGL_PALETTE_BR):
+            colors.push_back(glm::vec4(0,0,0,1));
+            colors.push_back(glm::vec4(0.5,1,1,1));
+            colors.push_back(glm::vec4(1,1,0,0));
+            break;
+        }
+    }
+void CglPalette::setBoundaries(float m, float M){
+        mini = m;
+        maxi = M;
+    }
+glm::vec3 CglPalette::getColor(float val){
+        val = (val-mini)/(maxi-mini);
+        for(int i = 0 ; i < colors.size() ; i++){
+            if(i==colors.size()-1){
+                float fac       = (val - colors[i-1][0])/(colors[i][0] - colors[i-1][0]);
+                glm::vec4 col   = (1-fac)*colors[i-1] + fac*colors[i];
+                return glm::vec3(col[1], col[2], col[3]);
+            }
+            else{
+                if( (val>colors[i][0]) && (val<colors[i+1][0]) ){
+                    float fac       = (val - colors[i][0])/(colors[i+1][0] - colors[i][0]);
+                    glm::vec4 col   = (1-fac)*colors[i] + fac*colors[i+1];
+                    return glm::vec3(col[1], col[2], col[3]);
+                }
+            }
+        }
+        //glm::vec3 col0 = glm::vec3(colors[0][1], colors[0][1], colors[0][2]);
+        //glm::vec3 col1 = glm::vec3(colors[1][1], colors[1][1], colors[1][2]);
+        //return glm::vec3(val);
+        //return val * col0 + (1-val)*col1;
+    }
+
+
+
+
+
 
 
 

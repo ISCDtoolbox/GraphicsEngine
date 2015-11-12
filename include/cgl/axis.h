@@ -10,6 +10,8 @@
 #ifndef __CGL_AXIS_H_
 #define __CGL_AXIS_H_
 
+
+
 #include <cgl/object.h>
 #include <cgl/shader.h>
 #include <cgl/view.h>
@@ -27,16 +29,17 @@ private:
   GLuint mainGridBuffer;
   GLuint secondaryGridBuffer;
   GLuint axesBuffer;
+  glm::vec3 mins, maxs;
   //pCglMaterial    material;
 
 public:
   CglAxis();
   ~CglAxis(){};
+  glm::vec3 getBBMIN(){return mins;}
+  glm::vec3 getBBMAX(){return maxs;}
   void display();
   pCglView view;
-
-  pCglCube pCube;
-
+  //pCglScene pScene;
 };
 typedef CglAxis* pCglAxis;
 

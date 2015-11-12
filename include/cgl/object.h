@@ -12,6 +12,7 @@
 #include "defs.h"
 #include <cgl/transform.h>
 #include <cgl/material.h>
+#include <cgl/colorgenerator.h>
 
 class               CglScene;
 class               CglObject;
@@ -26,6 +27,7 @@ class CGL_API CglObject
   public:
     CglTransform            transform;
     string                  meshFile;
+    CglPalette*             palette;
 
     //Links with other objects
     std::vector<pCglObject> listPart;
@@ -44,6 +46,7 @@ class CGL_API CglObject
     GLuint      meshBuffer;
     GLuint      normalBuffer;
     GLuint      indicesBuffer;
+    GLuint      colorBuffer;
 
     int         objectID;
     glm::vec3   pickingColor;
@@ -157,7 +160,7 @@ class CGL_API CglObject
     void createBuffer(GLuint *pBuffer, std::vector<int>   *data);
     void bindBuffer(int attrib, int bufferType, GLuint buffer);
     void freeBuffer();
-    void draw(int ID, int s, int mBuffer, int nBuffer, int iBuffer);
+    void draw(int ID, int s, int mBuffer, int nBuffer, int iBuffer, int cBuffer = -1);
     void uniform(int ID, float     f);
     void uniform(int ID, glm::vec3 v);
     void uniform(int ID, glm::mat4 &m);
@@ -168,6 +171,94 @@ protected:
 };
 
 typedef CglObject* pCglObject;
+
+
+/*
+//OPNEGL "Facilitators"
+void enableFog(int ID);
+void disableFog(int ID);
+int  initProgram(int ID);
+void createBuffer(int *pBuffer, std::vector<float> *data);//GLuint
+void createBuffer(int *pBuffer, std::vector<short> *data);//GLuint
+void createBuffer(int *pBuffer, std::vector<int>   *data);//GLuint
+void bindBuffer(int attrib, int bufferType, GLuint buffer);
+void freeBuffer();
+void draw(int ID, int s, int mBuffer, int nBuffer, int iBuffer);
+void uniform(int ID, float     f);
+void uniform(int ID, glm::vec3 v);
+void uniform(int ID, glm::mat4 &m);
+*/
+
+
+
+/*
+//Structures pour la lecture des .mesh
+typedef struct {
+  double    c[3];
+  int       ref;
+} Point; //typedef Point * pPoint;
+typedef struct {
+  int       v[3],ref;
+} Tria;//typedef Tria * pTria;
+typedef struct {
+  double    n[3];
+} Normal;//typedef Normal * pNormal;
+typedef struct {
+  int inds[2];
+} NormalAtVertex;
+
+enum GEOMETRY{CGL_CUBE, CGL_SPHERE, CGL_CYLINDER, CGL_PLANE, CGL_MESH};
+
+class CglGeometry{
+public:
+    GEOMETRY            geometry;
+    std::vector<float>  vertices;
+    std::vector<float>  normals;
+    std::vector<int>    indices;
+    int                 nTriangles;
+
+    int                 mBuffer;
+    int                 nBuffer;
+    int                 cBuffer;
+    int                 iBuffer;
+    int                 bbmBuffer;
+    int                 bbiBuffer;
+
+    float               localScale;
+    float               scaleFactor;
+
+    glm::vec3 bbmin, bbmax;
+    glm::vec3 tra;
+    std::string meshFile;
+
+    CglGeometry();
+    CglGeometry(GEOMETRY geom);
+    CglGeometry(char* file);
+    void        getBBOX(std::vector<Point> &p);
+    void        computeBuffers();
+};
+typedef CglGeometry* pCglGeometry;
+
+
+            CglGeometry::CglGeometry();
+            CglGeometry::CglGeometry(GEOMETRY geom);
+            CglGeometry::CglGeometry(char* file);
+void        CglGeometry::getBBOX(std::vector<Point> &p);
+void        CglGeometry::computeBuffers();
+
+
+#endif
+
+*/
+
+
+
+
+
+
+
+
+
 
 
 #endif

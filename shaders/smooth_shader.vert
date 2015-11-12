@@ -3,9 +3,11 @@
 
 attribute vec3 vertex_position;
 attribute vec3 vertex_normal;
+attribute vec3 vertex_color;
 
 varying vec3 vertex_pos;
 varying vec3 vertex_nor;
+varying vec3 vertex_col;
 //varying float gl_ClipDistance[1];
 
 uniform mat4 MVP;
@@ -19,6 +21,7 @@ void main(){
   //float f     = noise3f(vertex_position, 1000) * noise3f(vertex_position, 100);
   vertex_pos  = vertex_position;// + 0.005 * snoise(vertex_position) * vertex_normal;// + 0.005 * f * vertex_normal;
   vertex_nor  = vertex_normal;
+  vertex_col = vertex_color;
   gl_Position = MVP * vec4(vertex_pos, 1);
 
   //Mise en place du clipping plane

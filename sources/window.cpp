@@ -30,6 +30,8 @@ CglWindow::CglWindow(int x, int y, int w, int h){
     size             = glm::vec2(w,h);
     title            = "Window " + to_string(pcv->getWindows().size());
 
+
+
     glutInitWindowPosition( position.x, position.y);
     glutInitWindowSize(     size.x, size.y);
     ID = glutCreateWindow(  title.c_str());

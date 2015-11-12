@@ -52,7 +52,8 @@ void CglObject::draw(   int ID,       //Shader ID
                         int s,        //Number of vertices
                         int mBuffer,  //Vertexs BUffer
                         int nBuffer,  //Normals Buffer
-                        int iBuffer   //Indices Buffer
+                        int iBuffer,  //Indices Buffer
+                        int cBuffer
                     ){
 
     //Vertex Buffer
@@ -67,14 +68,17 @@ void CglObject::draw(   int ID,       //Shader ID
     if(iBuffer!=-1){
         bindBuffer(-1, GL_ELEMENT_ARRAY_BUFFER, iBuffer);
     }
+    //Color buffer
+    if(cBuffer != -1){
+        bindBuffer(2, GL_ARRAY_BUFFER, cBuffer);
+        glBindAttribLocation(ID, 2, "vertex_color");
+    }
     int t0 = glutGet(GLUT_ELAPSED_TIME);
     //Drawing
     glDrawElements(GL_TRIANGLES, s, GL_UNSIGNED_INT, (void*)0);
     int t2 = glutGet(GLUT_ELAPSED_TIME);
     pcv->PROF.draw += t2 - t0;
 }
-
-
 void CglObject::uniform(int ID, glm::vec3 v){
     int t0 = glutGet(GLUT_ELAPSED_TIME);
   glUniform3f(ID, v.x, v.y, v.z);
@@ -93,10 +97,6 @@ void CglObject::uniform(int ID, float f){
   int t1 = glutGet(GLUT_ELAPSED_TIME);
     pcv->PROF.uni += t1 - t0;
 }
-
-
-
-
 
 
 // object constructor
@@ -118,6 +118,8 @@ CglObject::CglObject()
   pGroup = NULL;
   pMaterial   = new CglMaterial(pcv->profile.color(), 0.85, 0.15, 12.0);
   localScale = 1;
+
+  colorBuffer = -1;
 }
 CglObject::~CglObject(){}
 
@@ -177,20 +179,60 @@ void CglObject::applyTransformation(){
             MODEL =  glm::translate(ID, *rotationCenter) * transform.rot * glm::translate(ID, -*rotationCenter) * MODEL;
 
         //if(isMesh)
-        glm::vec3 bbC = 0.5f * (getBBMAX() + getBBMIN());
-        glm::vec3 newMinPos = glm::vec3(pScene->getMODEL()[3]) + glm::vec3(MODEL[3]) + transform.tr + scaleFactor*(getBBMIN()-bbC);
-        glm::vec3 newMaxPos = glm::vec3(pScene->getMODEL()[3]) + glm::vec3(MODEL[3]) + transform.tr + scaleFactor*(getBBMAX()-bbC);
-        //if(isSelected()){cout << scaleFactor << endl;}
-        glm::vec3 trans(0,0,0);
-        if( (newMaxPos.x < transform.xBounds[1] ) && (newMinPos.x > transform.xBounds[0]) )
-            trans.x += transform.tr.x;
-        if( (newMaxPos.y < transform.yBounds[1] ) && (newMinPos.y > transform.yBounds[0]) )
-            trans.y += transform.tr.y;
-        if( (newMaxPos.z < transform.zBounds[1] ) && (newMinPos.z > transform.zBounds[0]) )
-            trans.z += transform.tr.z;
+        //if(!pGroup){
+            glm::vec3 bbC = 0.5f * (getBBMAX() + getBBMIN());
+            glm::vec3 newMinPos = glm::vec3(pScene->getMODEL()[3]) + glm::vec3(MODEL[3]) + transform.tr + scaleFactor*(getBBMIN()-bbC);
+            glm::vec3 newMaxPos = glm::vec3(pScene->getMODEL()[3]) + glm::vec3(MODEL[3]) + transform.tr + scaleFactor*(getBBMAX()-bbC);
+            //if(isSelected()){cout << scaleFactor << endl;}
+            glm::vec3 trans(0,0,0);
+            float scale = pScene->getScale();
+            glm::vec3 mins = pcv->getScene()->getAxis()->getBBMIN();
+            glm::vec3 maxs = pcv->getScene()->getAxis()->getBBMAX();
+            if( (newMaxPos.x < sMODEL()[3].x + scale * maxs.x ) && (newMinPos.x > sMODEL()[3].x + scale * mins.x) )
+                trans.x += transform.tr.x;
+            if( (newMaxPos.y < sMODEL()[3].y + scale * maxs.y ) && (newMinPos.y > sMODEL()[3].y + scale * mins.y) )
+                trans.y += transform.tr.y;
+            if( (newMaxPos.z < sMODEL()[3].z + scale * maxs.z ) && (newMinPos.z > sMODEL()[3].z + scale * mins.z) )
+                trans.z += transform.tr.z;
 
-        MODEL = glm::translate(ID, trans) * MODEL;
-        center += trans;// glm::vec3(MODEL[3]);
+            MODEL = glm::translate(ID, trans) * MODEL;
+            center += trans;// glm::vec3(MODEL[3]);
+        //}
+
+        /*else{
+            //CHECK IF OK FOR EVERYONE IN THE GROUP
+            float trX = trY = trZ = 10000f;
+            glm::vec3 groupTr;
+            for(int i = 0 ; i < pScene->numObjects() ; i++){
+                pCglObject obj = pScene->getObject[i];
+                if(obj->getGroup() == pGroup){
+                    glm::vec3 bbC = 0.5f * (obj->getBBMAX() + obj->getBBMIN());
+                    glm::vec3 newMinPos = glm::vec3(pScene->getMODEL()[3]) + glm::vec3(obj->getMODEL()[3]) + transform.tr + scaleFactor*(obj->getBBMIN()-bbC);
+                    glm::vec3 newMaxPos = glm::vec3(pScene->getMODEL()[3]) + glm::vec3(obj->getMODEL()[3]) + transform.tr + scaleFactor*(obj->getBBMAX()-bbC);
+                    glm::vec3 trans(0,0,0);
+                    float scale = pScene->getScale();
+                    glm::vec3 mins = pcv->getScene()->getAxis()->getBBMIN();
+                    glm::vec3 maxs = pcv->getScene()->getAxis()->getBBMAX();
+                    if( (newMaxPos.x < sMODEL()[3].x + scale * maxs.x ) && (newMinPos.x > sMODEL()[3].x + scale * mins.x) )
+                        trans.x = transform.tr.x;
+                    if( (newMaxPos.y < sMODEL()[3].y + scale * maxs.y ) && (newMinPos.y > sMODEL()[3].y + scale * mins.y) )
+                        trans.y = transform.tr.y;
+                    if( (newMaxPos.z < sMODEL()[3].z + scale * maxs.z ) && (newMinPos.z > sMODEL()[3].z + scale * mins.z) )
+                        trans.z = transform.tr.z;
+                    trX = min(trX, trans.x);
+                    trY = min(trY, trans.y);
+                    trZ = min(trZ, trans.z);
+                }
+            }
+            groupTr = glm::vec3(trX, trY, trZ);
+            for(int i = 0 ; i < pScene->numObjects() ; i++){
+                pCglObject obj = pScene->getObject[i];
+                if(obj->getGroup() == pGroup){
+                    obj->transform.reset();
+                    obj->transform.tr = groupTr;
+                }
+            }
+        }*/
         transform.reset();
     }
 }

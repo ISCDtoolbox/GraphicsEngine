@@ -2,6 +2,7 @@
 
 varying vec3 vertex_pos;
 varying vec3 vertex_nor;
+varying vec3 vertex_col;
 
 uniform mat4 MVP;
 uniform vec3 COL;
@@ -32,7 +33,9 @@ float fbm(vec3 val, float initFreq, float gain, int octaves, float lacunarity);
 
 void main(){
   vec3 Position_worldspace = (M * vec4(vertex_pos,1)).xyz;
-  vec3 col = smoothLight(FILL, COL) + smoothLight(SIDE, COL) + smoothLight(BACK, COL);
+  vec3 color 	= COL;
+  //color 	= vertex_col;
+  vec3 col = smoothLight(FILL, color) + smoothLight(SIDE, color) + smoothLight(BACK, color);
   //gl_FragColor = vec4(col, 0.3);
 
   //Second try for noise

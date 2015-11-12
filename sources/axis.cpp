@@ -61,7 +61,21 @@ CglAxis::CglAxis(){
     createBuffer(&axesBuffer,           &axes);
 
 
-    float W = 2., H = 1.;
+    //DImensions du tableau de fond
+    float W,H;
+    pScene = pcv->getScene();
+    if(pScene->scene_type == CGL_GALERY){
+        W = 0.5;
+        H = 30;
+    }
+    else if(pScene->scene_type == CGL_MANIPULATION){
+        W = 30;
+        H = 0.45;
+    }
+    mins = glm::vec3(-W/2, -10, -H/2);
+    maxs = glm::vec3(W/2, -10, H/2);
+
+
     std::vector<glm::vec3> plane;
     //Ground
     plane.push_back(glm::vec3(-W/2, 0., H/2));
@@ -69,8 +83,6 @@ CglAxis::CglAxis(){
     plane.push_back(glm::vec3(W/2,  0., -H/2));
     plane.push_back(glm::vec3(-W/2, 0., -H/2));
 
-    //Panels
-    float offset = 0.1;
 
     std::vector<float> normal{  0,1,0,
                                 0,1,0,
@@ -90,8 +102,6 @@ CglAxis::CglAxis(){
     createBuffer(&normalBuffer, &normal);
 
     pMaterial   = new CglMaterial(glm::vec3(0.,0.,1.0), 0.2, 0.1, 1.1);
-    pCube       = new CglCube(0,0,0, 1,1,1);
-    pcv->getScene()->addObject(pCube);
 }
 
 
@@ -108,11 +118,20 @@ void CglAxis::display(){
 
 
     //GRID
-    if(pcv->profile.displayBottomGrid){
+    if( (pcv->profile.displayBottomGrid) && (pScene->scene_type != CGL_GALERY) ){
         enableFog(shaderID);
 
         glm::mat4 VIEW  = sVIEW();
-        glm::mat4 MVP   = glm::translate( sPROJ() * VIEW * MODEL, center);
+
+
+        glm::mat4 MVP   =   sPROJ()     *
+                            sVIEW()     *
+                            sMODEL()    *
+                            glm::translate(    glm::scale(glm::mat4(1), glm::vec3(pScene->getScale(),1,pScene->getScale())),  glm::vec3(0) );//glm::vec3(sMODEL()[3])   );
+        /*glm::translate(glm::mat4(1), center) *
+                            glm::scale(glm::translate( sPROJ() * VIEW * MODEL, center),
+                                       glm::vec3(pScene->getScale(), 1, pScene->getScale())) *
+                            glm::translate(glm::mat4(1), -center);*/
 
         uniform(MatrixID,   MVP);
         uniform(MID,        MODEL);
@@ -173,9 +192,6 @@ void CglAxis::display(){
         glDisable(GL_BLEND);
         disableFog(shaderID);
         glPolygonMode(GL_FRONT, GL_FILL);
-
-        //pCube->display();
-
     }
 
     shaderID = initProgram(pcv->simpleID());
@@ -190,7 +206,7 @@ void CglAxis::display(){
         glDisable(GL_DEPTH_TEST);
         glViewport(0,0,view->width/6,view->width/6);
 
-        glm::mat4 NEUTRAL   = glm::mat4(glm::perspective(70.0, 1.0, view->m_znear, view->m_zfar)) * sVIEW() * MODEL;
+        glm::mat4 NEUTRAL   = glm::mat4(glm::perspective(70.0, 1.0, view->m_znear, view->m_zfar)) * sVIEW() * glm::mat4(1);
         glm::mat4 M         = glm::scale(NEUTRAL, glm::vec3(view->zoom));
         uniform(MatrixID, M);
 

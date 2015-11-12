@@ -70,6 +70,8 @@ class CglProfile
     float           value;
     float           mixFactor;
     glm::vec3       mixColor;
+
+    float           speed;
 };
 typedef CglProfile* pCglProfile;
 #endif // PROFILE_H

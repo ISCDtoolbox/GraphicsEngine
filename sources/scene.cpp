@@ -18,27 +18,36 @@ template<typename T> std::vector<T> split(const std::string& line) {
 }
 
 // object constructor
-CglScene::CglScene(){
+CglScene::CglScene(SCENE_TYPE type){
   pcv->addScene(this);
+  scene_type = type;
   //:transform()
   selected = true;
-  m_cam    = glm::normalize(glm::vec3(1,1,1));
+  if(scene_type == CGL_GALERY){
+    m_cam    = glm::normalize(glm::vec3(0,1.73,0));
+    m_up     = glm::normalize(glm::vec3(0, 0, -1));
+  }
+  else if(scene_type == CGL_MANIPULATION){
+    m_cam    = glm::normalize(glm::vec3(1,1,1));
+    m_up     = glm::normalize(glm::vec3(-1, 1, -1));
+  }
+
+
   m_look   = -m_cam;
-  m_up     = glm::normalize(glm::vec3(-1, 1., -1));
   m_right  = glm::cross(m_look, m_up);
   center   = glm::vec3(0,0,0);
   VIEW     = glm::lookAt(m_cam, m_look, m_up);
   globalScale = 100000.0f;//For use of minimums later
   background  = new CglBackground();
   cout << "Scene created with Adress = " << this << endl;
+  speedFactor = 1.0f;
 }
 CglScene::~CglScene(){
     delete background;
 }
 
 
-void CglScene::addObject(pCglObject object)
-{
+void CglScene::addObject(pCglObject object){
   //Ajout de l'objet à la scène
   listObject.push_back(object);
   object->setScene(this, numObjects());
@@ -52,14 +61,11 @@ void CglScene::addObject(pCglObject object)
 
   globalScale = min(globalScale, object->getLocalScale());
 }
-void CglScene::removeObject(pCglObject object)
-{
+void CglScene::removeObject(pCglObject object){
   for(int i = 0 ; i < numObjects() ; i++)
     if(object == listObject[i])
         listObject.erase(listObject.begin() + i);
 }
-
-
 void CglScene::display(){
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_CULL_FACE);
@@ -108,7 +114,6 @@ void CglScene::display(){
     //pcv->getInterface()->display();
     //debug();
 }
-
 
 pCglObject CglScene::getPicked(int x, int y){
     unsigned char pixel[3];
@@ -231,7 +236,7 @@ void CglScene::onLeftDrag(int x, int y){
   glm::mat4 ROT(1), ID(1);
   float dx = x - lastDrag.x;
   float dy = y - lastDrag.y;
-  float f = 0.01f;
+  float f = pcv->profile.speed * 0.01f;
   if(pcv->profile.camera == CGL_CAM_UPPER_SPHERE)
     ROT = glm::mat4(  glm::angleAxis(f*dy, glm::normalize(m_right))  *  glm::angleAxis(f*dx, glm::vec3(0,1,0)) );
   else if(pcv->profile.camera == CGL_CAM_FULL_SPHERE)
@@ -251,7 +256,7 @@ void CglScene::onLeftDrag(int x, int y){
       lastRay         = getRayVector(lastDrag.x, lastDrag.y);
       lastInter       = intersect(lastRay, c, planeNormal, intersectsLast);
       float     angle = orientedAngle(lastInter, inter, c, axis);
-      glm::mat4 tot   = glm::mat4(glm::angleAxis(4.0f * angle, axis));
+      glm::mat4 tot   = glm::mat4(glm::angleAxis(pcv->profile.speed * speedFactor * 4.0f * angle, axis));
       listObject[i]->transform.setRotation( tot );
     }
   }
@@ -288,16 +293,26 @@ void CglScene::onMiddleDrag(int x, int y){
   lastRay   = getRayVector(lastDrag.x, lastDrag.y);
   lastInter = intersect(lastRay, plane, planeNormal, intersectsLast);
 
-  if(!isSelected()){
-    if(intersects)
-      for(int i = 0 ; i < listObject.size() ; i++)
-	if (listObject[i]->isSelected())
-	  listObject[i]->transform.setTranslation(inter - lastInter);}
-  else{
-    if(intersects)
-      transform.setTranslation(inter - lastInter);}
+    if(!isSelected()){
+        if(intersects)
+            for(int i = 0 ; i < listObject.size() ; i++)
+        if (listObject[i]->isSelected())
+            listObject[i]->transform.setTranslation(pcv->profile.speed * (inter - lastInter));
+    }
+    else{
+        if(intersects){
+            glm::vec3 trans = pcv->profile.speed * (inter - lastInter);
+            if(scene_type == CGL_GALERY)
+                trans = glm::vec3(0, 0, trans.z);
+            transform.setTranslation(trans);
+            axis->transform.setTranslation(  1.0f/getScale() * trans );
+            cout << getScale() << endl;
+            //m_cam   += inter - lastInter;
+            //m_look  += inter - lastInter;
+        }
+    }
 
-  lastDrag = glm::vec2(x,y);
+    lastDrag = glm::vec2(x,y);
 }
 void CglScene::onRightDrag( int x, int y){}
 
@@ -363,8 +378,7 @@ void CglScene::toogleFlyingMode(){
   transform.reset();
 }
 
-void CglScene::applyTransformation()
-{
+void CglScene::applyTransformation(){
   //FLYING MODE
   if(pcv->profile.flyingMode){
     m_cam   +=  transform.tr;
@@ -381,6 +395,7 @@ void CglScene::applyTransformation()
   else if (pcv->profile.camera == CGL_CAM_UPPER_SPHERE){
     MODEL = glm::translate(MODEL, transform.tr);
     m_cam   =  view->zoom * glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_cam,1)));
+    //m_look   =  view->zoom * glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_look,0)));
     if (m_cam.y< 0){
       m_cam.y = 0;
       m_up = glm::normalize(glm::vec3(0,m_up.y,0));
@@ -407,9 +422,7 @@ void CglScene::applyTransformation()
 
   transform.reset();
 }
-
-void CglScene::update_matrices()
-{
+void CglScene::update_matrices(){
   //if(!pcv->profile.flyingMode)
   VIEW = glm::lookAt(m_cam + view->camOffset * m_right, m_look, m_up);
 
@@ -429,7 +442,6 @@ void CglScene::saveTransformations(){
   transform.lastUps.push_back(m_up);
   transform.lastCams.push_back(m_cam);
 }
-
 void CglScene::undoLast(){
   if(transform.lastMatrices.size()>0){
     MODEL = transform.lastMatrices.back();
@@ -441,7 +453,6 @@ void CglScene::undoLast(){
     transform.lastCams.pop_back();
   }
 }
-
 void CglScene::resetAll(){
   while(transform.lastMatrices.size()>0)
     undoLast();
@@ -484,8 +495,7 @@ void CglScene::debug(){
 }
 
 
-void CglScene::cglInit()
-{
+void CglScene::cglInit(){
   //  glEnable(GL_DEPTH_TEST);	// Active le test de profondeur
   // 	glEnable(GL_LIGHTING);	// Active l'éclairage
   // 	glEnable(GL_LIGHT0);
@@ -507,6 +517,30 @@ void CglScene::place_objects_on_grid(){
   if(nRow * nCol != nM)
     nCol++;
   float dist = 0.35;
+  float offX = ((nCol%2==0)? 0.5 * dist*nCol/2.0f : dist*nCol/2.0f - dist/2.0f );
+  float offZ = ((nRow%2==0)? 0.5 * dist*nRow/2.0f : dist*nRow/2.0f - dist/2.0f );
+
+  for(int i = 0 ; i < listObject.size() ; i++){
+    if(listObject[i]->isMeshObject()){
+      glm::vec3 c = glm::vec3( -offX + dist * (i%nCol), 0, -offZ + dist * (i/nCol));
+      glm::mat4 M = glm::mat4(1);
+      M[3][0] = c.x;
+      M[3][1] = c.y;
+      M[3][2] = c.z;
+      listObject[i]->setCenter(c);
+      listObject[i]->setMODEL(M);
+    }
+  }
+}
+void CglScene::place_objects_on_column(){
+  int nM = 0;
+  for(int i = 0 ; i < listObject.size() ; i++)
+    if(listObject[i]->isMeshObject())
+      nM++;
+
+  int nRow = nM;
+  int nCol = 1;
+  float dist = 0.40;
   float offX = ((nCol%2==0)? 0.5 * dist*nCol/2.0f : dist*nCol/2.0f - dist/2.0f );
   float offZ = ((nRow%2==0)? 0.5 * dist*nRow/2.0f : dist*nRow/2.0f - dist/2.0f );
 
@@ -590,7 +624,7 @@ void CglScene::load_meshes_from_file(string fileName){
         }
       }
       if((lineNumber%numLines == 6) && (lineNumber!=-1))
-        groups.push_back(atoi(line.c_str()));
+        groups.push_back(atol(line.c_str()));
       lineNumber++;
     }
     saveFile.close();
@@ -607,6 +641,22 @@ void CglScene::load_meshes_from_file(string fileName){
     mats[i/4][i%4] = matrices[i];
   }
 
+  //Vérif des groupes
+  std::vector<int> indGroups;
+    for(int i = 0 ; i < groups.size() ; i++){
+        bool stocked = false;
+        for(int j = 0 ; j < indGroups.size() ; j++){
+            if(groups[j] == indGroups[i])
+                stocked = true;
+        }
+        if(!stocked){
+            indGroups.push_back(indGroups.size());
+        }
+    }
+    cout << "Groups:" << indGroups.size() << endl;
+    for(int i = 0 ; i < groups.size() ; i++)
+        cout << groups[i] << endl;
+
   //Upload des propriétés du maillage
   vector<pCglMesh> mesh;
   for (int i=0; i < numberMeshes; i++){
@@ -617,24 +667,38 @@ void CglScene::load_meshes_from_file(string fileName){
     mesh[i]->setCenter(centers[i]);
     mesh[i]->setMODEL(mats[i]);
     addObject(mesh[i]);
-
-    //Création des groupes
-    set<int> indGroups(groups.begin(), groups.end());
-    for (set<int>::iterator i = indGroups.begin(); i != indGroups.end(); i++) {
-      std::vector<pCglObject> objectsToGroup;
-      for(int j = 0 ; j < numObjects() ; j++){
-        if((groups[j]==*i) && (groups[j]!=-1)){
-          objectsToGroup.push_back(getObject(j));
-        }
-      }
-      if(objectsToGroup.size()>1){
-        getGroupList()->push_back(new CglGroup(objectsToGroup));
-      }
-    }
     mesh[i]->setFileName(names[i]);
   }
-}
 
+
+    //Création des groupes
+    //set<int> indGroups(groups.begin(), groups.end());
+    for(int i = 0 ; i < indGroups.size() ; i++){
+        std::vector<pCglObject> objectsToGroup;
+        for(int j = 0 ; j < numObjects() ; j++){
+            if((groups[j]==indGroups[i]) && (groups[j]!=0)){
+                objectsToGroup.push_back(getObject(j));
+            }
+        }
+        if(objectsToGroup.size()>1){
+            getGroupList()->push_back(new CglGroup(objectsToGroup));
+        }
+    }
+
+     /*
+    for(int j = 0 ; j < indGroups.size() ; j++){
+    //for (set<int>::iterator i = indGroups.begin(); i != indGroups.end(); i++) {
+
+      for(int j = 0 ; j < numObjects() ; j++){
+        if((groups[j]==indGroups[i]) && (groups[j]!=0)){
+
+        }
+      }
+
+    }
+    */
+
+}
 
 
 int CglScene::addLight(pCglLight li){

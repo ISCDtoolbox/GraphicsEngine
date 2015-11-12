@@ -19,13 +19,14 @@ using namespace std;
 
 int main(int argc, char **argv){
   CglCanvas cv(argc, argv);
-  string configFile = "/home/tech/dev/SUSCCGL/APP_NumeRO/numero.config";
+  string configFile = "@CMAKE_SOURCE_DIR@/numero.config";
   cv.getProfile()->read_configuration_file(configFile);
 
   if((argc==2) && (string(argv[1])=="cgl.save")){
     //cv.initWindow(idw, ids, 400, 400);
     //cv.load_meshes_from_file("cgl.save", ids);
   }
+
 
   else if (argc > 1){
 
@@ -89,7 +90,7 @@ int main(int argc, char **argv){
 
 
 
-
+    /*
     pCglWindow window2 = new CglWindow(800, 0, 800, 800);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -143,6 +144,94 @@ int main(int argc, char **argv){
     //scene4->addObject( new CglSphere(0,0,0, 1,1,1, 5) );
 
     SW4->loadShaders();
+    */
+
+
+
+
+    if(argc>2){
+
+      pCglWindow window2 = new CglWindow(800, 0, 800, 800);
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////
+      //PREMIERE SOUS FENETRE, LA PLUS GRANDE
+      ////////////////////////////////////////////////////////////////////////////////////////////////
+
+      pCglSubWindow SW3 = new CglSubWindow(window2, CGL_LEFT, 0.3);
+      pCglScene  scene3  = new CglScene(CGL_GALERY);
+      pCglLight fill3    = new CglLight(0,8,15,    1,1,1,  300.0, false);
+      pCglLight side3    = new CglLight(-10,5,-3,  1,1,1,  70.0,  false);
+      pCglLight back3    = new CglLight(-10,5,-10, 1,1,1,  50.0,  false);
+
+      scene3->addLight( fill3 );
+      scene3->addLight( side3 );
+      scene3->addLight( back3 );
+      SW3->setScene(   scene3);
+      cv.initGLEW();
+
+      //for (int i=0; i < argc-1; i++)
+      //  scene3->addObject(new CglMesh(argv[i+1]));
+      //if(cv.profile.initial_arrangement == CGL_ARRANGEMENT_GRID)
+      //  scene3->place_objects_on_column();
+      scene3->load_meshes_from_file("cgl.save_0");
+
+      SW3->loadShaders();
+
+
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////
+      //PREMIERE SOUS FENETRE, LA PLUS GRANDE
+      ////////////////////////////////////////////////////////////////////////////////////////////////
+
+      pCglSubWindow SW4     = new CglSubWindow(window2, CGL_RIGHT, 0.7);//400, 0, 400, 800);
+      pCglScene  scene4     = new CglScene(CGL_MANIPULATION);
+      pCglLight fill4       = new CglLight(0,8,15,    1,1,1,  300.0, false);
+      pCglLight side4       = new CglLight(-10,5,-3,  1,1,1,  70.0,  false);
+      pCglLight back4       = new CglLight(-10,5,-10, 1,1,1,  50.0,  false);
+
+      scene4->addLight( fill4 );
+      scene4->addLight( side4 );
+      scene4->addLight( back4 );
+      SW4->setScene(scene4);
+
+      cv.initGLEW();
+
+      //for (int i=3; i < 5; i++)
+      //  scene4->addObject(new CglMesh(argv[i+1]));
+      //if(cv.profile.initial_arrangement == CGL_ARRANGEMENT_GRID)
+      //  scene4->place_objects_on_grid();
+      scene4->load_meshes_from_file("cgl.save_1");
+
+      SW4->loadShaders();
+    }
+
+    else if(argc == 2){
+       pCglWindow window2 = new CglWindow(800, 0, 800, 800);
+
+      ////////////////////////////////////////////////////////////////////////////////////////////////
+      //PREMIERE SOUS FENETRE, LA PLUS GRANDE
+      ////////////////////////////////////////////////////////////////////////////////////////////////
+
+      pCglSubWindow SW3 = new CglSubWindow(window2, CGL_FULL);
+      pCglScene  scene3  = new CglScene(CGL_MANIPULATION);
+      pCglLight fill3    = new CglLight(0,8,15,    1,1,1,  300.0, false);
+      pCglLight side3    = new CglLight(-10,5,-3,  1,1,1,  70.0,  false);
+      pCglLight back3    = new CglLight(-10,5,-10, 1,1,1,  50.0,  false);
+
+      scene3->addLight( fill3 );
+      scene3->addLight( side3 );
+      scene3->addLight( back3 );
+      SW3->setScene(   scene3);
+      cv.initGLEW();
+
+      for (int i=0; i < argc-1; i++)
+        scene3->addObject(new CglMesh(argv[i+1]));
+      //if(cv.profile.initial_arrangement == CGL_ARRANGEMENT_GRID)
+      //  scene3->place_objects_on_column();
+      //scene3->load_meshes_from_file("cgl.save_0");
+
+      SW3->loadShaders();
+    }
   }
 
   else{

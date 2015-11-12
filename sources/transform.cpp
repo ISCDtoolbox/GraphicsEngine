@@ -12,7 +12,7 @@ void CglTransform::setRotation(glm::mat4 M){
 CglTransform::CglTransform(){
     xBounds = glm::vec2(-1,1);
     yBounds = glm::vec2(-10,10);
-    zBounds = glm::vec2(-0.5, 0.5);
+    zBounds = glm::vec2(-0.225, 0.225);
 };
 
 

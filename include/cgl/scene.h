@@ -18,11 +18,15 @@
 #include <cgl/group.h>
 #include <cgl/light.h>
 
+enum SCENE_TYPE{CGL_GALERY, CGL_MANIPULATION};
+
 class CGL_API CglScene
 {
 
 /////////////////////////////////////////////////////
 //Attributes
+public:
+    SCENE_TYPE scene_type;
 
 private:
 
@@ -47,6 +51,7 @@ private:
   //Properties
   bool                    selected;
   float                   globalScale;
+  float                   speedFactor;
 
 /////////////////////////////////////////////////////
 //Methods
@@ -58,7 +63,7 @@ public:
     std::vector<pCglLight> getLights(){return lights;}
 
   //Constructors
-  CglScene();
+  CglScene(SCENE_TYPE type = CGL_MANIPULATION);
   virtual ~CglScene();
   void load_meshes_from_file(string fileName);
 
@@ -74,8 +79,10 @@ public:
   pCglAxis                 getAxis(){return axis;}
   pCglView                 getView(){return view;}
   void                     setView(pCglView newView){view = newView;}
+  void                     setSpeed(float s){speedFactor = s;}
   pCglBackground           getBackground(){return background;}
   pCglTransform            getTransform(){return &transform;}
+  float                    getScale(){return globalScale;}
 
   //Accessors for matrices
   glm::mat4                 getMODEL(){ return MODEL;}
@@ -100,6 +107,7 @@ public:
   void                     undoLast();
   void                     resetAll();
   void                     place_objects_on_grid();
+  void                     place_objects_on_column();
   void                     save();
 
   //Picking

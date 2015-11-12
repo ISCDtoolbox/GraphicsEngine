@@ -24,20 +24,67 @@ CglMesh::CglMesh(char *name)
     vector<Normal>            normal;
     vector<NormalAtVertex>    NormalAtVertices;
 
-  /*
-  //Lecture du .sol
-  //std::string solFile   = meshFile.substr(0, meshFile.size()-5) + ".sol";
-  //cout << solFile << endl << endl;
-  //int ver2, dim2;
-  //int inMeshSol = GmfOpenMesh((char*)(solFile.c_str()), GmfRead, &ver2, &dim2);
-  //if(!inMeshSol){
-  //      exit(143);
-  //}
 
-  cout << "sol file opened" << endl;
-  int nSol      = GmfStatKwd(inMeshSol, GmfISolAtVertices);
-  cout << "size of solution = " << nSol << endl;
-  */
+  //Lecture du .sol
+    /*
+
+  std::string solFile   = meshFile.substr(0, meshFile.size()-5) + ".sol";
+  cout << solFile << endl << endl;
+  int ver2, dim2;
+  int inMeshSol = GmfOpenMesh((char*)(solFile.c_str()), GmfRead, &ver2, &dim2);
+  if(!inMeshSol){
+        exit(143);
+  }
+
+  cout << "sol file opened " << (char*)(solFile.c_str()) << endl;
+  int type, offset, typtab[GmfMaxTyp];
+  int nSol      = GmfStatKwd(inMeshSol, GmfSolAtVertices, &type, &offset, &typtab);
+  std::vector<float> values(nSol);
+    GmfGotoKwd(inMeshSol, GmfSolAtVertices);
+    for(int i = 0 ; i< nSol ; i++){
+        double val;
+        if ( ver2 == GmfFloat ){
+            GmfGetLin(inMeshSol, GmfSolAtVertices, &values[i]);
+        }
+        else{
+          GmfGetLin(inMeshSol, GmfSolAtVertices, &val);
+          values[i] = val;
+        }
+    }
+    GmfCloseMesh(inMeshSol);
+
+
+
+
+    float mini = 1e9;
+    float maxi = -1e9;
+    for(int i = 0 ; i < values.size() ; i++){
+        mini = min(mini, values[i]);
+        maxi = max(maxi, values[i]);
+    }
+    cout << "Min val = " << mini << " / " << "Max val = " << maxi << endl;
+
+
+  palette = new CglPalette( mini, maxi, CGL_PALETTE_BR );
+  palette->setBoundaries(mini, maxi);
+  std::vector<float> colors;
+  for(int i = 0 ; i < values.size() ; i++){
+    glm::vec3 col = palette->getColor(values[i]);
+    colors.push_back(col.x);
+    colors.push_back(col.y);
+    colors.push_back(col.z);
+    if(i < 100){
+        cout << col.x << " " << col.y << " " << col.z << endl;
+    }
+  }
+
+  //On attrape min et max du champ scalaire
+  //On créé la palette en conséquence
+  //On enregistre ce qu'il faut pour envoyer en uniforme
+
+*/
+
+
 
 
   inm = GmfOpenMesh(name,GmfRead,&ver,&dim);
@@ -45,6 +92,8 @@ CglMesh::CglMesh(char *name)
     //cout << "  ** FILE NOT FOUND.\n";
     exit(0);
   }
+
+
 
   np    = GmfStatKwd(inm, GmfVertices);
   nt    = GmfStatKwd(inm, GmfTriangles);
@@ -147,8 +196,10 @@ CglMesh::CglMesh(char *name)
     createBuffer(&indicesBuffer,    &indices);
     createBuffer(&normalBuffer,     &normals);
 
-  //TYPE DE RENDU ET SHADER
-  nTriangles = 3 * tria.size();
+    //createBuffer(&colorBuffer,      &colors);
+
+    //TYPE DE RENDU ET SHADER
+    nTriangles = 3 * tria.size();
 }
 
 /*
@@ -197,8 +248,9 @@ void CglMesh::getBBOX(std::vector<Point> &p)
     p0->c[2] -= tra.z;
   }
 
-  glm::vec3 size = bbmax - bbmin;
-  localScale     = 0.5f * 1.0f / (max( max(size.x, size.y) , size.z ));
+  glm::vec3 size    = bbmax - bbmin;
+  float maxDim      = max( max(size.x, size.y) , size.z );
+  localScale     = 0.5f / maxDim;
   //Independant scale -> Chaque objet est ramené de sorte que sa plus grande dimension egale 1.
   if(pcv->profile.independantScale){
     scaleFactor = localScale;
@@ -323,7 +375,7 @@ void CglMesh::displayReflection(){
 
     if(pcv->profile.displayBottomGrid)
         glEnable(GL_STENCIL_TEST);
-    draw(shaderID, nTriangles, meshBuffer, normalBuffer, indicesBuffer);
+    draw(shaderID, nTriangles, meshBuffer, normalBuffer, indicesBuffer, colorBuffer);
     if(pcv->profile.displayBottomGrid)
         glDisable(GL_STENCIL_TEST);
 
@@ -444,7 +496,7 @@ void CglMesh::display(){
 
         enableFog(shaderID);
         glPolygonMode(GL_FRONT, GL_FILL);
-        draw(shaderID, nTriangles, meshBuffer, normalBuffer, indicesBuffer);
+        draw(shaderID, nTriangles, meshBuffer, normalBuffer, indicesBuffer, colorBuffer);
         glDisable(GL_POLYGON_OFFSET_FILL);
 
         //Wireframe

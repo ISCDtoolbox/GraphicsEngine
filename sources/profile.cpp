@@ -31,6 +31,8 @@ void CglProfile::read_configuration_file(string fileName){
   globalScale       = false;
   bottomDistance    = 0.1;
   bottomAngle       = 0.0;
+  speed             = 1;
+
   //Modifiable variables
   displayBottomGrid = false;
   stereo            = false;

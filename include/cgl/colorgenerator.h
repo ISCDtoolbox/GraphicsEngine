@@ -47,52 +47,9 @@ class CglPalette
     std::vector<glm::vec4> colors;
 
 public:
-    CglPalette(float m, float M, CGL_PALETTE p){
-        mini    = m;
-        maxi    = M;
-        palette = p;
-
-        switch(palette){
-        case(CGL_PALETTE_JET):
-            colors.push_back(glm::vec4(0,   0,   0,   0.2));
-            colors.push_back(glm::vec4(0.3, 0,   0.2, 0.8));
-            colors.push_back(glm::vec4(0.5, 0.2, 0.8, 0.2));
-            colors.push_back(glm::vec4(0.7, 0.8, 0.2, 0.0));
-            colors.push_back(glm::vec4(1,   0.2, 0.0, 0.0));
-            break;
-        case(CGL_PALETTE_GRAY):
-            colors.push_back(glm::vec4(0,0,0,0));
-            colors.push_back(glm::vec4(1,1,1,1));
-            break;
-        case(CGL_PALETTE_BR):
-            colors.push_back(glm::vec4(0,0,0,0.5));
-            colors.push_back(glm::vec4(0.5,1,1,1));
-            colors.push_back(glm::vec4(1,0.5,0,0));
-            break;
-        }
-    }
-    CglPalette(){CglPalette(0.0, 1.0, CGL_PALETTE_JET);}
-
-    void setBoundaries(float m, float M){
-        mini = m;
-        maxi = M;
-    }
-
-    glm::vec3 getColor(float val){
-        val = (val-mini)/(maxi-mini);
-        for(int i = 0 ; i < colors.size() ; i++){
-            if(i==colors.size()-1){
-                float fac       = (val - colors[i-1][0])/(colors[i][0] - colors[i-1][0]);
-                glm::vec4 col   = (1-fac)*colors[i-1] + fac*colors[i];
-                return glm::vec3(col[1], col[2], col[3]);
-            }
-            else if(val>colors[i][0]){
-                float fac       = (val - colors[i][0])/(colors[i+1][0] - colors[i][0]);
-                glm::vec4 col   = (1-fac)*colors[i] + fac*colors[i+1];
-                return glm::vec3(col[1], col[2], col[3]);
-            }
-        }
-    }
+    CglPalette(float m = 0.0f, float M=1.0f, CGL_PALETTE p=CGL_PALETTE_JET);
+    void setBoundaries(float m, float M);
+    glm::vec3 getColor(float val);
 };
 
 #endif // CglCOLORGENERATOR_H

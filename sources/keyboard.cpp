@@ -1,4 +1,5 @@
 #include <fstream>
+#include <string>
 
 #include <cgl/keyboard.h>
 #include <cgl/cube.h>
@@ -256,12 +257,27 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
   //Save
   if(key == 's'){
     ofstream saveFile;
-    saveFile.open("cgl.save");
+    saveFile.open("cgl.save_" + std::to_string(scene->scene_type) );
     int numberMeshes = 0;
     for(int i = 0 ; i < scene->numObjects() ; i++)
       if(scene->getObject(i)->isMeshObject())
         numberMeshes++;
+
     saveFile << numberMeshes << endl;
+
+    std::vector<pCglGroup> WrittenGroups;
+    std::vector<int> groupIds;
+    for(int i = 0 ; i < scene->numObjects() ; i++){
+        bool written = false;
+        int groupID = 0;
+        for(int j = 0 ; j < WrittenGroups.size() ; j++){
+            if (scene->getObject(i)->getGroup() == WrittenGroups[j])
+                written = true;
+        }
+        if(!written)
+            WrittenGroups.push_back(scene->getObject(i)->getGroup());
+    }
+
     for(int i = 0 ; i < scene->numObjects() ; i++){
       if(scene->getObject(i)->isMeshObject()){
         pCglObject obj = scene->getObject(i);
@@ -271,7 +287,17 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
           saveFile << float(M[i][0]) << " " << float(M[i][1]) << " " << float(M[i][2]) << " " << float(M[i][3]) << endl;
         glm::vec3 c = *(obj->getCenterPtr());
         saveFile << c.x << " " << c.y << " " << c.z << endl;
-        saveFile << obj->getGroup() << endl;
+
+        if (obj->getGroup() == NULL)
+            saveFile << 0 << endl;
+        else{
+            for(int j = 0 ; j < WrittenGroups.size() ; j++){
+                if (obj->getGroup() == WrittenGroups[j]){
+                    saveFile << j+1 << endl;
+                }
+            }
+        }
+
       }
     }
     saveFile.close();
@@ -336,7 +362,6 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
             }
         }
     }
-
     //Cut
     if(key=='X'){
         pcv->clipboard.erase(pcv->clipboard.begin(), pcv->clipboard.end());
@@ -359,7 +384,6 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
         for(int i = 0 ; i < objectsToRemove.size() ; i++)
             scene->removeObject(objectsToRemove[i]);
     }
-
     //Paste
     if(key == 'V'){
         for(int i = 0 ; i < pcv->clipboard.size() ; i++){
@@ -376,8 +400,11 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
                 obj = new CglSphere(c.x, c.y, c.z);
             }
             scene->addObject(obj);
-            obj->setMODEL(pcv->clipboard[i].MODEL);
-            obj->setCenter(pcv->clipboard[i].center);
+            glm::vec3 newC = -glm::vec3(scene->getMODEL()[3]);// - scene->getLook();
+
+            obj->setMODEL(glm::translate(/*pcv->clipboard[i].MODEL*/glm::mat4(1), glm::vec3(newC.x, 0, newC.z)));
+
+            obj->setCenter(glm::vec3(newC.x, 0, newC.z));//pcv->clipboard[i].center);
             obj->select();
         }
         pcv->clipboard.erase(pcv->clipboard.begin(), pcv->clipboard.end());
@@ -389,6 +416,16 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
                 scene->removeObject(scene->getObject(i));
     }
 
+    //Speed
+    if(key == 'J'){
+        cout << pcv->profile.speed << endl;
+        if(pcv->profile.speed == 1){
+            pcv->profile.speed = 0.1;
+        }
+        else{
+            pcv->profile.speed = 1;
+        }
+    }
 
   lastKey = key;
 }
