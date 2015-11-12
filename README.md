@@ -52,7 +52,7 @@ further instructions about the use of SUscCGL.
 
 ##Examples
 
-![Example](screenshot_1.png?raw=true "NumeRO example")
+![Example](Screenshot_1.png?raw=true "NumeRO example")
 
 In order to execute sample applications based on SUscCGL, navigate to SUscCGL
 installation directory and type the following commands in a new prompt:
