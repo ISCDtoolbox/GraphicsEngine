@@ -2,13 +2,13 @@
 
 # INTRODUCTION
 
-SUscCGL (Sorbonne Universités SCientific Computer Graphics Library) is an C++ library, developed at ICS@SU (Institut du Calcul et de la Simulation), providing an Open Source Framework to ease the creation of 3D software applications in a scientific context.
+SUscCGL (Sorbonne Universités SCientific Computer Graphics Library) is a C++ library, developed at ICS@SU (Institut du Calcul et de la Simulation), providing an Open Source Framework to ease the creation of 3D software applications in a scientific context.
 
 Among the different features of SUscCGL, the developer will find all the tools necessary for:
 - Window and subwindow creation and management
 - 3D objects manipulation
 - Custom user interaction, via a graphical interface or mouse and keyboard shortcuts
-- Extensive rendering options (full material, lighting, background... customisation)
+- Extensive rendering options (material, lighting, background, color palettes... customisation)
 - ...
 
 # Installation (Mac OS & Linux)
@@ -73,6 +73,7 @@ To execute the app, just call the corresponding executable with the expected arg
 
 * [ICS@SU website](http://ics.sorbonne-universites.fr/)
 * [CMake download and installation](https://cmake.org/download/)
+* [mmgTools, a powerful remeshing toolbox](https://github.com/MmgTools/mmg)
 * [Interesting collection of tutorials on modern OpenGL](http://www.opengl-tutorial.org/)
 * [Medit documentation, .mesh and .sol file formats documentation](http://www.ann.jussieu.fr/frey/logiciels/Docmedit.dir/Docmedit.html#SECTION00030000000000000000)
 
