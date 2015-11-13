@@ -20,7 +20,8 @@ Mac OS support should be implemented soon.
 2. Install the external dependencies depending on your platform (Cf "Dependencies" below)
 3. Navigate to SUscCGL installation directory
 4. In a command prompt, type the following commands:
-5.      mkdir build 
+
+        mkdir build 
         cd build
         cmake ..
         make SUscCGL
@@ -39,7 +40,7 @@ The following packages need to be installed in order to use the library:
 Use "sudo apt-get install [Package_Name]" in order to install those packages.
 
 ### Mac OS
-As stated above, Mac OS is not ***yet*** fully supported. At leas XCode and CMake must be operational in order to compile the library, however serious performance issues make the practical use of the provided tools impossible at the time being.
+As stated above, Mac OS is not ***yet*** fully supported. At least XCode and CMake must be operational in order to compile the library, however serious performance issues make the practical use of the provided tools impossible at the time being.
 
 We hope however that a fix will be encountered really soon!
 
@@ -73,6 +74,7 @@ To execute the app, just call the corresponding executable with the expected arg
 * [ICS@SU website](http://ics.sorbonne-universites.fr/)
 * [CMake download and installation](https://cmake.org/download/)
 * [Interesting collection of tutorials on modern OpenGL](http://www.opengl-tutorial.org/)
+* [Medit documentation, .mesh and .sol file formats documentation](http://www.ann.jussieu.fr/frey/logiciels/Docmedit.dir/Docmedit.html#SECTION00030000000000000000)
 
 
 # License
