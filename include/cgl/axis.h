@@ -29,6 +29,7 @@ private:
   GLuint mainGridBuffer;
   GLuint secondaryGridBuffer;
   GLuint axesBuffer;
+  GLuint normalBuffer;
   glm::vec3 mins, maxs;
   //pCglMaterial    material;
 

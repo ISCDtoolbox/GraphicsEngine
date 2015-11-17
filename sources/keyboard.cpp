@@ -260,7 +260,6 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
     saveFile.open("cgl.save_" + std::to_string(scene->scene_type) );
     int numberMeshes = 0;
     for(int i = 0 ; i < scene->numObjects() ; i++)
-      if(scene->getObject(i)->isMeshObject())
         numberMeshes++;
 
     saveFile << numberMeshes << endl;
@@ -279,10 +278,9 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
     }
 
     for(int i = 0 ; i < scene->numObjects() ; i++){
-      if(scene->getObject(i)->isMeshObject()){
         pCglObject obj = scene->getObject(i);
         glm::mat4 M = obj->getMODEL();
-        saveFile << obj->meshFile << endl;
+        saveFile << obj->pGeom->meshFile << endl;
         for(int i = 0 ; i < 4 ; i++)
           saveFile << float(M[i][0]) << " " << float(M[i][1]) << " " << float(M[i][2]) << " " << float(M[i][3]) << endl;
         glm::vec3 c = *(obj->getCenterPtr());
@@ -297,8 +295,6 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
                 }
             }
         }
-
-      }
     }
     saveFile.close();
     cout << "Scene saved!!!" << endl;
@@ -348,17 +344,18 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
         pcv->clipboard.erase(pcv->clipboard.begin(), pcv->clipboard.end());
         for(int i = 0 ; i < scene->numObjects() ; i++){
             pCglObject obj = scene->getObject(i);
-            if(obj->isSelected()){
-                OBJECT_TYPE typ;
-                if(obj->isSuper()){typ = SUPER;}
-                else if(obj->isMeshObject()){typ = MESH;}
-                else{typ = SIMPLE;}
-                ClipBoard clip(typ,
-                               (char*)(obj->meshFile).c_str(),
-                               obj->getCenter(),
-                               obj->getMODEL());
-                pcv->clipboard.push_back(clip);
-                obj->unSelect();
+            if(obj->dynamic){
+                if(obj->isSelected()){
+                    OBJECT_TYPE typ;
+                    if(obj->isSuper()){typ = SUPER;}
+                    else{typ = SIMPLE;}
+                    ClipBoard clip(typ,
+                                   (char*)(obj->pGeom->meshFile).c_str(),
+                                   obj->getCenter(),
+                                   obj->getMODEL());
+                    pcv->clipboard.push_back(clip);
+                    obj->unSelect();
+                }
             }
         }
     }
@@ -368,17 +365,18 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
         std::vector<pCglObject> objectsToRemove;
         for(int i = 0 ; i < scene->numObjects() ; i++){
             pCglObject obj = scene->getObject(i);
-            if(obj->isSelected()){
-                OBJECT_TYPE typ;
-                if(obj->isSuper()){typ = SUPER;}
-                else if(obj->isMeshObject()){typ = MESH;}
-                else{typ = SIMPLE;}
-                ClipBoard clip(typ,
-                               (char*)(obj->meshFile).c_str(),
-                               obj->getCenter(),
-                               obj->getMODEL());
-                pcv->clipboard.push_back(clip);
-                objectsToRemove.push_back(obj);
+            if(obj->dynamic){
+                if(obj->isSelected()){
+                    OBJECT_TYPE typ;
+                    if(obj->isSuper()){typ = SUPER;}
+                    else{typ = SIMPLE;}
+                    ClipBoard clip(typ,
+                                   (char*)(obj->pGeom->meshFile).c_str(),
+                                   obj->getCenter(),
+                                   obj->getMODEL());
+                    pcv->clipboard.push_back(clip);
+                    objectsToRemove.push_back(obj);
+                }
             }
         }
         for(int i = 0 ; i < objectsToRemove.size() ; i++)
@@ -391,19 +389,45 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
 
             scene->unSelect();
             pCglObject obj = NULL;
-            if(object_type == MESH)
-                obj = new CglMesh( pcv->clipboard[i].fileName );
+            int nT = 0;
+            for(int iS = 0 ; iS < pcv->getScenes().size() ; iS++){
+                for(int iO = 0 ; iO < pcv->getScene(iS)->getObjectList()->size() ; iO++){
+                    pCglObject pOBJ = pcv->getScene(iS)->getObject(iO);
+                    if((char*)(pOBJ->pGeom->meshFile).c_str() == pcv->clipboard[i].fileName){
+                        obj = new CglMesh(pOBJ);
+                        break;
+                    }
+                }
+            }
             //else if(object_type == SUPER)
-            //    obj =
+            /*
             else{
                 glm::vec3 c = pcv->clipboard[i].center;
                 obj = new CglSphere(c.x, c.y, c.z);
             }
+            */
             scene->addObject(obj);
-            glm::vec3 newC = -glm::vec3(scene->getMODEL()[3]);// - scene->getLook();
+
+
+
+
+            //if
+            //glm::vec3 newC = -glm::vec3(scene->getMODEL()[3]);// - scene->getLook();
+            glm::vec3 plane(0, -pcv->profile.bottomDistance, 0);
+            glm::vec3 planeNormal(0,1,0);
+            bool intersects;
+            glm::vec3 ray;
+            glm::vec3 inter;
+            ray = pcv->getScene()->getRayVector(x,y);
+            inter     = pcv->getScene()->intersect(ray, plane, planeNormal, intersects);
+            glm::vec3 newC;
+            if(intersects)
+                newC = inter;
+
+
+
 
             obj->setMODEL(glm::translate(/*pcv->clipboard[i].MODEL*/glm::mat4(1), glm::vec3(newC.x, 0, newC.z)));
-
             obj->setCenter(glm::vec3(newC.x, 0, newC.z));//pcv->clipboard[i].center);
             obj->select();
         }
@@ -411,9 +435,12 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
     }
     //Suppr
     if(key == 'D'){
+        std::vector<pCglObject> objectsToRemove;
         for(int i = 0 ; i < scene->numObjects() ; i++)
             if(scene->getObject(i)->isSelected())
-                scene->removeObject(scene->getObject(i));
+                objectsToRemove.push_back(scene->getObject(i));
+        for(int i = 0 ; i < objectsToRemove.size() ; i++)
+            scene->removeObject(objectsToRemove[i]);
     }
 
     //Speed

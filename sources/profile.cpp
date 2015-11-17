@@ -90,8 +90,9 @@ void CglProfile::read_configuration_file(string fileName){
 	  colors              = static_cast<CGL_COLORS>(stoi(str.substr(str.find(" ")+1,str.length())));
 	if(firstWord == "THEME")
 	  theme               = static_cast<CGL_THEME>(stoi(str.substr(str.find(" ")+1,str.length())));
-	//if(firstWord == "GROUND")
-	//	ground              = static_cast<CGL_GROUND>(stoi(str.substr(str.find(" ")+1,str.length())));
+	if(firstWord == "GROUND")
+        ground              = static_cast<CGL_GROUND>(stoi(str.substr(str.find(" ")+1,str.length())));
+    cout << "GROUND = " << ground << endl;
 
 	//Fixed variables
 	if(firstWord == "INVERT_VERTICAL")
@@ -189,8 +190,9 @@ void CglProfile::update_colors(){
 void CglProfile::update_objects_colors(){
   for(int i = 0 ; i < pcv->getObjectList()->size() ; i++){
     pCglObject obj = (*pcv->getObjectList())[i];
-    if (obj->isMeshObject())
+    if(obj->dynamic){
       obj->setColor(color());
+    }
   }
 }
 
@@ -201,13 +203,15 @@ void CglProfile::update_theme(){
     grid_color = glm::vec3(0.65, 0.65, 0.65);
     idle_color = glm::vec3(0.8,  0.8,  0.8);
     sele_color = glm::vec3(1,    0.6,  0);
-    ground     = CGL_GROUND_REFLECTION;
+    if(ground != CGL_GROUND_NONE)
+        ground     = CGL_GROUND_REFLECTION;
   }
   if( (theme == CGL_THEME_CLEAR) || (theme == CGL_THEME_WHITE) ){
     grid_color = glm::vec3(0.4,  0.4,  0.4);
     idle_color = glm::vec3(0.15, 0.15, 0.15);
     sele_color = glm::vec3(1,    0.6,  0);
-    ground         = CGL_GROUND_SHADOWS;
+    if(ground != CGL_GROUND_NONE)
+        ground         = CGL_GROUND_SHADOWS;
   }
 
   //Ground update

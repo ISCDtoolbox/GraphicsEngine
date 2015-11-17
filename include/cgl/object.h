@@ -14,6 +14,19 @@
 #include <cgl/material.h>
 #include <cgl/colorgenerator.h>
 
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+
+int  initProgram(int ID);
+void createBuffer(GLuint *pBuffer, std::vector<float> *data);
+void createBuffer(GLuint *pBuffer, std::vector<short> *data);
+void createBuffer(GLuint *pBuffer, std::vector<int>   *data);
+void bindBuffer(int attrib, int bufferType, GLuint buffer);
+void freeBuffer();
+void draw(int ID, int s, int mBuffer, int nBuffer, int iBuffer, int cBuffer = -1);
+void uniform(int ID, float     f);
+void uniform(int ID, glm::vec3 v);
+void uniform(int ID, glm::mat4 &m);
+
 class               CglScene;
 class               CglObject;
 class               CglGroup;
@@ -21,13 +34,74 @@ typedef CglScene*   pCglScene;
 typedef CglObject*  pCglObject;
 typedef CglGroup*   pCglGroup;
 
+typedef struct {
+  double    c[3];
+  int       ref;
+} Point;
+//typedef Point * pPoint;
+typedef struct {
+  int       v[3],ref;
+} Tria;
+//typedef Tria * pTria;
+typedef struct {
+  double    n[3];
+} Normal;
+//typedef Normal * pNormal;
+typedef struct {
+  int inds[2];
+} NormalAtVertex;
+
+enum GEOMETRY{CGL_CUBE, CGL_SPHERE, CGL_CYLINDER, CGL_PLANE, CGL_MESH};
+class CglGeometry;
+typedef CglGeometry* pCglGeometry;
+class CglGeometry{
+
+public:
+
+    GEOMETRY            geometry;
+
+    std::string         meshFile;
+    CglPalette*         palette;
+
+    std::vector<float>  vertices;
+    std::vector<float>  normals;
+    std::vector<float>  colors;
+    std::vector<int>    indices;
+    int                 nTriangles;
+
+    GLuint              mBuffer;
+    GLuint              nBuffer;
+    GLuint              cBuffer;
+    GLuint              iBuffer;
+    GLuint              bbmBuffer;
+    GLuint              bbiBuffer;
+
+    float               localScale;
+    float               scaleFactor;
+
+    glm::vec3 bbmin, bbmax;
+    glm::vec3 tra;
+
+    CglGeometry(GEOMETRY geom = CGL_CUBE, char* file = "");
+    //CglGeometry(pCglGeometry geom);
+    void        getBBOX(std::vector<float> &V);
+    void        computeBuffers();
+};
 
 class CGL_API CglObject
 {
+public:
+
+    pCglGeometry pGeom;
+    bool         dynamic;
+
+
+    float       localScale;
+    float       scaleFactor;
+
+
   public:
     CglTransform            transform;
-    string                  meshFile;
-    CglPalette*             palette;
 
     //Links with other objects
     std::vector<pCglObject> listPart;
@@ -39,24 +113,13 @@ class CGL_API CglObject
     pCglMaterial    pMaterial;
 
     //GEOMETRY
-    bool        isMesh;
-    float       localScale;
-    float       scaleFactor;
-
-    GLuint      meshBuffer;
-    GLuint      normalBuffer;
-    GLuint      indicesBuffer;
-    GLuint      colorBuffer;
-
     int         objectID;
     glm::vec3   pickingColor;
-    int         nTriangles;
 
     //POSTIONS, TRANSFORMATIONS
     glm::mat4   MODEL;
     glm::vec3   center;
     glm::vec3   *rotationCenter;
-
     bool        isRotationConstrained;
     bool        isTranslationConstrained;
     glm::vec3   constrainedRotationAxis;
@@ -73,6 +136,7 @@ class CGL_API CglObject
   //Public methods
   public:
     CglObject();
+    CglObject(pCglObject obj);//Copy constructor
     virtual ~CglObject();
 
     void setScene(pCglScene pSc, int ID){
@@ -111,7 +175,6 @@ class CGL_API CglObject
   public:
     virtual glm::vec3 getBBMIN(){};
     virtual glm::vec3 getBBMAX(){};
-    bool  isMeshObject(){return isMesh;}
     glm::mat4 getMODEL(){return MODEL;}
     glm::vec3 getRotationCenter(){return *rotationCenter;}
     glm::vec3 getCenter(){return center;}
@@ -154,16 +217,7 @@ class CGL_API CglObject
     //OPNEGL "Facilitators"
     void enableFog(int ID);
     void disableFog(int ID);
-    int  initProgram(int ID);
-    void createBuffer(GLuint *pBuffer, std::vector<float> *data);
-    void createBuffer(GLuint *pBuffer, std::vector<short> *data);
-    void createBuffer(GLuint *pBuffer, std::vector<int>   *data);
-    void bindBuffer(int attrib, int bufferType, GLuint buffer);
-    void freeBuffer();
-    void draw(int ID, int s, int mBuffer, int nBuffer, int iBuffer, int cBuffer = -1);
-    void uniform(int ID, float     f);
-    void uniform(int ID, glm::vec3 v);
-    void uniform(int ID, glm::mat4 &m);
+
 
 protected:
   virtual void cglInit();
@@ -171,94 +225,6 @@ protected:
 };
 
 typedef CglObject* pCglObject;
-
-
-/*
-//OPNEGL "Facilitators"
-void enableFog(int ID);
-void disableFog(int ID);
-int  initProgram(int ID);
-void createBuffer(int *pBuffer, std::vector<float> *data);//GLuint
-void createBuffer(int *pBuffer, std::vector<short> *data);//GLuint
-void createBuffer(int *pBuffer, std::vector<int>   *data);//GLuint
-void bindBuffer(int attrib, int bufferType, GLuint buffer);
-void freeBuffer();
-void draw(int ID, int s, int mBuffer, int nBuffer, int iBuffer);
-void uniform(int ID, float     f);
-void uniform(int ID, glm::vec3 v);
-void uniform(int ID, glm::mat4 &m);
-*/
-
-
-
-/*
-//Structures pour la lecture des .mesh
-typedef struct {
-  double    c[3];
-  int       ref;
-} Point; //typedef Point * pPoint;
-typedef struct {
-  int       v[3],ref;
-} Tria;//typedef Tria * pTria;
-typedef struct {
-  double    n[3];
-} Normal;//typedef Normal * pNormal;
-typedef struct {
-  int inds[2];
-} NormalAtVertex;
-
-enum GEOMETRY{CGL_CUBE, CGL_SPHERE, CGL_CYLINDER, CGL_PLANE, CGL_MESH};
-
-class CglGeometry{
-public:
-    GEOMETRY            geometry;
-    std::vector<float>  vertices;
-    std::vector<float>  normals;
-    std::vector<int>    indices;
-    int                 nTriangles;
-
-    int                 mBuffer;
-    int                 nBuffer;
-    int                 cBuffer;
-    int                 iBuffer;
-    int                 bbmBuffer;
-    int                 bbiBuffer;
-
-    float               localScale;
-    float               scaleFactor;
-
-    glm::vec3 bbmin, bbmax;
-    glm::vec3 tra;
-    std::string meshFile;
-
-    CglGeometry();
-    CglGeometry(GEOMETRY geom);
-    CglGeometry(char* file);
-    void        getBBOX(std::vector<Point> &p);
-    void        computeBuffers();
-};
-typedef CglGeometry* pCglGeometry;
-
-
-            CglGeometry::CglGeometry();
-            CglGeometry::CglGeometry(GEOMETRY geom);
-            CglGeometry::CglGeometry(char* file);
-void        CglGeometry::getBBOX(std::vector<Point> &p);
-void        CglGeometry::computeBuffers();
-
-
-#endif
-
-*/
-
-
-
-
-
-
-
-
-
 
 
 #endif

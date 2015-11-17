@@ -6,291 +6,28 @@ extern "C" {
 #include <cgl/canvas.h>
 extern CglCanvas *pcv;
 
-CglMesh::CglMesh(char *name)
-{
-    int np,nt,nn,dim,ver, nNAtV;
-    isMesh   = true;
-    Point    *ppt;
-    Tria     *pt;
-    double   *n,dd;
-    float     fp1,fp2,fp3;
-    int       k,inm;
-    meshFile  = std::string(name);
-    cout << "Reading: " << name << " " << endl;
-
-    //Peuvent faire partie de la classe
-    vector<Point>             point;
-    vector<Tria>              tria;
-    vector<Normal>            normal;
-    vector<NormalAtVertex>    NormalAtVertices;
-
-
-  //Lecture du .sol
-    /*
-
-  std::string solFile   = meshFile.substr(0, meshFile.size()-5) + ".sol";
-  cout << solFile << endl << endl;
-  int ver2, dim2;
-  int inMeshSol = GmfOpenMesh((char*)(solFile.c_str()), GmfRead, &ver2, &dim2);
-  if(!inMeshSol){
-        exit(143);
-  }
-
-  cout << "sol file opened " << (char*)(solFile.c_str()) << endl;
-  int type, offset, typtab[GmfMaxTyp];
-  int nSol      = GmfStatKwd(inMeshSol, GmfSolAtVertices, &type, &offset, &typtab);
-  std::vector<float> values(nSol);
-    GmfGotoKwd(inMeshSol, GmfSolAtVertices);
-    for(int i = 0 ; i< nSol ; i++){
-        double val;
-        if ( ver2 == GmfFloat ){
-            GmfGetLin(inMeshSol, GmfSolAtVertices, &values[i]);
-        }
-        else{
-          GmfGetLin(inMeshSol, GmfSolAtVertices, &val);
-          values[i] = val;
-        }
-    }
-    GmfCloseMesh(inMeshSol);
-
-
-
-
-    float mini = 1e9;
-    float maxi = -1e9;
-    for(int i = 0 ; i < values.size() ; i++){
-        mini = min(mini, values[i]);
-        maxi = max(maxi, values[i]);
-    }
-    cout << "Min val = " << mini << " / " << "Max val = " << maxi << endl;
-
-
-  palette = new CglPalette( mini, maxi, CGL_PALETTE_BR );
-  palette->setBoundaries(mini, maxi);
-  std::vector<float> colors;
-  for(int i = 0 ; i < values.size() ; i++){
-    glm::vec3 col = palette->getColor(values[i]);
-    colors.push_back(col.x);
-    colors.push_back(col.y);
-    colors.push_back(col.z);
-    if(i < 100){
-        cout << col.x << " " << col.y << " " << col.z << endl;
-    }
-  }
-
-  //On attrape min et max du champ scalaire
-  //On créé la palette en conséquence
-  //On enregistre ce qu'il faut pour envoyer en uniforme
-
-*/
-
-
-
-
-  inm = GmfOpenMesh(name,GmfRead,&ver,&dim);
-  if ( !inm ){
-    //cout << "  ** FILE NOT FOUND.\n";
-    exit(0);
-  }
-
-
-
-  np    = GmfStatKwd(inm, GmfVertices);
-  nt    = GmfStatKwd(inm, GmfTriangles);
-  nn    = GmfStatKwd(inm, GmfNormals);
-  //Normals At vertices
-  nNAtV = GmfStatKwd(inm, GmfNormalAtVertices);
-
-  if ( !np ){
-    cout << "  ** MISSING DATA\n";
-    exit(0);
-  }
-
-  point.resize(np);
-  GmfGotoKwd(inm,GmfVertices);
-  for (k=0; k<np; k++){
-    ppt = &point[k];
-    if ( ver == GmfFloat ){
-      GmfGetLin(inm,GmfVertices,&fp1,&fp2,&fp3,&ppt->ref);
-      ppt->c[0] = fp1;
-      ppt->c[1] = fp2;
-      ppt->c[2] = fp3;
-    }
-    else
-      GmfGetLin(inm,GmfVertices,&ppt->c[0],&ppt->c[1],&ppt->c[2],&ppt->ref);
-  }
-
-  //read triangles
-  tria.resize(nt);
-  GmfGotoKwd(inm,GmfTriangles);
-  for (k=0; k<nt; k++) {
-    pt = &tria[k];
-    GmfGetLin(inm,GmfTriangles,&pt->v[0],&pt->v[1],&pt->v[2],&pt->ref);
-  }
-
-  normal.resize(np);
-  if ( nn ) {
-    GmfGotoKwd(inm,GmfNormals);
-    for (k=0; k<nn; k++) {
-      if ( ver == GmfFloat ) {
-        GmfGetLin(inm,GmfNormals,&fp1,&fp2,&fp3);
-        normal[k].n[0] = fp1;
-        normal[k].n[1] = fp2;
-        normal[k].n[2] = fp3;
-      }
-      else
-        GmfGetLin(inm,GmfNormals,&normal[k].n[0],&normal[k].n[1],&normal[k].n[2]);
-      n  = normal[k].n;
-      dd = 1.0 / sqrt(n[0]*n[0] + n[1]*n[1] + n[2]*n[2]);
-      n[0] *= dd;
-      n[1] *= dd;
-      n[2] *= dd;
-    }
-  }
-
-  //Calcul de la bounding box
-  getBBOX(point);
-
-  //Préparation des buffers
-  std::vector<float> vertices;
-  std::vector<int>   indices;
-  int inv = ((pcv->profile.invertVertical)?-1:1);
-
-  //Buffer des vertices
-  for (int i = 0 ; i < point.size() ; i++){
-    vertices.push_back(      point[i].c[0]);
-    vertices.push_back(inv * point[i].c[1]);
-    vertices.push_back(inv * point[i].c[2]);
-  }
-
-  //Buffer des indices
-  for (int i = 0 ; i < tria.size() ; i++)
-    for(int j = 0 ; j < 3 ; j++)
-      indices.push_back(tria[i].v[j]-1);
-
-
-  //Lecture des NormalsAtVertices pour faire les normales
-  NormalAtVertices.resize(nNAtV + 1);
-  //Lecture du .mesh
-  if ( nNAtV ) {
-    GmfGotoKwd(inm,GmfNormalAtVertices);
-    for (k=0; k<nNAtV; k++)
-      GmfGetLin(inm,GmfNormalAtVertices,
-                &NormalAtVertices[k].inds[0],
-                &NormalAtVertices[k].inds[1]);
-  }
-  //Initialisation des normals à 0 pour les vertices n'ayant pas de normales
-  std::vector<float> normals;
-  for(int i = 0 ; i < vertices.size() ; i++)
-    normals.push_back(0.0f);
-  //Remplissage du vector 1D "normals", envoyé plus tard aux buffers
-  for(int i = 0 ; i < NormalAtVertices.size() - 1 ; i++){
-    int indV = NormalAtVertices[i].inds[0] - 1;
-    int indN = NormalAtVertices[i].inds[1] - 1;
-    normals[3 * indV + 0] =       normal[indN].n[0];
-    normals[3 * indV + 1] = inv * normal[indN].n[1];
-    normals[3 * indV + 2] = inv * normal[indN].n[2];
-  }
-
-    createBuffer(&meshBuffer,       &vertices);
-    createBuffer(&indicesBuffer,    &indices);
-    createBuffer(&normalBuffer,     &normals);
-
-    //createBuffer(&colorBuffer,      &colors);
-
-    //TYPE DE RENDU ET SHADER
-    nTriangles = 3 * tria.size();
+CglMesh::CglMesh(pCglObject M){
+    pGeom = new CglGeometry(*(M->pGeom));
+    pGeom->computeBuffers();
 }
 
+CglMesh::CglMesh(char *name){
+    pGeom = new CglGeometry(CGL_MESH, name);
+}
 /*
-void CglMesh::meshInfo(const int& verbose, ostream& outstr)
-{
-  //cout << " \t\t MeshInfo \n" << endl;
-  cout << "np: " << np << ", nt: " << nt << ", nn:" << nn << ", dim: " << dim << ", ver: " << ver << endl;
-  if (verbose){
-    cout << "Points" << endl;
-    for (int i = 0; i < np; i++)
-      cout << point[i].c[0] << ", " << point[i].c[1] << ", " << point[i].c[2] << ", " << point[i].ref << endl;
-    cout << "Triangles" << endl;
-    for (int i = 0; i < nt; i++)
-      cout << tria[i].v[0] << ", " << tria[i].v[1] << ", " << tria[i].v[2] << ", " << tria[i].ref << endl;
-    cout << "Normals" << endl;
-    for (int i = 0; i < nn; i++)
-      cout << normal[i].n[0] << ", " << normal[i].n[1] << ", " << normal[i].n[2] << endl;
-  }
-}
-*/
-
-void CglMesh::getBBOX(std::vector<Point> &p)
-{
-  //Init
-  Point *p0;
-  bbmin = glm::vec3(FLOAT_MAX);
-  bbmax = glm::vec3(-FLOAT_MAX);
-
-  //Compute bounding box
-  for (int k=0; k<p.size(); k++) {
-    p0 = &(p[k]);
-    if ( p0->c[0] < bbmin.x ) bbmin.x = p0->c[0];
-    if ( p0->c[0] > bbmax.x ) bbmax.x = p0->c[0];
-    if ( p0->c[1] < bbmin.y ) bbmin.y = p0->c[1];
-    if ( p0->c[1] > bbmax.y ) bbmax.y = p0->c[1];
-    if ( p0->c[2] < bbmin.z ) bbmin.z = p0->c[2];
-    if ( p0->c[2] > bbmax.z ) bbmax.z = p0->c[2];
-  }
-
-  //Translate mesh to center
-  tra = 0.5f * (bbmin + bbmax);
-  for (int k=0; k<p.size(); k++) {
-    p0 = &(p[k]);
-    p0->c[0] -= tra.x;
-    p0->c[1] -= tra.y;
-    p0->c[2] -= tra.z;
-  }
-
-  glm::vec3 size    = bbmax - bbmin;
-  float maxDim      = max( max(size.x, size.y) , size.z );
-  localScale     = 0.5f / maxDim;
-  //Independant scale -> Chaque objet est ramené de sorte que sa plus grande dimension egale 1.
-  if(pcv->profile.independantScale){
-    scaleFactor = localScale;
-  }
-  //ELSE: C'EST LA SCENE QUI SE CHARGE DENVOYER LE PATE
-
-  //Bounding box buffer
-  std::vector<float> cube{
-    -0.5, -0.5, -0.5,
-     0.5, -0.5, -0.5,
-     0.5,  0.5, -0.5,
-    -0.5,  0.5, -0.5,
-    -0.5, -0.5,  0.5,
-     0.5, -0.5,  0.5,
-     0.5,  0.5,  0.5,
-    -0.5,  0.5,  0.5
-  };
-
-  //Indices buffer
-  std::vector<short> elements{
-    0, 1, 2, 3,
-    4, 5, 6, 7,
-    0, 4, 1, 5, 2, 6, 3, 7
-  };
-
-  createBuffer(&bboxBuffer, &cube);
-  createBuffer(&bboxIndBuffer, &elements);
-  freeBuffer();
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////
-//                      SHADOWS & REFLECTION
-///////////////////////////////////////////////////////////////////////////
 void CglMesh::shadowsDisplay(){
     if(pcv->profile.displayShadows && !hidden){
         displayShadow();
     }
     else if(pcv->profile.displayReflection){
+        displayReflection();
+    }
+}*/
+void CglMesh::shadowsDisplay(){
+    if((pcv->profile.ground==CGL_GROUND_SHADOWS) && !hidden){
+        displayShadow();
+    }
+    else if((pcv->profile.ground==CGL_GROUND_REFLECTION)){
         displayReflection();
     }
 }
@@ -336,7 +73,7 @@ void CglMesh::displayShadow(){
 
     if(pcv->profile.displayBottomGrid)
         glEnable(GL_STENCIL_TEST);
-    draw(shaderID, nTriangles, meshBuffer, -1, indicesBuffer);
+    draw(shaderID, pGeom->nTriangles, pGeom->mBuffer, pGeom->nBuffer, pGeom->iBuffer, pGeom->cBuffer);
     if(pcv->profile.displayBottomGrid)
         glDisable(GL_STENCIL_TEST);
     freeBuffer();
@@ -375,7 +112,7 @@ void CglMesh::displayReflection(){
 
     if(pcv->profile.displayBottomGrid)
         glEnable(GL_STENCIL_TEST);
-    draw(shaderID, nTriangles, meshBuffer, normalBuffer, indicesBuffer, colorBuffer);
+    draw(shaderID, pGeom->nTriangles, pGeom->mBuffer, pGeom->nBuffer, pGeom->iBuffer, pGeom->cBuffer);
     if(pcv->profile.displayBottomGrid)
         glDisable(GL_STENCIL_TEST);
 
@@ -384,10 +121,6 @@ void CglMesh::displayReflection(){
     glCullFace(GL_BACK);
 }
 
-
-///////////////////////////////////////////////////////////////////////////
-//                      ARTIFACTS
-///////////////////////////////////////////////////////////////////////////
 void CglMesh::artifactsDisplay(){
     if(!hidden){
         int shaderID                = initProgram(pcv->simpleID());
@@ -405,7 +138,7 @@ void CglMesh::artifactsDisplay(){
             glDisable(GL_DEPTH_TEST);
             uniform(colorID,  selection_color);
             uniform(MatrixID, MVP);
-            draw(shaderID, nTriangles, meshBuffer, -1, indicesBuffer);
+            draw(shaderID, pGeom->nTriangles, pGeom->mBuffer, -1, pGeom->iBuffer);
             glEnable(GL_DEPTH_TEST);
             glLineWidth(1.0);
         }
@@ -414,13 +147,13 @@ void CglMesh::artifactsDisplay(){
         if(box){
             glEnable(GL_POLYGON_OFFSET_LINE);
             glPolygonOffset(10,0);
-            glm::mat4 SCALE = glm::scale(MVP, 1.02f * (bbmax - bbmin));
+            glm::mat4 SCALE = glm::scale(MVP, 1.02f * (pGeom->bbmax - pGeom->bbmin));
             glm::vec3 color = ((isSelected())?selection_color:pcv->profile.idle_color);
             uniform( MatrixID, SCALE);
             uniform(colorID, color);
             glLineWidth(((isSelected())?2.0:1.0));
-            bindBuffer(0, GL_ARRAY_BUFFER, bboxBuffer);
-            bindBuffer(-1, GL_ELEMENT_ARRAY_BUFFER, bboxIndBuffer);
+            bindBuffer(0, GL_ARRAY_BUFFER, pGeom->bbmBuffer);
+            bindBuffer(-1, GL_ELEMENT_ARRAY_BUFFER, pGeom->bbiBuffer);
             glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0);
             glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, (GLvoid*)(4*sizeof(GLushort)));
             glDrawElements(GL_LINES, 8, GL_UNSIGNED_SHORT, (GLvoid*)(8*sizeof(GLushort)));
@@ -461,16 +194,14 @@ void CglMesh::artifactsDisplay(){
     }
 }
 
-
-///////////////////////////////////////////////////////////////////////////
-//                      MAIN DISPLAY
-///////////////////////////////////////////////////////////////////////////
 void CglMesh::display(){
     if(!hidden){
         glEnable(GL_CULL_FACE);
         glEnable(GL_POLYGON_OFFSET_FILL);
         glPolygonOffset(1.0,1.0);
         int shaderID                = initProgram(((pcv->profile.smooth)? pcv->smoothID() : pcv->flatID()));
+        if(line)
+            shaderID = initProgram(pcv->simpleID());
         int MatrixID                = glGetUniformLocation(shaderID, "MVP");
         int colorID                 = glGetUniformLocation(shaderID, "COL");
         GLuint MID                  = glGetUniformLocation(shaderID, "M");
@@ -490,18 +221,20 @@ void CglMesh::display(){
         uniform( MID, M);
         uniform( VID, V);
         uniform( colorID, color);
+        if(line)
+            uniform(colorID, glm::vec3(1,1,1));
         uniform( fill_light_ID, *(lights[0]->getLightMatrix(pMaterial)));
         uniform( side_light_ID, *(lights[1]->getLightMatrix(pMaterial)));
         uniform( back_light_ID, *(lights[2]->getLightMatrix(pMaterial)));
 
         enableFog(shaderID);
         glPolygonMode(GL_FRONT, GL_FILL);
-        draw(shaderID, nTriangles, meshBuffer, normalBuffer, indicesBuffer, colorBuffer);
+        draw(shaderID, pGeom->nTriangles, pGeom->mBuffer, pGeom->nBuffer, pGeom->iBuffer, pGeom->cBuffer);
         glDisable(GL_POLYGON_OFFSET_FILL);
 
         //Wireframe
         if(line){
-            shaderID = initProgram(pcv->smoothID());
+            shaderID = initProgram(pcv->flatID());
             MatrixID = glGetUniformLocation(shaderID, "MVP");
             colorID  = glGetUniformLocation(shaderID, "COL");
             color = ((isSelected())?0.6f * selection_color:0.6f * pMaterial->getColor());
@@ -509,7 +242,7 @@ void CglMesh::display(){
             uniform( colorID, color);
             glDisable(GL_POLYGON_OFFSET_FILL);
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            draw(shaderID, nTriangles, meshBuffer, -1, indicesBuffer);
+            draw(shaderID, pGeom->nTriangles, pGeom->mBuffer, -1, pGeom->iBuffer);
         }
 
         freeBuffer();

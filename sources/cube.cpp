@@ -4,7 +4,7 @@
 extern CglCanvas *pcv;
 
 #include <algorithm>
-
+/*
 std::vector<Point> tovecs3(std::vector<float> V0){
     std::vector<Point> V1;
     for(int i = 0 ; i < V0.size() ; i+=3){
@@ -273,3 +273,5 @@ void CglCylinder::init(float x,  float y,  float z,
     freeBuffer();
 }
 CglCylinder::~CglCylinder(){}
+
+*/

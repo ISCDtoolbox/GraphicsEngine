@@ -48,16 +48,17 @@ CglScene::~CglScene(){
 
 
 void CglScene::addObject(pCglObject object){
-  //Ajout de l'objet à la scène
-  listObject.push_back(object);
-  object->setScene(this, numObjects());
 
-  //Création des axes
-  if(numObjects()==1){
+    //Création des axes
+  if(numObjects()==0){
     axis = new CglAxis();
     axis->setScene(this, 0);
     axis->view = view;
   }
+
+  //Ajout de l'objet à la scène
+  listObject.push_back(object);
+  object->setScene(this, numObjects());
 
   globalScale = min(globalScale, object->getLocalScale());
 }
@@ -211,10 +212,6 @@ void CglScene::save(){
 }
 
 
-
-//Dragging
-void CglScene::onDrag(int x, int y){}
-
 float CglScene::orientedAngle(glm::vec3 pt1,
 			      glm::vec3 pt2,
 			      glm::vec3 c,
@@ -225,7 +222,24 @@ float CglScene::orientedAngle(glm::vec3 pt1,
                               );
   return a;
 }
+glm::vec3 CglScene::intersect(glm::vec3 ray,
+			      glm::vec3 plane,
+			      glm::vec3 planeNormal,
+			      bool      &intersects){
+  float      intersectDist;
+  glm::vec3  intersection;
+  intersects = glm::intersectRayPlane(m_cam,
+				      ray,
+				      plane,
+				      planeNormal,
+				      intersectDist);
+  if(intersects)
+    intersection = m_cam + intersectDist * ray;
+  return intersection;
+}
 
+//Dragging
+void CglScene::onDrag(int x, int y){}
 void CglScene::onLeftDrag(int x, int y){
   glm::vec3 planeNormal(0,1,0);
   bool intersects, intersectsLast;
@@ -240,7 +254,7 @@ void CglScene::onLeftDrag(int x, int y){
   if(pcv->profile.camera == CGL_CAM_UPPER_SPHERE)
     ROT = glm::mat4(  glm::angleAxis(f*dy, glm::normalize(m_right))  *  glm::angleAxis(f*dx, glm::vec3(0,1,0)) );
   else if(pcv->profile.camera == CGL_CAM_FULL_SPHERE)
-    ROT = glm::mat4( glm::angleAxis(f*dy, m_right) * glm::angleAxis(f*dx, m_up) );
+    ROT = glm::mat4( glm::angleAxis(f*dy, glm::normalize(m_right)) * glm::angleAxis(f*dx, glm::normalize(m_up)) );
   if (isSelected())
     transform.setRotation(ROT);
 
@@ -262,23 +276,6 @@ void CglScene::onLeftDrag(int x, int y){
   }
   lastDrag = glm::vec2(x,y);
 }
-
-glm::vec3 CglScene::intersect(glm::vec3 ray,
-			      glm::vec3 plane,
-			      glm::vec3 planeNormal,
-			      bool      &intersects){
-  float      intersectDist;
-  glm::vec3  intersection;
-  intersects = glm::intersectRayPlane(m_cam,
-				      ray,
-				      plane,
-				      planeNormal,
-				      intersectDist);
-  if(intersects)
-    intersection = m_cam + intersectDist * ray;
-  return intersection;
-}
-
 void CglScene::onMiddleDrag(int x, int y){
   glm::vec3 plane(0, -pcv->profile.bottomDistance, 0);
   glm::vec3 planeNormal(0,1,0);
@@ -384,7 +381,6 @@ void CglScene::applyTransformation(){
     m_cam   +=  transform.tr;
     m_look  =   glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_look,0)));
     m_up    =   glm::normalize(glm::vec3(glm::inverse(transform.rot) * glm::vec4(m_up,1)));
-
     VIEW = glm::lookAt(m_cam + view->camOffset * m_right,
                        m_cam + view->camOffset * m_right + m_look,
                        m_up);
@@ -509,7 +505,6 @@ void CglScene::unSelect(){selected = false;}
 void CglScene::place_objects_on_grid(){
   int nM = 0;
   for(int i = 0 ; i < listObject.size() ; i++)
-    if(listObject[i]->isMeshObject())
       nM++;
 
   int nRow = int(sqrt(nM));
@@ -521,7 +516,6 @@ void CglScene::place_objects_on_grid(){
   float offZ = ((nRow%2==0)? 0.5 * dist*nRow/2.0f : dist*nRow/2.0f - dist/2.0f );
 
   for(int i = 0 ; i < listObject.size() ; i++){
-    if(listObject[i]->isMeshObject()){
       glm::vec3 c = glm::vec3( -offX + dist * (i%nCol), 0, -offZ + dist * (i/nCol));
       glm::mat4 M = glm::mat4(1);
       M[3][0] = c.x;
@@ -529,13 +523,11 @@ void CglScene::place_objects_on_grid(){
       M[3][2] = c.z;
       listObject[i]->setCenter(c);
       listObject[i]->setMODEL(M);
-    }
   }
 }
 void CglScene::place_objects_on_column(){
   int nM = 0;
   for(int i = 0 ; i < listObject.size() ; i++)
-    if(listObject[i]->isMeshObject())
       nM++;
 
   int nRow = nM;
@@ -545,7 +537,6 @@ void CglScene::place_objects_on_column(){
   float offZ = ((nRow%2==0)? 0.5 * dist*nRow/2.0f : dist*nRow/2.0f - dist/2.0f );
 
   for(int i = 0 ; i < listObject.size() ; i++){
-    if(listObject[i]->isMeshObject()){
       glm::vec3 c = glm::vec3( -offX + dist * (i%nCol), 0, -offZ + dist * (i/nCol));
       glm::mat4 M = glm::mat4(1);
       M[3][0] = c.x;
@@ -553,7 +544,6 @@ void CglScene::place_objects_on_column(){
       M[3][2] = c.z;
       listObject[i]->setCenter(c);
       listObject[i]->setMODEL(M);
-    }
   }
 }
 
@@ -563,7 +553,7 @@ glm::vec3 CglScene::getRayVector(int x, int y){
   int       h = view->height;
 
   glm::vec2 window_position(x,y);
-  glm::vec2 normalized_window_position((x/(w*0.5f) - 1) , 1.0f - y/(h*0.5f));
+  glm::vec2 normalized_window_position((x/(w*0.5f) - 1) * view->ratio, 1.0f - y/(h*0.5f));
 
   //Ray end points
   float     fov             = view->m_fovy;
@@ -662,8 +652,6 @@ void CglScene::load_meshes_from_file(string fileName){
   for (int i=0; i < numberMeshes; i++){
     char *N = (char*)names[i].c_str();
     mesh.push_back(new CglMesh(N));
-    //mesh[i]->meshInfo(0);
-    //int idObj = cglObject(mesh[i]);
     mesh[i]->setCenter(centers[i]);
     mesh[i]->setMODEL(mats[i]);
     addObject(mesh[i]);

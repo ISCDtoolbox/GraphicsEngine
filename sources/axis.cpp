@@ -44,6 +44,9 @@ CglAxis::CglAxis(){
     }
     */
 
+    pGeom = new CglGeometry(CGL_CUBE);
+    dynamic = false;
+
     //Axes
     std::vector<glm::vec3> tAxes = {glm::vec3(0,0,0),
                                     glm::vec3(1,0,0),
@@ -99,7 +102,7 @@ CglAxis::CglAxis(){
     createBuffer(&mainGridBuffer, &mainGrid);
 
 
-    createBuffer(&normalBuffer, &normal);
+    createBuffer(&(pGeom->nBuffer), &normal);
 
     pMaterial   = new CglMaterial(glm::vec3(0.,0.,1.0), 0.2, 0.1, 1.1);
 }
@@ -152,7 +155,7 @@ void CglAxis::display(){
         //glLineWidth(2.0);
         bindBuffer(0, GL_ARRAY_BUFFER, mainGridBuffer);
         glBindAttribLocation( shaderID, 0, "vertex_position");
-        bindBuffer(1, GL_ARRAY_BUFFER, normalBuffer);
+        bindBuffer(1, GL_ARRAY_BUFFER, pGeom->nBuffer);
         glBindAttribLocation( shaderID, 1, "vertex_normal");
         //glDrawArrays(GL_QUADS, 0, mainGrid.size()/3);
 
