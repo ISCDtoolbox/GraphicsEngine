@@ -1,96 +1,44 @@
 cmake_minimum_required(VERSION 2.8)
-project(SUscCGL )
+project(SUscCGL)
 set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_SOURCE_DIRECTORY ${CMAKE_SOURCE_DIR})
 
+include_directories("~/include/" "include/" ${PNG_INCLUDE_DIR})
 
 configure_file("${CMAKE_SOURCE_DIR}/include/ext.h.in" "${CMAKE_SOURCE_DIR}/include/ext.h")
 
-
-set(GLEW_LIBRARY_DIR ${CMAKE_SOURCE_DIR}/build/library/glew)
-#Include de GLEW
-include(ExternalProject)
-ExternalProject_Add(
-  glew
-  PREFIX            "./library/glew"
-  BINARY_DIR        "./library/glew/src/glew/"
-  GIT_REPOSITORY    https://github.com/nigels-com/glew.git
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND     make extensions COMMAND make
-  INSTALL_COMMAND   make install GLEW_DEST=${GLEW_LIBRARY_DIR}
-  LOG_DOWNLOAD ON
-  LOG_INSTALL ON
-)
-set_target_properties(glew PROPERTIES SUFFIX .so)
-
-
-#Include de GLM
-include(ExternalProject)
-set_property(DIRECTORY PROPERTY EP_STEP_TARGETS configure build test)
-ExternalProject_Add(
-  glm
-  PREFIX "./library/glm"
-  GIT_REPOSITORY https://github.com/g-truc/glm.git
-  CONFIGURE_COMMAND ""
-  BUILD_COMMAND ""
-  INSTALL_COMMAND ""
-  LOG_DOWNLOAD ON
-  LOG_INSTALL ON
-)
+#if(EXISTS "$ENV{HOME}/include/glm/")
+#message("-- Found glm headers in $ENV{HOME}/include/glm/")
+#endif()
+#if(EXISTS "$ENV{HOME}/lib/libGLEW.so")
+#message("-- Found GLEW library in $ENV{HOME}/lib/")
+#endif()
+#if(EXISTS "$ENV{HOME}/lib/libCommons.so")
+#message("-- Found Commons library in $ENV{HOME}/lib/")
+#endif()
 
 #Libmesh creation
-add_library(mesh SHARED library/libmesh/libmesh5.h library/libmesh/libmesh5.c)
-
-#Flags and libraries
-set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -Wno-deprecated -O2 -pg")
+find_library(common NAMES Commons HINTS "$ENV{HOME}/lib")
+find_library(glew   NAMES GLEW    HINTS "$ENV{HOME}/lib")
 find_package(GLUT REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(X11 REQUIRED)
-#find_package(GLEW REQUIRED)
 
-
-set(CORELIBS ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES} "${GLEW_LIBRARY_DIR}/lib64/libGLEW.so")
-
-#Include files
-include_directories("include/"
-                    "library/libmesh/"
-                    ${PNG_INCLUDE_DIR}
-                    "${CMAKE_CURRENT_BINARY_DIR}/library/glm/src/glm/"
-                    "${CMAKE_CURRENT_BINARY_DIR}/library/glew/src/glew/include/")
+#Flags and libraries
+set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -Wno-deprecated -O2 -pg -Wno-overflow -Wno-format-security -Wno-unused-result")
+set(CORELIBS ${common} ${glew} ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES})
 
 #Project files
 file(GLOB_RECURSE source_files sources/* include/cgl/* include/*)
 add_library(SUscCGL SHARED ${source_files})
-
-set_target_properties(SUscCGL PROPERTIES SUFFIX .so)
-add_dependencies(SUscCGL glew glm)
-
-
-
-target_link_libraries(SUscCGL ${CORELIBS} mesh)
+target_link_libraries(SUscCGL ${CORELIBS})
 add_dependencies(SUscCGL HEADERFILES)
 
-#Installation lors d'un make install, permet de ne builder que la librairie.
-#set(IN /usr)
-#set(IN $ENV{HOME})
-
-#install(TARGETS mesh
-#        ARCHIVE DESTINATION "${IN}/lib/"
-#        LIBRARY DESTINATION "${IN}/lib/"
-#        RUNTIME DESTINATION "${IN}/bin/")
-#
-#install(TARGETS SUscCGL
-#        ARCHIVE DESTINATION "${IN}/lib/"
-#        LIBRARY DESTINATION "${IN}/lib/"
-#        RUNTIME DESTINATION "${IN}/bin/")
-
-#install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/"
-#        DESTINATION "${IN}/include/SUscCGL")
-
-#install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/library/glm/src/glm/glm/"
-#	DESTINATION "${IN}/include/glm")
+install(TARGETS SUscCGL LIBRARY DESTINATION "$ENV{HOME}/lib/")
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/" DESTINATION "$ENV{HOME}/include/SUscCGL")
 
 
+#Creates header files from shaders
 add_custom_target(
   HEADERFILES
   COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" simple_frag_code "../shaders/shader.frag"        simple_shader_frag.h
@@ -105,6 +53,5 @@ add_custom_target(
   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/include"
   COMMENT "Creates header files"
 )
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 add_executable(embedfile sources/embedfile.cpp)
