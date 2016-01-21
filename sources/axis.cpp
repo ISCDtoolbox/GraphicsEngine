@@ -44,7 +44,7 @@ CglAxis::CglAxis(){
     }
     */
 
-    pGeom = new CglGeometry(CGL_CUBE);
+    pGeom = new CglGeometry(CGL_PLANE);
     dynamic = false;
 
     //Axes
@@ -63,7 +63,7 @@ CglAxis::CglAxis(){
     //createBuffer(&secondaryGridBuffer,  &secondaryGrid);
     createBuffer(&axesBuffer,           &axes);
 
-
+/*
     //DImensions du tableau de fond
     float W,H;
     pScene = pcv->getScene();
@@ -105,10 +105,12 @@ CglAxis::CglAxis(){
     createBuffer(&(pGeom->nBuffer), &normal);
 
     pMaterial   = new CglMaterial(glm::vec3(0.,0.,1.0), 0.2, 0.1, 1.1);
+    */
 }
 
-
+/*
 void CglAxis::display(){
+
     int shaderID = initProgram(pcv->fresnelID());
     GLuint MatrixID = glGetUniformLocation(shaderID, "MVP");
     GLuint colorID  = glGetUniformLocation(shaderID, "COL");
@@ -131,10 +133,10 @@ void CglAxis::display(){
                             sVIEW()     *
                             sMODEL()    *
                             glm::translate(    glm::scale(glm::mat4(1), glm::vec3(pScene->getScale(),1,pScene->getScale())),  glm::vec3(0) );//glm::vec3(sMODEL()[3])   );
-        /*glm::translate(glm::mat4(1), center) *
-                            glm::scale(glm::translate( sPROJ() * VIEW * MODEL, center),
-                                       glm::vec3(pScene->getScale(), 1, pScene->getScale())) *
-                            glm::translate(glm::mat4(1), -center);*/
+        //glm::translate(glm::mat4(1), center) *
+        //                    glm::scale(glm::translate( sPROJ() * VIEW * MODEL, center),
+        //                               glm::vec3(pScene->getScale(), 1, pScene->getScale())) *
+        //                    glm::translate(glm::mat4(1), -center);
 
         uniform(MatrixID,   MVP);
         uniform(MID,        MODEL);
@@ -179,23 +181,22 @@ void CglAxis::display(){
 
 
         //Draw d'un contour
-        /*
-        glLineWidth(10.0f);
-        uniform(gridID, 0.0f);
+
+        //glLineWidth(10.0f);
+        //uniform(gridID, 0.0f);
         //glEnable(GL_POLYGON_OFFSET_LINE);
         //glPolygonOffset(1.0,1.0);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glDrawArrays(GL_QUADS, 0, mainGrid.size()/3);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        //glDrawArrays(GL_QUADS, 0, mainGrid.size()/3);
         //glDisable(GL_POLYGON_OFFSET_LINE);
-        glLineWidth(1.0f);
-        */
-
-
+        //glLineWidth(1.0f);
 
         glDisable(GL_BLEND);
         disableFog(shaderID);
         glPolygonMode(GL_FRONT, GL_FILL);
     }
+
+
 
     shaderID = initProgram(pcv->simpleID());
     glPolygonMode(GL_FRONT, GL_LINE);
@@ -232,6 +233,7 @@ void CglAxis::display(){
     glPolygonMode(GL_FRONT, GL_FILL);
     freeBuffer();
 }
+*/
 
 
 CglBackground::CglBackground(){

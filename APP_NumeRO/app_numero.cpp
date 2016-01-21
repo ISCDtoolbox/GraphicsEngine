@@ -19,7 +19,7 @@ using namespace std;
 
 int main(int argc, char **argv){
   CglCanvas cv(argc, argv);
-  string configDir = "@CMAKE_SOURCE_DIR@/"; 
+  string configDir = "/home/tech/dev/SUSCCGL/APP_NumeRO/"; 
 
   if (argc > 1){
     if(argc>2){
@@ -106,6 +106,7 @@ int main(int argc, char **argv){
 	pCglLight fill3    = new CglLight(0,8,15,    1,1,1,  300.0, false);
 	pCglLight side3    = new CglLight(5,-5,-3,  1,1,1,  70.0,  false);
 	pCglLight back3    = new CglLight(-10,5,-10, 1,1,1,  50.0,  false);
+
 	scene3->addLight( fill3 );
 	scene3->addLight( side3 );
 	scene3->addLight( back3 );

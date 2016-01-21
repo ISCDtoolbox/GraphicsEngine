@@ -1,4 +1,4 @@
-![Example](Screenshot_1.png?raw=true "NumeRO example")
+![Example](https://cloud.githubusercontent.com/assets/11873158/12479197/d67e8e90-c039-11e5-8c36-1402adbf06c3.png "NumeRO example")
 
 # INTRODUCTION
 
@@ -84,11 +84,5 @@ SUcgl
 Copyright (c) 2010-2015 ICS-SU.
 
 SUcgl is distributed under the GNU Lesser General Public License
-(LGPL).  This implies that you may link SUcgl into proprietary
-applications, provided you follow the rules stated in the LGPL.  You can
-also modify SUcgl; if you distribute a modified version, you must
-distribute it under the terms of the LGPL, which in particular states
-that you must release the source code for the modified software.  
-
-See COPYING.LESSER for more information.
+(LGPL). See [License](LICENSE.md)
 

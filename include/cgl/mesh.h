@@ -46,6 +46,7 @@ public:
 public:
   CglMesh(char *name);
   CglMesh(pCglObject M);
+  CglMesh(GEOMETRY);
   ~CglMesh(){};
 
   glm::vec3 getBBMIN(){return center + glm::vec3(glm::inverse(MODEL) * glm::vec4(pGeom->bbmin, 0));};

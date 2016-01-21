@@ -14,6 +14,13 @@ CglMesh::CglMesh(pCglObject M){
 CglMesh::CglMesh(char *name){
     pGeom = new CglGeometry(CGL_MESH, name);
 }
+
+CglMesh::CglMesh(GEOMETRY geom){
+    if(geom != CGL_MESH)
+        pGeom = new CglGeometry(geom);
+    else
+        exit(255);
+}
 /*
 void CglMesh::shadowsDisplay(){
     if(pcv->profile.displayShadows && !hidden){
@@ -120,7 +127,6 @@ void CglMesh::displayReflection(){
     glDisable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 }
-
 void CglMesh::artifactsDisplay(){
     if(!hidden){
         int shaderID                = initProgram(pcv->simpleID());
@@ -193,7 +199,6 @@ void CglMesh::artifactsDisplay(){
         freeBuffer();
     }
 }
-
 void CglMesh::display(){
     if(!hidden){
         glEnable(GL_CULL_FACE);

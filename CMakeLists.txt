@@ -43,10 +43,10 @@ add_library(mesh SHARED library/libmesh/libmesh5.h library/libmesh/libmesh5.c)
 
 #Flags and libraries
 set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -Wno-deprecated -O2 -pg")
-find_package(GLUT)
-find_package(OpenGL)
-find_package(X11)
-#find_package(GLEW)
+find_package(GLUT REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(X11 REQUIRED)
+#find_package(GLEW REQUIRED)
 
 
 set(CORELIBS ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES} "${GLEW_LIBRARY_DIR}/lib64/libGLEW.so")

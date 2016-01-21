@@ -32,7 +32,7 @@ void selectAll(pCglScene sc){
 
 int main(int argc, char **argv){
   CglCanvas cv(argc, argv);
-  string configFile = "@CMAKE_SOURCE_DIR@/chemistry.config"; // Remplacer avec "at"CMAKE_SOURCE_DIR"at"
+  string configFile = "/home/tech/dev/SUSCCGL/APP_CHEMISTRY/chemistry.config"; // Remplacer avec "at"CMAKE_SOURCE_DIR"at"
   cv.getProfile()->read_configuration_file(configFile);
 
   cv.getKeyboard()->addAction('K', functionA);
@@ -61,7 +61,7 @@ int main(int argc, char **argv){
     //scene3->addObject(new CglSphere(0,0,0.12));
     //scene3->addObject(new CglCylinder(  -0.025,-0.025,-0.025,   -0.025,-0.025,0.025));
 
-
+    /*
 
     std::vector<pCglSphere> atoms;
     float space = 0.05;
@@ -92,13 +92,28 @@ int main(int argc, char **argv){
       }
     }
 
+    */
 
+    std::vector<pCglMesh> atoms;
+    for(int i = 0 ; i < 10 ; i++)
+      atoms.push_back(new CglMesh(CGL_CUBE));
+    std::vector<pCglMesh> links;
+    //for(int i = 0 ; i < 1 ; i++)
+    //  links.push_back(new CglMesh(CGL_CYLINDER));
+
+    /*
     pCglSuperObject OBJ = new CglSuperObject();
     scene3->addObject(OBJ);
     for(int i = 0 ; i < atoms.size() ; i++)
       OBJ->addPart(atoms[i]);
     for(int i = 0 ; i < links.size() ; i++)
       OBJ->addPart(links[i]);
+    */
+    // PROBLEME EN DECIDANT D'UTILISER LES MESH ET PAS OBJECT.
+    // SEGFAULT AVEC LIBGL.so
+
+    for(int i = 0 ; i < atoms.size() ; i++)
+      scene3->addObject(atoms[i]);
 
     SW3->loadShaders();
 

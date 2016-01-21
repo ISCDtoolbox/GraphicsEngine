@@ -59,29 +59,27 @@ void    draw(   int ID,         //Shader ID
                 int iBuffer,    //Indices Buffer
                 int cBuffer     //Colors Buffer
             ){
-
+    freeBuffer();
     //Vertex Buffer
     bindBuffer(0, GL_ARRAY_BUFFER, mBuffer);
     glBindAttribLocation(ID, 0, "vertex_position");
-    //Normal Buffer
+    //Indices Buffer
+    bindBuffer(-1, GL_ELEMENT_ARRAY_BUFFER, iBuffer);
+    //Normal and Color Buffer
     if(nBuffer!=-1){
         bindBuffer(1, GL_ARRAY_BUFFER, nBuffer);
         glBindAttribLocation(ID, 1, "vertex_normal");
     }
-    //Indices Buffer
-    if(iBuffer!=-1){
-        bindBuffer(-1, GL_ELEMENT_ARRAY_BUFFER, iBuffer);
-    }
-    //Color buffer
     if(cBuffer != -1){
+        cout << "color = " << cBuffer << endl;
         bindBuffer(2, GL_ARRAY_BUFFER, cBuffer);
         glBindAttribLocation(ID, 2, "vertex_color");
     }
-    int t0 = glutGet(GLUT_ELAPSED_TIME);
+
     //Drawing
     glDrawElements(GL_TRIANGLES, s, GL_UNSIGNED_INT, (void*)0);
-    int t2 = glutGet(GLUT_ELAPSED_TIME);
-    pcv->PROF.draw += t2 - t0;
+    freeBuffer();
+
 }
 void    uniform(int ID, glm::vec3 v){
     //int t0 = glutGet(GLUT_ELAPSED_TIME);
@@ -177,6 +175,8 @@ struct sphereGeom{
 
 };
 CglGeometry::CglGeometry(GEOMETRY geom, char* file){
+    mBuffer = nBuffer = cBuffer = iBuffer = bbmBuffer = bbiBuffer;
+
     glm::vec3 center(0,0,0);
     glm::vec3 scale(1,1,1);
     glm::vec3 color(1,1,1);
@@ -424,7 +424,19 @@ CglGeometry::CglGeometry(GEOMETRY geom, char* file){
         GmfCloseMesh(inm);
         break;
     }
-
+    case CGL_PLANE:{
+        std::vector<float> vertices = {-1,0,1,
+                                        1,0,1,
+                                        1,0,-1,
+                                        -1,0,-1
+                                        };
+        std::vector<int> indices = {0,1,2,
+                                    1,2,3
+                                    };
+        std::vector<float> normals = {  0,1,0,
+                                        0,1,0
+                                        };
+    }
     }
 
     getBBOX(vertices);
@@ -491,13 +503,15 @@ void CglGeometry::getBBOX(std::vector<float> &V){
 void CglGeometry::computeBuffers(){
     createBuffer(&mBuffer, &vertices);
     createBuffer(&iBuffer, &indices);
-    nBuffer = cBuffer = -1;
-    if(normals.size())
+    nBuffer = -1;
+    cBuffer = -1;
+    if(normals.size() > 0)
         createBuffer(&nBuffer, &normals);
-    if(colors.size())
+    if(colors.size() > 0)
         createBuffer(&cBuffer, &colors);
     freeBuffer();
-    nTriangles = 3*indices.size();
+    nTriangles = indices.size()/3;
+    cout << mBuffer << " / " << iBuffer << " / " << nBuffer << " / " << cBuffer << "  /  " << nTriangles << endl;
 }
 
 
