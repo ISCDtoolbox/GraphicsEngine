@@ -1,32 +1,27 @@
 cmake_minimum_required(VERSION 2.8)
 project(SUscCGL)
 set(CMAKE_BUILD_TYPE "Release")
+set(CMAKE_MACOSX_RPATH 1)
 set(CMAKE_SOURCE_DIRECTORY ${CMAKE_SOURCE_DIR})
 
 include_directories("~/include/" "include/" ${PNG_INCLUDE_DIR})
 
 configure_file("${CMAKE_SOURCE_DIR}/include/ext.h.in" "${CMAKE_SOURCE_DIR}/include/ext.h")
 
-#if(EXISTS "$ENV{HOME}/include/glm/")
-#message("-- Found glm headers in $ENV{HOME}/include/glm/")
-#endif()
-#if(EXISTS "$ENV{HOME}/lib/libGLEW.so")
-#message("-- Found GLEW library in $ENV{HOME}/lib/")
-#endif()
-#if(EXISTS "$ENV{HOME}/lib/libCommons.so")
-#message("-- Found Commons library in $ENV{HOME}/lib/")
-#endif()
-
-#Libmesh creation
+#Libraries
 find_library(common NAMES Commons HINTS "$ENV{HOME}/lib")
-find_library(glew   NAMES GLEW    HINTS "$ENV{HOME}/lib")
 find_package(GLUT REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(X11 REQUIRED)
+if(!APPLE)
+	find_library(glew   NAMES GLEW    HINTS "$ENV{HOME}/lib")
+	set(CORELIBS ${glew})
+endif()
+set(CORELIBS ${common} ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES})
 
 #Flags and libraries
-set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -Wno-deprecated -O2 -pg -Wno-overflow -Wno-format-security -Wno-unused-result")
-set(CORELIBS ${common} ${glew} ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES})
+set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -O2 -w")
+
 
 #Project files
 file(GLOB_RECURSE source_files sources/* include/cgl/* include/*)

@@ -1,17 +1,15 @@
 cmake_minimum_required(VERSION 2.8)
 set(CMAKE_BUILD_TYPE "Release")
-set(PROJECT_NAME "Numero")
 set(CMAKE_SOURCE_DIRECTORY ${CMAKE_SOURCE_DIR})
+project(numero)
 
-project(${PROJECT_NAME})
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "$ENV{HOME}/bin")
+set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -O2 -w")
 
 configure_file("${CMAKE_SOURCE_DIR}/app_numero.cpp" "${CMAKE_SOURCE_DIR}/app_numero.cpp")
-include_directories("${CMAKE_SOURCE_DIR}/../build/library/glm/src/glm/"
-		    "${CMAKE_SOURCE_DIR}/../include/")
+include_directories(~/include/ ~/include/SUscCGL/)
 
-add_executable(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/app_numero.cpp")
-target_link_libraries(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/../build/libSUscCGL.so")
+add_executable(numero "${CMAKE_SOURCE_DIR}/app_numero.cpp")
+find_library(susccgl NAMES SUscCGL HINTS "$ENV{HOME}/lib")
+target_link_libraries(numero ${susccgl})
 
-#Penser à lancer "sudo /sbin/ldconfig -v" pour mettre à jour
+install(TARGETS numero RUNTIME DESTINATION "$ENV{HOME}/bin")
