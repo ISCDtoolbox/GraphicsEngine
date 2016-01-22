@@ -17,10 +17,10 @@ if [ $# -eq 1 ]
 then
     if [ $1 = "-o" ]
     then
-	rm -rf ~/lib/libSUscCGL.*
+	rm -rf ~/lib/libGraphicsEngine.*
 	rm -rf ~/lib/libCommons.*
 	rm -rf ~/lib/libGLEW.*
-	rm -rf ~/include/SUscCGL
+	rm -rf ~/include/GraphicsEngine
 	rm -rf ~/include/glm
 	rm -rf ~/include/GL
     else
@@ -78,15 +78,15 @@ else
 	echo "-- Commons already installed. Skipping..."
 fi
 
-#Installing SUscCGL
-if [ \( ! -f ~/lib/libSUscCGL.so \)  -a \( ! -f ~/lib/libSUscCGL.dylib \) ]
+#Installing GraphicsEngine
+if [ \( ! -f ~/lib/libGraphicsEngine.so \)  -a \( ! -f ~/lib/libGraphicsEngine.dylib \) ]
 then
-    echo "-- Installing SUscCGL"
+    echo "-- Installing GraphicsEngine"
     cmake ..
     make
     make install
 else
-	echo "-- SUscCGL already installed. Skipping..."
+	echo "-- GraphicsEngine already installed. Skipping..."
 fi
 
 cd ../

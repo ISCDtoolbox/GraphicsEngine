@@ -2,9 +2,9 @@
 
 # INTRODUCTION
 
-SUscCGL (Sorbonne Universités SCientific Computer Graphics Library) is a C++ library, developed at ICS@SU (Institut du Calcul et de la Simulation), providing an Open Source Framework to ease the creation of 3D software applications in a scientific context.
+GraphicsEngine (Sorbonne Universités SCientific Computer Graphics Library) is a C++ library, developed at ICS@SU (Institut du Calcul et de la Simulation), providing an Open Source Framework to ease the creation of 3D software applications in a scientific context.
 
-Among the different features of SUscCGL, the developer will find all the tools necessary for:
+Among the different features of GraphicsEngine, the developer will find all the tools necessary for:
 - Window and subwindow creation and management
 - 3D objects manipulation
 - Custom user interaction, via a graphical interface or mouse and keyboard shortcuts
@@ -18,15 +18,15 @@ Mac OS support should be implemented soon.
 
 1. Download the repository to your computer (via git or direct source download)
 2. Install the external dependencies depending on your platform (Cf "Dependencies" below)
-3. Navigate to SUscCGL installation directory
+3. Navigate to GraphicsEngine installation directory
 4. In a command prompt, type the following commands:
 
         mkdir build 
         cd build
         cmake ..
-        make SUscCGL
+        make GraphicsEngine
 
-If no error occured, a dynamic library file (libSUscCGL.so or libSUscCGL.dylib) should appear in the build folder.
+If no error occured, a dynamic library file (libGraphicsEngine.so or libGraphicsEngine.dylib) should appear in the build folder.
 
 ## Dependencies
 ### Linux
@@ -46,15 +46,15 @@ We hope however that a fix will be encountered really soon!
 
 # Usage
 
-After compiling the dynamic library, one only needs to include the paths to libSUscCGL and its include directory in the compiler flag, and insert the following preprocessing directive at the beginning of its application:
+After compiling the dynamic library, one only needs to include the paths to libGraphicsEngine and its include directory in the compiler flag, and insert the following preprocessing directive at the beginning of its application:
 
         #include <cgl.h>
 
-For more information on the usage of SUscCGL, please refer to the Wiki page (coming soon), or the template applications present in the ***APP_*** folders.
+For more information on the usage of GraphicsEngine, please refer to the Wiki page (coming soon), or the template applications present in the ***APP_*** folders.
 
 ### Examples
 
-In order to execute sample applications based on SUscCGL, navigate to SUscCGL
+In order to execute sample applications based on GraphicsEngine, navigate to GraphicsEngine
 installation directory and type the following commands in a new prompt:
 
         cd APP_[Chosen_Example]

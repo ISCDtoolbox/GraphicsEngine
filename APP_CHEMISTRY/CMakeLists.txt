@@ -12,6 +12,6 @@ include_directories("${CMAKE_SOURCE_DIR}/../build/library/glm/src/glm/"
 		    "${CMAKE_SOURCE_DIR}/../include/")
 
 add_executable(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/app_chemistry.cpp")
-target_link_libraries(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/../build/libSUscCGL.so")
+target_link_libraries(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/../build/libGraphicsEngine.so")
 
 #Penser à lancer "sudo /sbin/ldconfig -v" pour mettre à jour

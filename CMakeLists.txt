@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(SUscCGL)
+project(GraphicsEngine)
 set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_MACOSX_RPATH 1)
 set(CMAKE_SOURCE_DIRECTORY ${CMAKE_SOURCE_DIR})
@@ -27,12 +27,12 @@ set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -O2 -w")
 
 #Project files
 file(GLOB_RECURSE source_files sources/* include/cgl/* include/*)
-add_library(SUscCGL SHARED ${source_files})
-target_link_libraries(SUscCGL ${CORELIBS})
-add_dependencies(SUscCGL HEADERFILES)
+add_library(GraphicsEngine SHARED ${source_files})
+target_link_libraries(GraphicsEngine ${CORELIBS})
+add_dependencies(GraphicsEngine HEADERFILES)
 
-install(TARGETS SUscCGL LIBRARY DESTINATION "$ENV{HOME}/lib/")
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/" DESTINATION "$ENV{HOME}/include/SUscCGL")
+install(TARGETS GraphicsEngine LIBRARY DESTINATION "$ENV{HOME}/lib/")
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/include/" DESTINATION "$ENV{HOME}/include/GraphicsEngine")
 
 
 #Creates header files from shaders

@@ -1,14 +1,14 @@
 // Installation procedure:
 //
-// Download SUscCGL via github
-// In SUscCGL main directory:
+// Download GraphicsEngine via github
+// In GraphicsEngine main directory:
 //   - mkdir build
 //   - cd build
 //   - cmake ..
 //   - sudo make install
 //
-// Link SUscCGL include files in CMakeLists.txt
-// Link against libSUscCGL.so
+// Link GraphicsEngine include files in CMakeLists.txt
+// Link against libGraphicsEngine.so
 // In the .cpp, include "cgl.h".
 // Everything should be set up and ready to go!
 //
