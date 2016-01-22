@@ -11,7 +11,7 @@ then
 fi
 if [ $# -eq 1 ]
 then
-	if [ $1 == "-o" ]
+	if [ $1 = "-o" ]
 	then
 		if [ -f ~/bin/numero ]
 		then

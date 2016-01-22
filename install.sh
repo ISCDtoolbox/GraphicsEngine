@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #Preparing directories
 mkdir -p ~/include/GL/
 mkdir -p ~/lib/
@@ -9,21 +11,22 @@ platform=$(uname)
 if [ $# -gt 1 ]
 then
     echo "Usage : sh install.sh [-o]"
-	exit 1
+    exit 1
 fi
 if [ $# -eq 1 ]
 then
-	if [ $1 == "-o" ]
-	then
-		rm -rf ~/lib/libSUscCGL.*
-		rm -rf ~/lib/libCommons.*
-		rm -rf ~/include/SUscCGL
-		rm -rf ~/include/glm
-		rm -rf ~/include/GL
-	else
-		echo "Usage : sh install.sh [-o]"
-		exit 1
-	fi
+    if [ $1 = "-o" ]
+    then
+	rm -rf ~/lib/libSUscCGL.*
+	rm -rf ~/lib/libCommons.*
+	rm -rf ~/lib/libGLEW.*
+	rm -rf ~/include/SUscCGL
+	rm -rf ~/include/glm
+	rm -rf ~/include/GL
+    else
+	echo "Usage : sh install.sh [-o]"
+	exit 1
+    fi
 fi
 
 #Installing glm

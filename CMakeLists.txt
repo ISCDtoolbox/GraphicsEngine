@@ -13,11 +13,13 @@ find_library(common NAMES Commons HINTS "$ENV{HOME}/lib")
 find_package(GLUT REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(X11 REQUIRED)
-if(!APPLE)
-	find_library(glew   NAMES GLEW    HINTS "$ENV{HOME}/lib")
-	set(CORELIBS ${glew})
-endif()
+#GLEW
 set(CORELIBS ${common} ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES})
+if("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
+	find_library(glew   NAMES GLEW    HINTS "$ENV{HOME}/lib")
+	set(CORELIBS ${common} ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${X11_LIBRARIES} ${glew})
+endif()
+
 
 #Flags and libraries
 set(CMAKE_CXX_FLAGS "-std=c++0x -g3 -O2 -w")
