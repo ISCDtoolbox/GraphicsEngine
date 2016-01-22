@@ -1,48 +1,32 @@
+# GraphicsEngine
+GraphicsEngine is a C++ library providing an Open Source Framework to ease the creation of 3D software applications in a scientific context.
 ![Example](https://cloud.githubusercontent.com/assets/11873158/12479197/d67e8e90-c039-11e5-8c36-1402adbf06c3.png "NumeRO example")
 
-# INTRODUCTION
+# Installation
 
-GraphicsEngine (Sorbonne Universités SCientific Computer Graphics Library) is a C++ library, developed at ICS@SU (Institut du Calcul et de la Simulation), providing an Open Source Framework to ease the creation of 3D software applications in a scientific context.
+Clone this repository on your computer:
+```
+git clone https://github.com/ICStoolbox/GraphicsEngine.git
+```
+then type once in a command prompt:
+```
+cd GraphicsEngine
+sh install.sh
+```
 
-Among the different features of GraphicsEngine, the developer will find all the tools necessary for:
-- Window and subwindow creation and management
-- 3D objects manipulation
-- Custom user interaction, via a graphical interface or mouse and keyboard shortcuts
-- Extensive rendering options (material, lighting, background, color palettes... customisation)
-- ...
+The install.sh script will automatically download some of the dependencies for GraphicsEngine library and applications (glm, GLEW and libCommons, developped at ICS).
 
-# Installation (Mac OS & Linux)
+If you later want to modify the sources of GraphicsEngine, you can manually enter the build directory and type in a command prompt:
+```
+cmake ..
+make
+make install
+```
 
-Please note that currently, only the Linux Platforms are fully supported. 
-Mac OS support should be implemented soon. 
+Other dependencies might be needed, amongst which:
+* LINUX: freeglut-dev, libXmu-dev, libXi-dev, cmake.
+* MACOS: XQuartz, XCode, cmake.
 
-1. Download the repository to your computer (via git or direct source download)
-2. Install the external dependencies depending on your platform (Cf "Dependencies" below)
-3. Navigate to GraphicsEngine installation directory
-4. In a command prompt, type the following commands:
-
-        mkdir build 
-        cd build
-        cmake ..
-        make GraphicsEngine
-
-If no error occured, a dynamic library file (libGraphicsEngine.so or libGraphicsEngine.dylib) should appear in the build folder.
-
-## Dependencies
-### Linux
-The following packages need to be installed in order to use the library:
-- cmake
-- glew-devel (might be removed)
-- freeglut-devel
-- libXmu-devel
-- libXi-devel
-
-Use "sudo apt-get install [Package_Name]" in order to install those packages.
-
-### Mac OS
-As stated above, Mac OS is not ***yet*** fully supported. At least XCode and CMake must be operational in order to compile the library, however serious performance issues make the practical use of the provided tools impossible at the time being.
-
-We hope however that a fix will be encountered really soon!
 
 # Usage
 
