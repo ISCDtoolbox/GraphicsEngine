@@ -19,7 +19,7 @@ using namespace std;
 
 int main(int argc, char **argv){
   CglCanvas cv(argc, argv);
-  string configDir = "/home/tech/dev/SUSCCGL/APP_NumeRO/"; 
+  string configDir = "@CMAKE_SOURCE_DIR@/APP_numero/"; 
 
   if (argc > 1){
     if(argc>2){
