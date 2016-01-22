@@ -66,14 +66,14 @@ install(TARGETS   chemistry      RUNTIME DESTINATION "$ENV{HOME}/bin")
 ################################################################
 add_custom_target(
   SHADERFILES
-  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" simple_frag_code   "../shaders/shader.frag"           simple_shader_frag.h
-  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" simple_vert_code   "../shaders/shader.vert"           simple_shader_vert.h
-  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" smooth_frag_code   "../shaders/smooth_shader.frag"    smooth_shader_frag.h
-  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" smooth_vert_code   "../shaders/smooth_shader.vert"    smooth_shader_vert.h
-  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" flat_frag_code     "../shaders/flat_shader.frag"      flat_shader_frag.h
-  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" flat_vert_code     "../shaders/flat_shader.vert"      flat_shader_vert.h
-  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" fresnel_frag_code  "../shaders/fresnel_shader.frag"   fresnel_shader_frag.h
-  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" fresnel_vert_code  "../shaders/fresnel_shader.vert"   fresnel_shader_vert.h
+  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" simple_frag_code   "../shaders/shader.frag"           simple_shader_frag.h > /dev/null
+  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" simple_vert_code   "../shaders/shader.vert"           simple_shader_vert.h > /dev/null
+  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" smooth_frag_code   "../shaders/smooth_shader.frag"    smooth_shader_frag.h > /dev/null
+  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" smooth_vert_code   "../shaders/smooth_shader.vert"    smooth_shader_vert.h > /dev/null
+  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" flat_frag_code     "../shaders/flat_shader.frag"      flat_shader_frag.h > /dev/null
+  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" flat_vert_code     "../shaders/flat_shader.vert"      flat_shader_vert.h > /dev/null
+  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" fresnel_frag_code  "../shaders/fresnel_shader.frag"   fresnel_shader_frag.h > /dev/null
+  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/embedfile" fresnel_vert_code  "../shaders/fresnel_shader.vert"   fresnel_shader_vert.h > /dev/null
   DEPENDS embedfile
   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/include"
   COMMENT "Creates header files"
