@@ -1,5 +1,5 @@
-#version 120
-#extension GL_EXT_gpu_shader4 : enable
+#version 130
+//#extension GL_EXT_gpu_shader4 : enable
 
 attribute vec3 vertex_position;
 attribute vec3 vertex_normal;

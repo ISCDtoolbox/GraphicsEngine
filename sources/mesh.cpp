@@ -13,6 +13,7 @@ CglMesh::CglMesh(pCglObject M){
 
 CglMesh::CglMesh(char *name){
     pGeom = new CglGeometry(CGL_MESH, name);
+    //pGeom->computeBuffers();
 }
 
 CglMesh::CglMesh(GEOMETRY geom){
@@ -21,15 +22,10 @@ CglMesh::CglMesh(GEOMETRY geom){
     else
         exit(255);
 }
-/*
-void CglMesh::shadowsDisplay(){
-    if(pcv->profile.displayShadows && !hidden){
-        displayShadow();
-    }
-    else if(pcv->profile.displayReflection){
-        displayReflection();
-    }
-}*/
+
+glm::vec3 CglMesh::getBBMIN(){ return glm::vec3(MODEL * glm::vec4(pGeom->bbmin, 0)); }
+glm::vec3 CglMesh::getBBMAX(){ return glm::vec3(MODEL * glm::vec4(pGeom->bbmax, 0)); }
+
 void CglMesh::shadowsDisplay(){
     if((pcv->profile.ground==CGL_GROUND_SHADOWS) && !hidden){
         displayShadow();
@@ -64,68 +60,72 @@ glm::mat4 shadowMatrix(glm::vec4 ground, glm::vec4 light){
     return shadowMat;
 }
 void CglMesh::displayShadow(){
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    int shaderID        = initProgram(pcv->simpleID());
-    int MatrixID        = glGetUniformLocation(shaderID, "MVP");
-    int colorID         = glGetUniformLocation(shaderID, "COL");
+    if(pcv->profile.displayBottomGrid){
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_FRONT);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        int shaderID        = initProgram(pcv->simpleID());
+        int MatrixID        = glGetUniformLocation(shaderID, "MVP");
+        int colorID         = glGetUniformLocation(shaderID, "COL");
 
-    glm::mat4 shadowMVP =   sPROJ() * sVIEW() * sMODEL() *
-                            shadowMatrix( glm::vec4(glm::vec3(0,1,0), pcv->profile.bottomDistance + sMODEL()[3].y + 0.002), glm::vec4(glm::vec3(0,1,0), 0) ) *
-                            glm::scale(MODEL, glm::vec3(scaleFactor));
+        glm::mat4 shadowMVP =   sPROJ() * sVIEW() * sMODEL() *
+                                shadowMatrix( glm::vec4(glm::vec3(0,1,0), pcv->profile.bottomDistance + sMODEL()[3].y + 0.002), glm::vec4(glm::vec3(0,1,0), 0) ) *
+                                glm::scale(MODEL, glm::vec3(pGeom->scaleFactor));
 
-    uniform(MatrixID,   shadowMVP);
-    uniform(colorID,    glm::vec3(0.2));
+        uniform(MatrixID,   shadowMVP);
+        uniform(colorID,    glm::vec3(0.2));
 
-    if(pcv->profile.displayBottomGrid)
-        glEnable(GL_STENCIL_TEST);
-    draw(shaderID, pGeom->nTriangles, pGeom->mBuffer, pGeom->nBuffer, pGeom->iBuffer, pGeom->cBuffer);
-    if(pcv->profile.displayBottomGrid)
-        glDisable(GL_STENCIL_TEST);
-    freeBuffer();
-    glDisable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+        if(pcv->profile.displayBottomGrid)
+            glEnable(GL_STENCIL_TEST);
+        draw(shaderID, 3*pGeom->nTriangles, pGeom->mBuffer, pGeom->nBuffer, pGeom->iBuffer, pGeom->cBuffer);
+        if(pcv->profile.displayBottomGrid)
+            glDisable(GL_STENCIL_TEST);
+        freeBuffer();
+        glDisable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+    }
 }
 void CglMesh::displayReflection(){
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    if(pcv->profile.displayBottomGrid){
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_FRONT);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    int shaderID    = initProgram( ((pcv->profile.smooth)?pcv->smoothID():pcv->flatID()) );
-    int MatrixID    = glGetUniformLocation(shaderID, "MVP");
-    int colorID     = glGetUniformLocation(shaderID, "COL");
-    int MID         = glGetUniformLocation(shaderID, "M");
+        int shaderID    = initProgram( ((pcv->profile.smooth)?pcv->smoothID():pcv->flatID()) );
+        int MatrixID    = glGetUniformLocation(shaderID, "MVP");
+        int colorID     = glGetUniformLocation(shaderID, "COL");
+        int MID         = glGetUniformLocation(shaderID, "M");
 
-    //Calcul de la couleur
-    glm::vec3 selection_color   = ((!pGroup)?pcv->profile.sele_color:pGroup->getColor());
-    glm::vec3 color             = ((isSelected())?selection_color:pMaterial->getColor());
-    glm::vec2 mix               = ((hidden)?glm::vec2(0,1):pcv->profile.reflection_mix);
+        //Calcul de la couleur
+        glm::vec3 selection_color   = ((!pGroup)?pcv->profile.sele_color:pGroup->getColor());
+        glm::vec3 color             = ((isSelected())?selection_color:pMaterial->getColor());
+        glm::vec2 mix               = ((hidden)?glm::vec2(0,1):pcv->profile.reflection_mix);
 
-    //Calcul de MVP
-    glm::mat4 ID(1);
-    glm::vec3 cc            =  glm::vec3(sMODEL()[3]);
-    glm::mat4 refMODEL      =  glm::translate(ID, glm::vec3(-cc.x, - pcv->profile.bottomDistance - cc.y, -cc.z)) *
-                                glm::scale(ID, glm::vec3(1,-1,1)) *
-                                glm::translate(ID, glm::vec3(cc.x, + pcv->profile.bottomDistance + cc.y, cc.z)) *
-                                glm::scale(MODEL, glm::vec3(scaleFactor));
-    glm::mat4 reflection    =  sPROJ() * sVIEW() * sMODEL() * refMODEL;
-    glm::mat4 M             = glm::translate(refMODEL, glm::vec3(sMODEL()[3]));
+        //Calcul de MVP
+        glm::mat4 ID(1);
+        glm::vec3 cc            =  glm::vec3(sMODEL()[3]);
+        glm::mat4 refMODEL      =  glm::translate(ID, glm::vec3(-cc.x, - pcv->profile.bottomDistance - cc.y, -cc.z)) *
+                                    glm::scale(ID, glm::vec3(1,-1,1)) *
+                                    glm::translate(ID, glm::vec3(cc.x, + pcv->profile.bottomDistance + cc.y, cc.z)) *
+                                    glm::scale(MODEL, glm::vec3(pGeom->scaleFactor));
+        glm::mat4 reflection    =  sPROJ() * sVIEW() * sMODEL() * refMODEL;
+        glm::mat4 M             = glm::translate(refMODEL, glm::vec3(sMODEL()[3]));
 
-    //Envoi des uniformes
-    uniform(colorID, (glm::vec3(mix.x) + mix.y * color));
-    uniform( MatrixID, reflection);
-    uniform(MID, M);
+        //Envoi des uniformes
+        uniform(colorID, (glm::vec3(mix.x) + mix.y * color));
+        uniform( MatrixID, reflection);
+        uniform(MID, M);
 
-    if(pcv->profile.displayBottomGrid)
-        glEnable(GL_STENCIL_TEST);
-    draw(shaderID, pGeom->nTriangles, pGeom->mBuffer, pGeom->nBuffer, pGeom->iBuffer, pGeom->cBuffer);
-    if(pcv->profile.displayBottomGrid)
-        glDisable(GL_STENCIL_TEST);
+        if(pcv->profile.displayBottomGrid)
+            glEnable(GL_STENCIL_TEST);
+        draw(shaderID, 3*pGeom->nTriangles, pGeom->mBuffer, pGeom->nBuffer, pGeom->iBuffer, pGeom->cBuffer);
+        if(pcv->profile.displayBottomGrid)
+            glDisable(GL_STENCIL_TEST);
 
-    freeBuffer();
-    glDisable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+        freeBuffer();
+        glDisable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+    }
 }
 void CglMesh::artifactsDisplay(){
     if(!hidden){
@@ -133,7 +133,7 @@ void CglMesh::artifactsDisplay(){
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         int MatrixID                = glGetUniformLocation(shaderID, "MVP");
         int colorID                 = glGetUniformLocation(shaderID, "COL");
-        glm::mat4 MVP               = sPROJ() * sVIEW() * sMODEL() * glm::scale(MODEL, glm::vec3(scaleFactor));
+        glm::mat4 MVP               = sPROJ() * sVIEW() * sMODEL() * glm::scale(MODEL, glm::vec3(pGeom->scaleFactor));
         pCglScene scene             = pcv->getScene();
         glm::vec3 selection_color   = ((!pGroup)?pcv->profile.sele_color:pGroup->getColor());
         computeGroup();
@@ -144,7 +144,7 @@ void CglMesh::artifactsDisplay(){
             glDisable(GL_DEPTH_TEST);
             uniform(colorID,  selection_color);
             uniform(MatrixID, MVP);
-            draw(shaderID, pGeom->nTriangles, pGeom->mBuffer, -1, pGeom->iBuffer);
+            draw(shaderID, 3*pGeom->nTriangles, pGeom->mBuffer, -1, pGeom->iBuffer);
             glEnable(GL_DEPTH_TEST);
             glLineWidth(1.0);
         }
@@ -207,6 +207,7 @@ void CglMesh::display(){
         int shaderID                = initProgram(((pcv->profile.smooth)? pcv->smoothID() : pcv->flatID()));
         if(line)
             shaderID = initProgram(pcv->simpleID());
+
         int MatrixID                = glGetUniformLocation(shaderID, "MVP");
         int colorID                 = glGetUniformLocation(shaderID, "COL");
         GLuint MID                  = glGetUniformLocation(shaderID, "M");
@@ -215,7 +216,10 @@ void CglMesh::display(){
         int side_light_ID           = glGetUniformLocation(shaderID, "SIDE");
         int back_light_ID           = glGetUniformLocation(shaderID, "BACK");
 
-        glm::mat4 MVP               = sPROJ() * sVIEW() * sMODEL() * glm::scale(MODEL, glm::vec3(scaleFactor));
+        //std::cout << MatrixID << " " << colorID << " " << MID << " " << VID << " " << std::endl;
+        //std::cout << pGeom->scaleFactor << std::endl;
+
+        glm::mat4 MVP               = sPROJ() * sVIEW() * sMODEL() * glm::scale(MODEL, glm::vec3(pGeom->scaleFactor));
         glm::mat4 M                 = glm::translate(MODEL, glm::vec3(sMODEL()[3]));
         glm::mat4 V                 = sVIEW();
         glm::vec3 selection_color   = ((!pGroup)?pcv->profile.sele_color:pGroup->getColor());
@@ -234,7 +238,7 @@ void CglMesh::display(){
 
         enableFog(shaderID);
         glPolygonMode(GL_FRONT, GL_FILL);
-        draw(shaderID, pGeom->nTriangles, pGeom->mBuffer, pGeom->nBuffer, pGeom->iBuffer, pGeom->cBuffer);
+        draw(shaderID, 3*pGeom->nTriangles, pGeom->mBuffer, pGeom->nBuffer, pGeom->iBuffer, pGeom->cBuffer);
         glDisable(GL_POLYGON_OFFSET_FILL);
 
         //Wireframe
@@ -247,12 +251,13 @@ void CglMesh::display(){
             uniform( colorID, color);
             glDisable(GL_POLYGON_OFFSET_FILL);
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            draw(shaderID, pGeom->nTriangles, pGeom->mBuffer, -1, pGeom->iBuffer);
+            draw(shaderID, 3*pGeom->nTriangles, pGeom->mBuffer, -1, pGeom->iBuffer);
         }
 
         freeBuffer();
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDisable(GL_CULL_FACE);
+
     }
 }
 

@@ -385,6 +385,16 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
     //Paste
     if(key == 'V'){
         for(int i = 0 ; i < pcv->clipboard.size() ; i++){
+            //New place for object
+            glm::vec3 plane(0, -pcv->profile.bottomDistance, 0);
+            glm::vec3 planeNormal(0,1,0);
+            glm::vec3 ray   = pcv->getScene()->getRayVector(x,y);
+            bool intersects;
+            glm::vec3 inter = pcv->getScene()->intersect(ray, plane, planeNormal, intersects);
+            glm::vec3 newC;
+            if(intersects)
+                newC = inter;
+
             OBJECT_TYPE object_type = pcv->clipboard[i].object_type;
 
             scene->unSelect();
@@ -395,41 +405,15 @@ void CglKeyboard::keyboard(unsigned char key, int x, int y)
                     pCglObject pOBJ = pcv->getScene(iS)->getObject(iO);
                     if((char*)(pOBJ->pGeom->meshFile).c_str() == pcv->clipboard[i].fileName){
                         obj = new CglMesh(pOBJ);
+                        scene->addObject(obj);
+                        obj->setMODEL(glm::translate(/*pcv->clipboard[i].MODEL*/glm::mat4(1), glm::vec3(newC.x, 0, newC.z)));
+                        obj->setCenter(glm::vec3(newC.x, 0, newC.z));//pcv->clipboard[i].center);
+                        obj->select();
                         break;
                     }
                 }
             }
-            //else if(object_type == SUPER)
-            /*
-            else{
-                glm::vec3 c = pcv->clipboard[i].center;
-                obj = new CglSphere(c.x, c.y, c.z);
-            }
-            */
-            scene->addObject(obj);
 
-
-
-
-            //if
-            //glm::vec3 newC = -glm::vec3(scene->getMODEL()[3]);// - scene->getLook();
-            glm::vec3 plane(0, -pcv->profile.bottomDistance, 0);
-            glm::vec3 planeNormal(0,1,0);
-            bool intersects;
-            glm::vec3 ray;
-            glm::vec3 inter;
-            ray = pcv->getScene()->getRayVector(x,y);
-            inter     = pcv->getScene()->intersect(ray, plane, planeNormal, intersects);
-            glm::vec3 newC;
-            if(intersects)
-                newC = inter;
-
-
-
-
-            obj->setMODEL(glm::translate(/*pcv->clipboard[i].MODEL*/glm::mat4(1), glm::vec3(newC.x, 0, newC.z)));
-            obj->setCenter(glm::vec3(newC.x, 0, newC.z));//pcv->clipboard[i].center);
-            obj->select();
         }
         pcv->clipboard.erase(pcv->clipboard.begin(), pcv->clipboard.end());
     }

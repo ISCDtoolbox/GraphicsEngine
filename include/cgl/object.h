@@ -95,11 +95,6 @@ public:
     pCglGeometry pGeom;
     bool         dynamic;
 
-
-    float       localScale;
-    float       scaleFactor;
-
-
   public:
     CglTransform            transform;
 

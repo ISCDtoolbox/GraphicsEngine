@@ -1,8 +1,0 @@
-#ifndef EXT_H
-#define EXT_H
-
-#include "string.h"
-
-static string EXT_PATH = "@CMAKE_SOURCE_DIRECTORY@/";
-
-#endif

@@ -24,15 +24,19 @@ private:
   vector<float> axes;
   vector<float> back;
   vector<float> colors;
+  vector<float> mainGrid;
   GLuint axesBuffer;
-  //pCglMaterial    material;
+  GLuint mainGridBuffer;
+  GLuint nBuffer;
+  glm::vec3 mins, maxs;
+  pCglMaterial    material;
 
 public:
   CglAxis();
   ~CglAxis(){};
-  //glm::vec3 getBBMIN(){return mins;}
-  //glm::vec3 getBBMAX(){return maxs;}
-  //void display();
+  glm::vec3 getBBMIN(){return mins;}
+  glm::vec3 getBBMAX(){return maxs;}
+  void display();
   pCglView view;
   //pCglScene pScene;
 };

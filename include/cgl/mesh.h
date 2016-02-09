@@ -49,8 +49,8 @@ public:
   CglMesh(GEOMETRY);
   ~CglMesh(){};
 
-  glm::vec3 getBBMIN(){return center + glm::vec3(glm::inverse(MODEL) * glm::vec4(pGeom->bbmin, 0));};
-  glm::vec3 getBBMAX(){return center + glm::vec3(glm::inverse(MODEL) * glm::vec4(pGeom->bbmax, 0));};
+  glm::vec3 getBBMIN();
+  glm::vec3 getBBMAX();
   //void      meshInfo(const int& verbose = 0, ostream& outstr = cout);
 
   void      shadowsDisplay();

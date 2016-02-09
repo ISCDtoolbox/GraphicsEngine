@@ -1,5 +1,4 @@
 #include "cgl/profile.h"
-#include "ext.h"
 
 //Config file reading
 #include <iostream>
@@ -14,7 +13,7 @@ extern CglCanvas *pcv;
 
 
 CglProfile::CglProfile(){
-  path              = EXT_PATH;
+  path              = ROOT_PATH;
   read_configuration_file("");
   update_colors();
   update_theme();

@@ -27,24 +27,18 @@ void    createBuffer(GLuint *pBuffer, std::vector<short> *data){
     glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * data->size(), &(*data)[0], GL_STATIC_DRAW);
 }
 void    bindBuffer(int attrib, int bufferType, GLuint buffer){
-    int t0 = glutGet(GLUT_ELAPSED_TIME);
     if(attrib!=-1)
         glEnableVertexAttribArray( attrib);
     glBindBuffer( bufferType, buffer);
     if(attrib!=-1)
         glVertexAttribPointer( attrib, 3, GL_FLOAT, GL_FALSE, 0, ( void*)0);
-    //int t1 = glutGet(GLUT_ELAPSED_TIME);
-    //pcv->PROF.bind += t1 - t0;
 }
 void    freeBuffer(){
-    int t0 = glutGet(GLUT_ELAPSED_TIME);
     for(int i = 0 ; i < 5 ; i++)
         glDisableVertexAttribArray(i);
     glUseProgram(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    //int t1 = glutGet(GLUT_ELAPSED_TIME);
-    //pcv->PROF.free += t1 - t0;
 }
 int     initProgram(int ID){
     glUseProgram(ID);
@@ -59,7 +53,8 @@ void    draw(   int ID,         //Shader ID
                 int iBuffer,    //Indices Buffer
                 int cBuffer     //Colors Buffer
             ){
-    freeBuffer();
+    //std:: cout << ID << " " << mBuffer << " " << nBuffer << " " << iBuffer << " " << cBuffer << std::endl;
+    //freeBuffer();
     //Vertex Buffer
     bindBuffer(0, GL_ARRAY_BUFFER, mBuffer);
     glBindAttribLocation(ID, 0, "vertex_position");
@@ -71,7 +66,7 @@ void    draw(   int ID,         //Shader ID
         glBindAttribLocation(ID, 1, "vertex_normal");
     }
     if(cBuffer != -1){
-        cout << "color = " << cBuffer << endl;
+        //cout << "color = " << cBuffer << endl;
         bindBuffer(2, GL_ARRAY_BUFFER, cBuffer);
         glBindAttribLocation(ID, 2, "vertex_color");
     }
@@ -82,22 +77,15 @@ void    draw(   int ID,         //Shader ID
 
 }
 void    uniform(int ID, glm::vec3 v){
-    //int t0 = glutGet(GLUT_ELAPSED_TIME);
   glUniform3f(ID, v.x, v.y, v.z);
-  //int t1 = glutGet(GLUT_ELAPSED_TIME);
-    //pcv->PROF.uni += t1 - t0;
 }
 void    uniform(int ID, glm::mat4 &m){
-    //int t0 = glutGet(GLUT_ELAPSED_TIME);
   glUniformMatrix4fv( ID, 1, GL_FALSE, &m[0][0]);
-  //int t1 = glutGet(GLUT_ELAPSED_TIME);
-    //pcv->PROF.uni += t1 - t0;
+
 }
 void    uniform(int ID, float f){
-    //int t0 = glutGet(GLUT_ELAPSED_TIME);
   glUniform1f( ID, f);
-  //int t1 = glutGet(GLUT_ELAPSED_TIME);
-    //pcv->PROF.uni += t1 - t0;
+
 }
 
 
@@ -174,8 +162,9 @@ struct sphereGeom{
     }
 
 };
+
 CglGeometry::CglGeometry(GEOMETRY geom, char* file){
-    mBuffer = nBuffer = cBuffer = iBuffer = bbmBuffer = bbiBuffer;
+    mBuffer = nBuffer = cBuffer = iBuffer = bbmBuffer = bbiBuffer = -1;
 
     glm::vec3 center(0,0,0);
     glm::vec3 scale(1,1,1);
@@ -297,6 +286,7 @@ CglGeometry::CglGeometry(GEOMETRY geom, char* file){
         vector<NormalAtVertex>  NormalAtVertices;
 
         //Lecture du .sol
+            /*
             std::string solFile   = meshFile.substr(0, meshFile.size()-5) + ".sol";
             cout << solFile << endl << endl;
             int ver2, dim2;
@@ -334,7 +324,7 @@ CglGeometry::CglGeometry(GEOMETRY geom, char* file){
                 colors.push_back(col.y);
                 colors.push_back(col.z);
             }
-
+    */
 
         //Lecture du .mesh
           inm = GmfOpenMesh(file,GmfRead,&ver,&dim);
@@ -441,7 +431,6 @@ CglGeometry::CglGeometry(GEOMETRY geom, char* file){
 
     getBBOX(vertices);
     computeBuffers();
-
     //A récupérer par l'objet lors de la création
     /*
     center = glm::vec3(x,y,z);
@@ -532,7 +521,6 @@ CglObject::CglObject(){
   //pScene = NULL;
   pGroup = NULL;
   pMaterial   = new CglMaterial(pcv->profile.color(), 0.85, 0.15, 12.0);
-  localScale = 1;
 }
 CglObject::~CglObject(){}
 
@@ -543,13 +531,13 @@ void CglObject::pickingDisplay(){
     int MatrixID = glGetUniformLocation(shaderID, "MVP");
     int colorID  = glGetUniformLocation(shaderID, "COL");
 
-    glm::mat4 MVP = sPROJ() * sVIEW() * sMODEL() * glm::scale(MODEL, glm::vec3(scaleFactor));;
+    glm::mat4 MVP = sPROJ() * sVIEW() * sMODEL() * glm::scale(MODEL, glm::vec3(pGeom->scaleFactor));;
 
     uniform(MatrixID, MVP);
     uniform(colorID, pickingColor);
 
     glPolygonMode(GL_FRONT, GL_FILL);
-    draw(shaderID, pGeom->nTriangles, pGeom->mBuffer, -1, pGeom->iBuffer);
+    draw(shaderID, 3*pGeom->nTriangles, pGeom->mBuffer, -1, pGeom->iBuffer);
   }
 }
 
@@ -593,19 +581,23 @@ void CglObject::applyTransformation(){
 
         //if(isMesh)
         //if(!pGroup){
+            glm::vec3 sC = sCENTER();
             glm::vec3 bbC = 0.5f * (getBBMAX() + getBBMIN());
-            glm::vec3 newMinPos = glm::vec3(pScene->getMODEL()[3]) + glm::vec3(MODEL[3]) + transform.tr + scaleFactor*(getBBMIN()-bbC);
-            glm::vec3 newMaxPos = glm::vec3(pScene->getMODEL()[3]) + glm::vec3(MODEL[3]) + transform.tr + scaleFactor*(getBBMAX()-bbC);
-            //if(isSelected()){cout << scaleFactor << endl;}
+            glm::vec3 newMinPos = sC  + glm::vec3(MODEL[3]) + transform.tr + pGeom->scaleFactor * (getBBMIN()-bbC);
+            glm::vec3 newMaxPos = sC  + glm::vec3(MODEL[3]) + transform.tr + pGeom->scaleFactor * (getBBMAX()-bbC);
+
+            std::cout << bbC.x << " " << bbC.y << " " << bbC.z << std::endl;
+
             glm::vec3 trans(0,0,0);
-            float scale = pScene->getScale();
+            float s = pScene->getScale();
             glm::vec3 mins = pcv->getScene()->getAxis()->getBBMIN();
             glm::vec3 maxs = pcv->getScene()->getAxis()->getBBMAX();
-            if( (newMaxPos.x < sMODEL()[3].x + scale * maxs.x ) && (newMinPos.x > sMODEL()[3].x + scale * mins.x) )
+
+            if( (newMaxPos.x < sC.x + s * maxs.x ) && (newMinPos.x > sC.x + s * mins.x) )
                 trans.x += transform.tr.x;
-            if( (newMaxPos.y < sMODEL()[3].y + scale * maxs.y ) && (newMinPos.y > sMODEL()[3].y + scale * mins.y) )
-                trans.y += transform.tr.y;
-            if( (newMaxPos.z < sMODEL()[3].z + scale * maxs.z ) && (newMinPos.z > sMODEL()[3].z + scale * mins.z) )
+            //if( (newMaxPos.y < sC.y + s * maxs.y ) && (newMinPos.y > sC.y + s * mins.y) )
+            //    trans.y += transform.tr.y;
+            if( (newMaxPos.z < sC.z + s * maxs.z ) && (newMinPos.z > sC.z + s * mins.z) )
                 trans.z += transform.tr.z;
 
             MODEL = glm::translate(ID, trans) * MODEL;
@@ -679,7 +671,7 @@ void CglObject::computeGroup(){
 }
 
 void CglObject::setRotationCenter(glm::vec3 &center){rotationCenter = &center;}
-void CglObject::setScaleFactor(float sf){scaleFactor = sf;}
+void CglObject::setScaleFactor(float sf){pGeom->scaleFactor = sf;}
 
 void CglObject::setMODEL(glm::mat4 M){MODEL = M;}
 void CglObject::setCenter(glm::vec3 C){center = C;}
@@ -689,7 +681,7 @@ void CglObject::setColor(glm::vec3 col){pMaterial->setColor(col);}
 
 pCglGroup  CglObject::getGroup(){return pGroup;}
 void       CglObject::resetGroup(){pGroup = NULL;}
-float      CglObject::getLocalScale(){return localScale;}
+float      CglObject::getLocalScale(){return pGeom->localScale;}
 int        CglObject::getID(){return objectID;}
 glm::vec3* CglObject::getCenterPtr(){return &center;}
 

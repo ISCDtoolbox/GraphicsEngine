@@ -19,7 +19,7 @@ using namespace std;
 
 int main(int argc, char **argv){
   CglCanvas cv(argc, argv);
-  string configDir = "@CMAKE_SOURCE_DIR@/APP_numero/"; 
+  string configDir = ROOT_PATH + "APP_NUMERO/";
 
   if (argc > 1){
     if(argc>2){
@@ -55,8 +55,7 @@ int main(int argc, char **argv){
       scene4->addLight( back4 );
       SW4->setScene(scene4);
       cv.initGLEW();
-      for (int i=3; i < 5; i++)
-        scene4->addObject(new CglMesh(argv[i+1]));
+    scene4->addObject(new CglMesh(argv[1]));
       if(cv.profile.initial_arrangement == CGL_ARRANGEMENT_GRID)
         scene4->place_objects_on_grid();
       SW4->loadShaders();
@@ -65,7 +64,7 @@ int main(int argc, char **argv){
     else if(argc == 2){
       //FICHIER DE SAUVEGARDE
       if(argv[1] == string("save")){
-	
+
 	cv.getProfile()->read_configuration_file(configDir + "numero.config");
 
 	 pCglWindow window = new CglWindow(800, 0, 800, 800);

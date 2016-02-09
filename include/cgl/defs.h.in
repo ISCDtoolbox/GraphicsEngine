@@ -19,6 +19,8 @@
 #include <math.h>
 #include <string.h>
 
+static std::string ROOT_PATH = "@CMAKE_SOURCE_DIR@/";
+
 using namespace std;
 
 #ifdef WIN32

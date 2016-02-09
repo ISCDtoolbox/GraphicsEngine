@@ -1,4 +1,4 @@
-#version 120
+#version 130
 
 attribute vec3 vertex_position;
 varying vec3   vertex_pos;

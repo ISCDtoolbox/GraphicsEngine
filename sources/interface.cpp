@@ -175,7 +175,7 @@ void CglInterface::checkHoveredButtons(int x, int y){
       glm::vec2 bX = glm::vec2( w/2 * minis.x + w/2, w/2 * maxis.x + w/2 );
       glm::vec2 bY = glm::vec2( h/2 * minis.y + h/2, h/2 * maxis.y + h/2 );
       if ( (x > bX.x) && (x < bX.y) && (y > bY.x) && (y < bY.y) ){
-        cout << "button " << i << " hovered!" << endl;
+        //cout << "button " << i << " hovered!" << endl;
         hover(i);
         noneHovered = false;
       }
@@ -248,6 +248,9 @@ void CglLinearInterface::init(float off){
     hovered.push_back(false);
   }
   offset = off;
+
+  //updateTextures();
+  //display();
 }
 
 void CglLinearInterface::display(){

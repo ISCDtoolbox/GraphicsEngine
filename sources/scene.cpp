@@ -68,6 +68,12 @@ void CglScene::removeObject(pCglObject object){
         listObject.erase(listObject.begin() + i);
 }
 void CglScene::display(){
+    //GLenum err = GL_NO_ERROR;
+    //while((err = glGetError()) != GL_NO_ERROR){
+    //    std::cout << "OpenGL error: " << gluErrorString(err) << std::endl;
+    //    exit(-1);
+    //}
+
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_CULL_FACE);
     glEnable( GL_MULTISAMPLE );
@@ -90,6 +96,7 @@ void CglScene::display(){
     background->display();
 
     //applyTransformation();
+
 
     for (int iObj = 0; iObj < numObjects(); iObj++)
         if(!listObject[iObj]->isHidden())

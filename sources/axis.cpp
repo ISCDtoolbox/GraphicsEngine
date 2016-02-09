@@ -44,8 +44,8 @@ CglAxis::CglAxis(){
     }
     */
 
-    pGeom = new CglGeometry(CGL_PLANE);
-    dynamic = false;
+    //pGeom = new CglGeometry(CGL_PLANE);
+    //dynamic = false;
 
     //Axes
     std::vector<glm::vec3> tAxes = {glm::vec3(0,0,0),
@@ -59,11 +59,11 @@ CglAxis::CglAxis(){
         axes.push_back(0.4*tAxes[i][j]);
 
     //Buffers creation
-    //createBuffer(&mainGridBuffer,       &mainGrid);
+
     //createBuffer(&secondaryGridBuffer,  &secondaryGrid);
     createBuffer(&axesBuffer,           &axes);
 
-/*
+
     //DImensions du tableau de fond
     float W,H;
     pScene = pcv->getScene();
@@ -77,38 +77,28 @@ CglAxis::CglAxis(){
     }
     mins = glm::vec3(-W/2, -10, -H/2);
     maxs = glm::vec3(W/2, -10, H/2);
-
-
     std::vector<glm::vec3> plane;
-    //Ground
     plane.push_back(glm::vec3(-W/2, 0., H/2));
     plane.push_back(glm::vec3(W/2,  0., H/2));
     plane.push_back(glm::vec3(W/2,  0., -H/2));
     plane.push_back(glm::vec3(-W/2, 0., -H/2));
-
-
     std::vector<float> normal{  0,1,0,
                                 0,1,0,
                                 0,1,0,
                                 0,1,0};
 
-    //mainGrid.erase(mainGrid.begin(), mainGrid.end());
      for(int i = 0 ; i < plane.size() ; i++){
         //plane[i] = glm::rotate( glm::angleAxis(pcv->profile.bottomAngle, glm::vec3(0, 1, 0)), glm::vec3(plane[i]));
         plane[i] = glm::vec3(glm::translate(glm::mat4(1),glm::vec3(0,-pcv->profile.bottomDistance,0)) * glm::vec4(plane[i], 1));
         for(int j = 0 ; j < 3 ; j++)
-        mainGrid.push_back(plane[i][j]);
+            mainGrid.push_back(plane[i][j]);
     }
     createBuffer(&mainGridBuffer, &mainGrid);
-
-
-    createBuffer(&(pGeom->nBuffer), &normal);
-
+    createBuffer(&nBuffer, &normal);
     pMaterial   = new CglMaterial(glm::vec3(0.,0.,1.0), 0.2, 0.1, 1.1);
-    */
 }
 
-/*
+
 void CglAxis::display(){
 
     int shaderID = initProgram(pcv->fresnelID());
@@ -141,7 +131,7 @@ void CglAxis::display(){
         uniform(MatrixID,   MVP);
         uniform(MID,        MODEL);
         uniform(VID,        VIEW);
-        uniform(colorID,    pMaterial->getColor());
+        uniform(colorID,    glm::vec3(0.,0.,1.0));
         std::vector<pCglLight> lights = pcv->getSubWindow()->getScene()->getLights();
         uniform( fill_light_ID, *(lights[0]->getLightMatrix(pMaterial)));
         uniform( side_light_ID, *(lights[1]->getLightMatrix(pMaterial)));
@@ -157,7 +147,7 @@ void CglAxis::display(){
         //glLineWidth(2.0);
         bindBuffer(0, GL_ARRAY_BUFFER, mainGridBuffer);
         glBindAttribLocation( shaderID, 0, "vertex_position");
-        bindBuffer(1, GL_ARRAY_BUFFER, pGeom->nBuffer);
+        bindBuffer(1, GL_ARRAY_BUFFER, nBuffer);
         glBindAttribLocation( shaderID, 1, "vertex_normal");
         //glDrawArrays(GL_QUADS, 0, mainGrid.size()/3);
 
@@ -197,7 +187,6 @@ void CglAxis::display(){
     }
 
 
-
     shaderID = initProgram(pcv->simpleID());
     glPolygonMode(GL_FRONT, GL_LINE);
     MatrixID = glGetUniformLocation(shaderID, "MVP");
@@ -233,7 +222,10 @@ void CglAxis::display(){
     glPolygonMode(GL_FRONT, GL_FILL);
     freeBuffer();
 }
-*/
+
+
+
+
 
 
 CglBackground::CglBackground(){

@@ -1,5 +1,5 @@
-#version 120
-#extension GL_EXT_gpu_shader4 : enable
+#version 130
+//#extension GL_EXT_gpu_shader4 : enable
 
 varying vec3 vertex_pos;
 varying vec3 vertex_nor;
@@ -31,7 +31,7 @@ vec3  fog(vec3 col){
 
 void main(){
   vec3 Position_worldspace = (M * vec4(vertex_pos,1)).xyz;
-  
+
   vec3 GRIDCOL;
   float alpha;
   if((int(10*vertex_pos.x + 10) + int(10*vertex_pos.y + 10) + int(10*vertex_pos.z + 10)) %2 < 1){GRIDCOL = COL;alpha=0.35;}
@@ -41,9 +41,9 @@ void main(){
   vec3 col = smoothLight(FILL, GRIDCOL) + smoothLight(SIDE, GRIDCOL) + smoothLight(BACK, GRIDCOL);
   vec3 finalCol = fog(col);
   //gl_FragColor  = vec4(finalCol, 0.0);
-  
+
   gl_FragColor = vec4(col,alpha);
-  
+
   /*
   //vec3 pos = FILL[0].xyz;
   float distance = length( (MVP * vec4(vertex_pos,1)).xyz);
@@ -56,15 +56,15 @@ void main(){
   vec3 n = normalize( normal_cameraspace );
   vec3 l = normalize( light_direction_cameraspace );
   float cosTheta = clamp( dot( n,l ), 0.,1. );
-  
+
   //gl_FragColor  = vec4(cosTheta, cosTheta, cosTheta, 0.0);
   //gl_FragColor  = vec4(vec3(clamp(dot(l, vertex_nor), 0., 1.)), 0.0);
   float fresnel = pow(1.0 - cosTheta, 2.0);
   //gl_FragColor = vec4(fresnel * col, 0);
   */
-  
-  
-  
+
+
+
 }
 
 
